@@ -29,6 +29,8 @@ media_server:               # optional; without it cards have no "Open in Plex" 
     - {from: /data/media/, to: /media/}
 
 sources:
+  # In each *arr: Settings → Connect → Webhook, On Import only, URL http://<heraldarr>:8790/hook/<name>,
+  # method POST, and the server.auth username/password.
   - name: sonarr
     kind: sonarr
     url: http://sonarr:8989

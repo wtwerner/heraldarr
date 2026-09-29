@@ -21,9 +21,26 @@ is announced twice within 30 days.
 | Deep links that work for shared friends | no | no | no | yes |
 | Runs without a cloud service or bot | yes | yes | no | yes |
 
-## Configuration
+## Running it
 
-See [config.example.yaml](config.example.yaml). Secrets can be read from files, which is recommended.
+```bash
+docker run -d --name heraldarr -p 8790:8790 -v /path/to/config:/config ghcr.io/wtwerner/heraldarr
+```
+
+Copy [config.example.yaml](config.example.yaml) to `/config/config.yaml`. Secrets can be inline, read from a
+file (`{file: …}`, recommended) or read from the environment (`{env: …}`). Then in each Sonarr/Radarr, add a
+**Webhook** connection with only **On Import** checked, pointing at `http://<host>:8790/hook/<source name>` with
+the username and password from `server.auth`. Its **Test** button should succeed.
+
+| Command | |
+|---|---|
+| `heraldarr validate` | check the configuration |
+| `heraldarr preview radarr 12,34 -to private` | render items already on disk as new and post them to a non-public destination (without `-to`: print the JSON) |
+| `heraldarr preview sonarr 7 S02` | same for a series, a season or `S02E05,S02E06` |
+| `heraldarr flush` | post everything pending now |
+| `heraldarr import-legacy DIR` | import an older `arr-discord` data folder |
+
+Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST /flush`.
 
 ## License
 
