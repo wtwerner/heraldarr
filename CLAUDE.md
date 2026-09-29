@@ -31,6 +31,9 @@ which needs the reference implementation (maintainer's machine). Need a new scen
 - Wrap errors with `%w`; a deleted item is `domain.ErrNotFound`. Log with `log/slog`.
 - A new module dependency gets one line in the PR saying why the stdlib isn't enough.
 - Test data is fictional: invented titles, `example.org` URLs, placeholder IDs.
+- Everything here is public: code, commits, PRs, issues and comments. Describe behavior
+  generically; never name a specific deployment (hostnames, IPs, local paths, private repos, the
+  apps or servers someone runs). Example hosts are service names like `http://sonarr:8989`.
 - Public destinations show what friends care about (title, scores, links), never paths, sizes or
   release groups: config enforces it, renderers honor `Style.TechDetails`.
 

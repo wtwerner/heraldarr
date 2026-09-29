@@ -19,7 +19,7 @@ build:
 golden-update:
 	go test ./internal/render/... -update
 
-# Regenerates the parity oracle: REFERENCE_PY=/path/to/arr_discord.py make harness (python3 ≥ 3.9).
+# Regenerates the parity oracle: REFERENCE_PY=/path/to/reference.py make harness (python3 ≥ 3.9).
 harness:
 	python3 testdata/harness/make_expected.py
 
