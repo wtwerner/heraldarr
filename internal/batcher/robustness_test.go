@@ -161,6 +161,9 @@ func TestDueFailurePartwayStrandsNothing(t *testing.T) {
 	if want := []string{"radarr4k:movies", "radarr:movies"}; !slices.Equal(keys, want) {
 		t.Fatalf("after recovery Due handed out %v, want %v", keys, want)
 	}
+	if again := mustDue(t, b); len(again) != 0 {
+		t.Fatalf("handed out twice: %d batches", len(again))
+	}
 }
 
 // Done reports on a batch Due handed out; anything else is a caller bug, and changes nothing.
