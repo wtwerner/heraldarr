@@ -61,8 +61,19 @@ func TestOpenSetsUpDatabase(t *testing.T) {
 	if err := s.db.QueryRowContext(ctx, `PRAGMA busy_timeout`).Scan(&busy); err != nil || busy <= 0 {
 		t.Errorf("busy_timeout = %d, %v", busy, err)
 	}
+	var syncMode int
+	if err := s.db.QueryRowContext(ctx, `PRAGMA synchronous`).Scan(&syncMode); err != nil || syncMode != 1 {
+		t.Errorf("synchronous = %d, %v; want 1 (NORMAL)", syncMode, err)
+	}
 	if n := s.db.Stats().MaxOpenConnections; n != 1 {
 		t.Errorf("writer pool allows %d connections, want 1", n)
+	}
+	var queryOnly int
+	if err := s.rdb.QueryRowContext(ctx, `PRAGMA query_only`).Scan(&queryOnly); err != nil || queryOnly != 1 {
+		t.Errorf("reader query_only = %d, %v; want 1", queryOnly, err)
+	}
+	if _, err := s.rdb.ExecContext(ctx, `DELETE FROM batches`); err == nil {
+		t.Error("the read pool accepted a write")
 	}
 }
 
@@ -115,7 +126,7 @@ func TestConcurrentUse(t *testing.T) {
 			for _, err := range []error{
 				s.SaveBatch(ctx, b),
 				s.MarkPosted(ctx, []domain.ItemKey{key}, t0),
-				s.CachePut(ctx, "rt", string(key), []byte("null"), t0),
+				s.CachePut(ctx, "rt", string(key), []byte("m/x"), t0),
 				s.AppendHistory(ctx, domain.HistoryEntry{At: t0, Source: "sonarr", Title: "X", Items: 1}),
 			} {
 				if err != nil {
@@ -199,11 +210,12 @@ func TestImportLegacy(t *testing.T) {
 
 	t.Run("rt cache", func(t *testing.T) {
 		v, at, ok, err := s.CacheGet(ctx, "rt", "tt0000001")
-		if !ok || err != nil || string(v) != `"m/example_movie"` || !at.Equal(time.UnixMilli(1781000000500)) {
+		// internal/enrich's encoding: the RT path, or empty for a miss.
+		if !ok || err != nil || string(v) != "m/example_movie" || !at.Equal(time.UnixMilli(1781000000500)) {
 			t.Errorf("hit = %s %v %v %v", v, at, ok, err)
 		}
 		v, at, ok, err = s.CacheGet(ctx, "rt", "tt0000002")
-		if !ok || err != nil || string(v) != "null" || !at.Equal(time.Unix(1781100000, 0)) {
+		if !ok || err != nil || len(v) != 0 || !at.Equal(time.Unix(1781100000, 0)) {
 			t.Errorf("miss = %s %v %v %v", v, at, ok, err)
 		}
 	})
@@ -284,7 +296,7 @@ func TestImportLegacyKeepsNewerState(t *testing.T) {
 	if err := s.MarkPosted(ctx, []domain.ItemKey{"sonarr:ep:501"}, later); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.CachePut(ctx, "rt", "tt0000002", []byte(`"m/found_later"`), later); err != nil {
+	if err := s.CachePut(ctx, "rt", "tt0000002", []byte("m/found_later"), later); err != nil {
 		t.Fatal(err)
 	}
 	live := &domain.Batch{Key: "sonarr:101", Source: "sonarr", Kind: domain.KindTV, First: later, Last: later}
@@ -297,7 +309,7 @@ func TestImportLegacyKeepsNewerState(t *testing.T) {
 	if p, _ := s.PostedSince(ctx, []domain.ItemKey{"sonarr:ep:501"}, later); !p["sonarr:ep:501"] {
 		t.Error("import moved a posted timestamp back")
 	}
-	if v, _, _, _ := s.CacheGet(ctx, "rt", "tt0000002"); string(v) != `"m/found_later"` {
+	if v, _, _, _ := s.CacheGet(ctx, "rt", "tt0000002"); string(v) != "m/found_later" {
 		t.Errorf("import replaced a newer cache entry: %s", v)
 	}
 	if b, _ := s.LoadBatches(ctx); !b["sonarr:101"].First.Equal(later) || len(b["sonarr:101"].Episodes) != 0 {
@@ -324,7 +336,7 @@ func TestImportLegacyMissingFiles(t *testing.T) {
 	}
 }
 
-func TestImportLegacyIsAtomic(t *testing.T) {
+func TestImportLegacyMalformedFileWritesNothing(t *testing.T) {
 	s := openTemp(t)
 	ctx := context.Background()
 	dir := t.TempDir()
@@ -339,6 +351,28 @@ func TestImportLegacyIsAtomic(t *testing.T) {
 	}
 	if p, _ := s.PostedSince(ctx, []domain.ItemKey{"sonarr:ep:1"}, time.Time{}); len(p) != 0 {
 		t.Error("a failed import left partial data")
+	}
+}
+
+func TestImportLegacyRollsBack(t *testing.T) {
+	s := openTemp(t)
+	ctx := context.Background()
+	// History is written last, so batches, posted and cache rows are already in the transaction.
+	if _, err := s.db.ExecContext(ctx,
+		`CREATE TRIGGER fail_history BEFORE INSERT ON history BEGIN SELECT RAISE(ABORT, 'boom'); END`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.ImportLegacy(ctx, "testdata/legacy"); err == nil {
+		t.Fatal("want the history insert to fail the import")
+	}
+	if p, _ := s.PostedSince(ctx, []domain.ItemKey{"sonarr:ep:501"}, time.Time{}); len(p) != 0 {
+		t.Error("posted rows survived a failed import")
+	}
+	if b, _ := s.LoadBatches(ctx); len(b) != 0 {
+		t.Errorf("%d batches survived a failed import", len(b))
+	}
+	if _, _, ok, _ := s.CacheGet(ctx, "rt", "tt0000001"); ok {
+		t.Error("cache rows survived a failed import")
 	}
 }
 

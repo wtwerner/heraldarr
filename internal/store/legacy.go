@@ -27,7 +27,7 @@ type Imported struct {
 //
 //   - posted.json: {"<item key>": unix seconds}
 //   - rt_cache.json: {"<imdb id>": {"id": "m/x" or null, "at": unix seconds}}, stored in the "rt"
-//     namespace with the RT path as a JSON value ("m/x" or null for a lookup that found nothing)
+//     namespace as internal/enrich reads it: the RT path, or empty for a lookup that found nothing
 //   - pending.json: batches, as the reference kept them
 //   - history.jsonl: one post per line
 //
@@ -108,7 +108,10 @@ func (s *Store) ImportLegacy(ctx context.Context, dir string) (Imported, error) 
 		}
 	}
 	for imdb, hit := range rt {
-		val, _ := json.Marshal(hit.ID) // *string never fails
+		val := []byte{} // a miss
+		if hit.ID != nil {
+			val = []byte(*hit.ID)
+		}
 		if err := exec(&n.Cache, `INSERT INTO cache (ns, key, val, at) VALUES ('rt', ?, ?, ?)
 			ON CONFLICT (ns, key) DO UPDATE SET val = excluded.val, at = excluded.at WHERE excluded.at > cache.at`,
 			imdb, val, ms(fromUnix(hit.At))); err != nil {
