@@ -4,8 +4,8 @@ Date: 2026-09-28 · Status: accepted
 
 ## Context
 
-heraldarr replaces a single-file Python service (stdlib only, JSON files for state) that has run
-on the maintainer's server since 2026-09-28. It is being rebuilt as a public project, partly to
+heraldarr replaces a single-file Python service (stdlib only, JSON files for state) that was in
+daily use before this project began. It is being rebuilt as a public project, partly to
 practise running several coding agents in parallel on one codebase.
 
 ## Decisions
