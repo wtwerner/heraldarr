@@ -60,7 +60,21 @@ chmod 600 config/secrets/*
 ```
 
 The Plex token is your server's `X-Plex-Token`: Plex's support article "Finding an authentication
-token" shows where to copy it, or point `preferences_xml` at Plex's `Preferences.xml` instead.
+token" shows where to copy it.
+
+Instead of a token or API key file, heraldarr can read them from the apps' own config files:
+`media_server.preferences_xml` from Plex's `Preferences.xml`, and a source's `config_xml` from that
+*arr's `config.xml`. Those files live outside `config/`, so mount each one into the container,
+read-only, under `volumes:` in `docker-compose.yml`:
+
+```yaml
+      - "/path/to/plex/Library/Application Support/Plex Media Server/Preferences.xml:/plex/Preferences.xml:ro"
+      - /path/to/sonarr/config.xml:/sonarr/config.xml:ro
+```
+
+With `docker run`, the same is `-v /path/to/sonarr/config.xml:/sonarr/config.xml:ro`. Then, in
+`config.yaml`, replace `token:` with `preferences_xml: /plex/Preferences.xml`, or a source's
+`api_key:` with `config_xml: /sonarr/config.xml` (each takes one or the other, not both).
 
 **3. Edit `config/config.yaml`.** Set each source's `url` to where heraldarr can reach it.
 
@@ -96,9 +110,10 @@ and posts nothing for it. A 401 means the username or password is wrong, a 404 t
 the URL.
 
 **7. The first card.** The next import is posted once its series has been quiet for 5 minutes
-(30 for back catalog; 5 for movies). With Plex, heraldarr then waits for Plex to have the item so
-the button works: up to 4 checks, 3 minutes apart, before it posts without the button. To post
-what is waiting now:
+(30 for back catalog; 5 for movies). With Plex, heraldarr first makes sure Plex has the item, so
+the button works: if it doesn't, heraldarr asks Plex to scan that folder and checks again up to 4
+times, 3 minutes apart. Then it does one final fresh lookup and posts, without the button for
+anything Plex still hasn't found. To post what is waiting now, skipping that wait:
 
 ```bash
 docker compose exec heraldarr /heraldarr flush
