@@ -1,0 +1,161 @@
+{
+  "description": "An upgrade (isUpgrade) and a replaced file (deletedFiles): nothing is queued.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 102,
+          "title": "Glass Orchard",
+          "titleSlug": "glass-orchard",
+          "path": "/data/media/TV/Glass Orchard (2022)",
+          "tvdbId": 900102,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900102",
+          "type": "standard",
+          "year": 2022,
+          "genres": [
+            "Comedy"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/glass-orchard/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/glass-orchard/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/glass-orchard.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/glass-orchard/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/glass-orchard.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 2034,
+            "episodeNumber": 4,
+            "seasonNumber": 3,
+            "title": "Pruning",
+            "overview": "An episode.",
+            "airDate": "2026-06-07",
+            "airDateUtc": "2026-06-07T12:00:00Z",
+            "seriesId": 102,
+            "tvdbId": 5002034
+          }
+        ],
+        "episodeFile": {
+          "id": 72034,
+          "relativePath": "Season 03/Glass Orchard - S03E04.mkv",
+          "path": "/data/media/TV/Glass Orchard (2022)/Season 03/Glass Orchard - S03E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": true,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH2034"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 102,
+          "title": "Glass Orchard",
+          "titleSlug": "glass-orchard",
+          "path": "/data/media/TV/Glass Orchard (2022)",
+          "tvdbId": 900102,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900102",
+          "type": "standard",
+          "year": 2022,
+          "genres": [
+            "Comedy"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/glass-orchard/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/glass-orchard/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/glass-orchard.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/glass-orchard/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/glass-orchard.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 2033,
+            "episodeNumber": 3,
+            "seasonNumber": 3,
+            "title": "Frost",
+            "overview": "An episode.",
+            "airDate": "2026-05-31",
+            "airDateUtc": "2026-05-31T12:00:00Z",
+            "seriesId": 102,
+            "tvdbId": 5002033
+          }
+        ],
+        "episodeFile": {
+          "id": 72033,
+          "relativePath": "Season 03/Glass Orchard - S03E03.mkv",
+          "path": "/data/media/TV/Glass Orchard (2022)/Season 03/Glass Orchard - S03E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH2033",
+        "deletedFiles": [
+          {
+            "id": 1,
+            "relativePath": "old.mkv",
+            "path": "/old.mkv",
+            "quality": "HDTV-720p"
+          }
+        ]
+      }
+    }
+  ],
+  "arr": {},
+  "plex": {},
+  "plex_seasons": {},
+  "rt": {}
+}

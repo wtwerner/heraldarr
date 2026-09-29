@@ -1,0 +1,344 @@
+{
+  "add_results": [
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1",
+    "sonarr Paper Comets: +1"
+  ],
+  "pending": {
+    "sonarr:103": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:3101": {
+          "aired": "2025-05-18T12:00:00Z",
+          "number": 1,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 1"
+        },
+        "sonarr:ep:3102": {
+          "aired": "2025-05-25T12:00:00Z",
+          "number": 2,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 2"
+        },
+        "sonarr:ep:3103": {
+          "aired": "2025-06-01T12:00:00Z",
+          "number": 3,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 3"
+        },
+        "sonarr:ep:3104": {
+          "aired": "2025-06-08T12:00:00Z",
+          "number": 4,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 4"
+        },
+        "sonarr:ep:3105": {
+          "aired": "2025-06-15T12:00:00Z",
+          "number": 5,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 5"
+        },
+        "sonarr:ep:3106": {
+          "aired": "2025-06-22T12:00:00Z",
+          "number": 6,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 6"
+        },
+        "sonarr:ep:3107": {
+          "aired": "2025-06-29T12:00:00Z",
+          "number": 7,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 7"
+        },
+        "sonarr:ep:3108": {
+          "aired": "2025-07-06T12:00:00Z",
+          "number": 8,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 8"
+        },
+        "sonarr:ep:3109": {
+          "aired": "2025-07-13T12:00:00Z",
+          "number": 9,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 9"
+        },
+        "sonarr:ep:3110": {
+          "aired": "2025-07-20T12:00:00Z",
+          "number": 10,
+          "quality": "Bluray-1080p",
+          "season": 2,
+          "title": "Chapter 10"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/paper-comets.jpg",
+        "genres": [
+          "Science Fiction",
+          "Adventure"
+        ],
+        "id": 103,
+        "imdbId": "tt9900103",
+        "path": "/data/media/TV/Paper Comets (2021)",
+        "poster": "https://images.example.org/poster/paper-comets.jpg",
+        "title": "Paper Comets",
+        "tvdbId": 900103,
+        "year": 2021
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900103/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/tv/paper_comets",
+            "🍅"
+          ]
+        ],
+        "color": 1752220,
+        "facts": [
+          [
+            "Network",
+            "Orbit"
+          ],
+          [
+            "Rating",
+            "★ 7.5 TMDB · TV-PG"
+          ],
+          [
+            "Genres",
+            "Science Fiction, Adventure"
+          ]
+        ],
+        "footer": "Example Server · 1080p Blu-ray",
+        "gallery": [],
+        "headline": "New season",
+        "lines": [
+          "**Season 2** · all 10 episodes"
+        ],
+        "overview": "",
+        "poster": "https://images.example.org/poster/paper-comets.jpg",
+        "title": "Paper Comets (2021)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900103/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/tv/paper_comets"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New season"
+            },
+            "color": 1752220,
+            "description": "**Season 2** · all 10 episodes",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Orbit"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 7.5 TMDB · TV-PG"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Science Fiction, Adventure"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p Blu-ray"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/paper-comets.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Paper Comets (2021)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New season"
+            },
+            "color": 1752220,
+            "description": "**Season 2** · all 10 episodes\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303) · [IMDb](https://www.imdb.com/title/tt9900103/) · [Rotten Tomatoes](https://www.rottentomatoes.com/tv/paper_comets)",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Orbit"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 7.5 TMDB · TV-PG"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Science Fiction, Adventure"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p Blu-ray"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/paper-comets.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Paper Comets (2021)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 1752220,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/paper-comets.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New season\n## [Paper Comets (2021)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303)",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**Season 2** · all 10 episodes",
+                "type": 10
+              },
+              {
+                "content": "Orbit · ★ 7.5 TMDB · TV-PG · Science Fiction, Adventure",
+                "type": 10
+              },
+              {
+                "content": "-# Example Server · 1080p Blu-ray",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5303"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900103/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/tv/paper_comets"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

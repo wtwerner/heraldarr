@@ -1,0 +1,254 @@
+{
+  "add_results": [
+    "sonarr Salt & Signal: +1",
+    "sonarr Salt & Signal: +1",
+    "sonarr Salt & Signal: +1",
+    "sonarr Salt & Signal: +1",
+    "sonarr Salt & Signal: +1"
+  ],
+  "pending": {
+    "sonarr:105": {
+      "fast": true,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:5041": {
+          "aired": "2025-12-04T12:00:00Z",
+          "number": 1,
+          "quality": "HDTV-720p",
+          "season": 4,
+          "title": "Part 1"
+        },
+        "sonarr:ep:5042": {
+          "aired": "2025-12-11T12:00:00Z",
+          "number": 2,
+          "quality": "HDTV-720p",
+          "season": 4,
+          "title": "Part 2"
+        },
+        "sonarr:ep:5043": {
+          "aired": "2025-12-18T12:00:00Z",
+          "number": 3,
+          "quality": "HDTV-720p",
+          "season": 4,
+          "title": "Part 3"
+        },
+        "sonarr:ep:5047": {
+          "aired": "2026-01-15T12:00:00Z",
+          "number": 7,
+          "quality": "HDTV-720p",
+          "season": 4,
+          "title": "Part 7"
+        },
+        "sonarr:ep:5048": {
+          "aired": "2026-01-22T12:00:00Z",
+          "number": 8,
+          "quality": "HDTV-720p",
+          "season": 4,
+          "title": "Part 8"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/salt-and-signal.jpg",
+        "genres": [
+          "Documentary"
+        ],
+        "id": 105,
+        "imdbId": "tt9900105",
+        "path": "/data/media/TV/Salt & Signal (2019)",
+        "poster": "https://images.example.org/poster/salt-and-signal.jpg",
+        "title": "Salt & Signal",
+        "tvdbId": 900105,
+        "year": 2019
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900105/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Salt+%26+Signal",
+            "🍅"
+          ]
+        ],
+        "color": 5793266,
+        "facts": [],
+        "footer": "Example Server · 720p HDTV",
+        "gallery": [],
+        "headline": "5 new episodes",
+        "lines": [
+          "**Season 4** · E01–E03, E07–E08 (5)"
+        ],
+        "overview": "",
+        "poster": "https://images.example.org/poster/salt-and-signal.jpg",
+        "title": "Salt & Signal (2019)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900105/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Salt+%26+Signal"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "5 new episodes"
+            },
+            "color": 5793266,
+            "description": "**Season 4** · E01–E03, E07–E08 (5)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 720p HDTV"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Salt & Signal (2019)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "5 new episodes"
+            },
+            "color": 5793266,
+            "description": "**Season 4** · E01–E03, E07–E08 (5)\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504) · [IMDb](https://www.imdb.com/title/tt9900105/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Salt+%26+Signal)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 720p HDTV"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Salt & Signal (2019)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 5793266,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/salt-and-signal.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# 5 new episodes\n## [Salt & Signal (2019)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504)",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**Season 4** · E01–E03, E07–E08 (5)",
+                "type": 10
+              },
+              {
+                "content": "-# Example Server · 720p HDTV",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5504"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900105/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Salt+%26+Signal"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

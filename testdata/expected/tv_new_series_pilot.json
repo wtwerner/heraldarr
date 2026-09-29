@@ -1,0 +1,306 @@
+{
+  "add_results": [
+    "sonarr Harbor Lights: +1"
+  ],
+  "pending": {
+    "sonarr:101": {
+      "fast": true,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:1001": {
+          "aired": "2026-06-13T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Low Tide"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/harbor-lights.jpg",
+        "genres": [
+          "Drama",
+          "Mystery",
+          "Crime",
+          "Thriller"
+        ],
+        "id": 101,
+        "imdbId": "tt9900101",
+        "path": "/data/media/TV/Harbor Lights (2026)",
+        "poster": "https://images.example.org/poster/harbor-lights.jpg",
+        "title": "Harbor Lights",
+        "tvdbId": 900101,
+        "year": 2026
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900101/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/tv/harbor_lights",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [
+          [
+            "Network",
+            "Example Network"
+          ],
+          [
+            "Rating",
+            "★ 8.1 TMDB · TV-14"
+          ],
+          [
+            "Genres",
+            "Drama, Mystery, Crime"
+          ],
+          [
+            "Next episode",
+            "Next episode <t:1781956800:R>"
+          ]
+        ],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/harbor-lights.jpg"
+        ],
+        "headline": "New series",
+        "lines": [
+          "`S01E01` · Low Tide · aired <t:1781352000:R>"
+        ],
+        "overview": "A harbor town keeps its secrets until a lighthouse keeper goes missing.",
+        "poster": "https://images.example.org/poster/harbor-lights.jpg",
+        "title": "Harbor Lights (2026)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900101/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/tv/harbor_lights"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> A harbor town keeps its secrets until a lighthouse keeper goes missing.\n\n`S01E01` · Low Tide · aired <t:1781352000:R>",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Example Network"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 8.1 TMDB · TV-14"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama, Mystery, Crime"
+              },
+              {
+                "inline": true,
+                "name": "Next episode",
+                "value": "Next episode <t:1781956800:R>"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/harbor-lights.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/harbor-lights.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Harbor Lights (2026)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> A harbor town keeps its secrets until a lighthouse keeper goes missing.\n\n`S01E01` · Low Tide · aired <t:1781352000:R>\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101) · [IMDb](https://www.imdb.com/title/tt9900101/) · [Rotten Tomatoes](https://www.rottentomatoes.com/tv/harbor_lights)",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Example Network"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 8.1 TMDB · TV-14"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama, Mystery, Crime"
+              },
+              {
+                "inline": true,
+                "name": "Next episode",
+                "value": "Next episode <t:1781956800:R>"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/harbor-lights.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/harbor-lights.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Harbor Lights (2026)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/harbor-lights.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New series\n## [Harbor Lights (2026)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101)\nA harbor town keeps its secrets until a lighthouse keeper goes missing.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "`S01E01` · Low Tide · aired <t:1781352000:R>",
+                "type": 10
+              },
+              {
+                "content": "Example Network · ★ 8.1 TMDB · TV-14 · Drama, Mystery, Crime · Next episode <t:1781956800:R>",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/harbor-lights.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5101"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900101/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/tv/harbor_lights"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

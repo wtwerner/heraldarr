@@ -1,0 +1,86 @@
+{
+  "description": "Series deleted from Sonarr before the batch went out (API 404): post from webhook data.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 106,
+          "title": "The Quiet Engine",
+          "titleSlug": "the-quiet-engine",
+          "path": "/data/media/TV/The Quiet Engine (2024)",
+          "tvdbId": 900106,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900106",
+          "type": "standard",
+          "year": 2024,
+          "genres": [
+            "Animation"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/the-quiet-engine/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/the-quiet-engine.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/the-quiet-engine/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/the-quiet-engine.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/the-quiet-engine/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/the-quiet-engine.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 6001,
+            "episodeNumber": 3,
+            "seasonNumber": 1,
+            "title": "Idle",
+            "overview": "An episode.",
+            "airDate": "2026-06-12",
+            "airDateUtc": "2026-06-12T12:00:00Z",
+            "seriesId": 106,
+            "tvdbId": 5006001
+          }
+        ],
+        "episodeFile": {
+          "id": 76001,
+          "relativePath": "Season 01/The Quiet Engine - S01E03.mkv",
+          "path": "/data/media/TV/The Quiet Engine (2024)/Season 01/The Quiet Engine - S01E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH6001"
+      }
+    }
+  ],
+  "arr": {
+    "series/106": null
+  },
+  "plex": {},
+  "plex_seasons": {},
+  "rt": {}
+}

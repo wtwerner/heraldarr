@@ -1,0 +1,14 @@
+/bin/
+/dist/
+/data/
+*.db
+*.db-*
+config.yaml
+!testdata/**/config.yaml
+.env
+secrets.env
+*.secret
+.DS_Store
+.claude/worktrees/
+.claude/settings.local.json
+__pycache__/

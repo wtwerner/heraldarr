@@ -1,0 +1,91 @@
+{
+  "description": "A Radarr upgrade is never announced.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 202,
+          "title": "Lantern Season",
+          "year": 2024,
+          "releaseDate": "2024-03-01",
+          "folderPath": "/data/media/Movies/Lantern Season (2024)",
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "overview": "Two rivals share a festival stall.",
+          "genres": [
+            "Romance"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lantern-season/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lantern-season.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lantern-season/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lantern-season.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lantern-season/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lantern-season.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "title": "Lantern Season",
+          "year": 2024
+        },
+        "movieFile": {
+          "id": 60202,
+          "relativePath": "Lantern Season (2024).mkv",
+          "path": "/data/media/Movies/Lantern Season (2024)/Lantern Season (2024).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": true,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM202"
+      }
+    }
+  ],
+  "arr": {},
+  "plex": {},
+  "plex_seasons": {},
+  "rt": {}
+}

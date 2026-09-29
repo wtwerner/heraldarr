@@ -1,0 +1,243 @@
+{
+  "add_results": [
+    "sonarr Glass Orchard: +1"
+  ],
+  "pending": {
+    "sonarr:102": {
+      "fast": true,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:2035": {
+          "aired": "2026-06-14T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "The Graft"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/glass-orchard.jpg",
+        "genres": [
+          "Comedy"
+        ],
+        "id": 102,
+        "imdbId": "tt9900102",
+        "path": "/data/media/TV/Glass Orchard (2022)",
+        "poster": "https://images.example.org/poster/glass-orchard.jpg",
+        "title": "Glass Orchard",
+        "tvdbId": 900102,
+        "year": 2022
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900102/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Glass+Orchard",
+            "🍅"
+          ]
+        ],
+        "color": 5793266,
+        "facts": [
+          [
+            "Next episode",
+            "Next episode <t:1782043200:R>"
+          ]
+        ],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [],
+        "headline": "New episode",
+        "lines": [
+          "`S03E05` · The Graft · aired <t:1781438400:R>"
+        ],
+        "overview": "",
+        "poster": "https://images.example.org/poster/glass-orchard.jpg",
+        "title": "Glass Orchard (2022)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900102/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Glass+Orchard"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New episode"
+            },
+            "color": 5793266,
+            "description": "`S03E05` · The Graft · aired <t:1781438400:R>",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Next episode",
+                "value": "Next episode <t:1782043200:R>"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Glass Orchard (2022)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New episode"
+            },
+            "color": 5793266,
+            "description": "`S03E05` · The Graft · aired <t:1781438400:R>\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203) · [IMDb](https://www.imdb.com/title/tt9900102/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Glass+Orchard)",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Next episode",
+                "value": "Next episode <t:1782043200:R>"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Glass Orchard (2022)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 5793266,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/glass-orchard.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New episode\n## [Glass Orchard (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203)",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "`S03E05` · The Graft · aired <t:1781438400:R>",
+                "type": 10
+              },
+              {
+                "content": "Next episode <t:1782043200:R>",
+                "type": 10
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5203"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900102/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Glass+Orchard"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

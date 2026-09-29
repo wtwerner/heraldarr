@@ -1,0 +1,422 @@
+{
+  "description": "Five non-contiguous episodes of a season that already had 3 files: an episodes card with ranges.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 105,
+          "title": "Salt & Signal",
+          "titleSlug": "salt-and-signal",
+          "path": "/data/media/TV/Salt & Signal (2019)",
+          "tvdbId": 900105,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900105",
+          "type": "standard",
+          "year": 2019,
+          "genres": [
+            "Documentary"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/salt-and-signal/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/salt-and-signal/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/salt-and-signal/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/salt-and-signal.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 5041,
+            "episodeNumber": 1,
+            "seasonNumber": 4,
+            "title": "Part 1",
+            "overview": "An episode.",
+            "airDate": "2025-12-04",
+            "airDateUtc": "2025-12-04T12:00:00Z",
+            "seriesId": 105,
+            "tvdbId": 5005041
+          }
+        ],
+        "episodeFile": {
+          "id": 75041,
+          "relativePath": "Season 04/Salt & Signal - S04E01.mkv",
+          "path": "/data/media/TV/Salt & Signal (2019)/Season 04/Salt & Signal - S04E01.mkv",
+          "quality": "HDTV-720p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH5041"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 105,
+          "title": "Salt & Signal",
+          "titleSlug": "salt-and-signal",
+          "path": "/data/media/TV/Salt & Signal (2019)",
+          "tvdbId": 900105,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900105",
+          "type": "standard",
+          "year": 2019,
+          "genres": [
+            "Documentary"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/salt-and-signal/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/salt-and-signal/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/salt-and-signal/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/salt-and-signal.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 5042,
+            "episodeNumber": 2,
+            "seasonNumber": 4,
+            "title": "Part 2",
+            "overview": "An episode.",
+            "airDate": "2025-12-11",
+            "airDateUtc": "2025-12-11T12:00:00Z",
+            "seriesId": 105,
+            "tvdbId": 5005042
+          }
+        ],
+        "episodeFile": {
+          "id": 75042,
+          "relativePath": "Season 04/Salt & Signal - S04E02.mkv",
+          "path": "/data/media/TV/Salt & Signal (2019)/Season 04/Salt & Signal - S04E02.mkv",
+          "quality": "HDTV-720p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH5042"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 105,
+          "title": "Salt & Signal",
+          "titleSlug": "salt-and-signal",
+          "path": "/data/media/TV/Salt & Signal (2019)",
+          "tvdbId": 900105,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900105",
+          "type": "standard",
+          "year": 2019,
+          "genres": [
+            "Documentary"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/salt-and-signal/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/salt-and-signal/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/salt-and-signal/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/salt-and-signal.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 5043,
+            "episodeNumber": 3,
+            "seasonNumber": 4,
+            "title": "Part 3",
+            "overview": "An episode.",
+            "airDate": "2025-12-18",
+            "airDateUtc": "2025-12-18T12:00:00Z",
+            "seriesId": 105,
+            "tvdbId": 5005043
+          }
+        ],
+        "episodeFile": {
+          "id": 75043,
+          "relativePath": "Season 04/Salt & Signal - S04E03.mkv",
+          "path": "/data/media/TV/Salt & Signal (2019)/Season 04/Salt & Signal - S04E03.mkv",
+          "quality": "HDTV-720p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH5043"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 105,
+          "title": "Salt & Signal",
+          "titleSlug": "salt-and-signal",
+          "path": "/data/media/TV/Salt & Signal (2019)",
+          "tvdbId": 900105,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900105",
+          "type": "standard",
+          "year": 2019,
+          "genres": [
+            "Documentary"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/salt-and-signal/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/salt-and-signal/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/salt-and-signal/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/salt-and-signal.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 5047,
+            "episodeNumber": 7,
+            "seasonNumber": 4,
+            "title": "Part 7",
+            "overview": "An episode.",
+            "airDate": "2026-01-15",
+            "airDateUtc": "2026-01-15T12:00:00Z",
+            "seriesId": 105,
+            "tvdbId": 5005047
+          }
+        ],
+        "episodeFile": {
+          "id": 75047,
+          "relativePath": "Season 04/Salt & Signal - S04E07.mkv",
+          "path": "/data/media/TV/Salt & Signal (2019)/Season 04/Salt & Signal - S04E07.mkv",
+          "quality": "HDTV-720p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH5047"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 105,
+          "title": "Salt & Signal",
+          "titleSlug": "salt-and-signal",
+          "path": "/data/media/TV/Salt & Signal (2019)",
+          "tvdbId": 900105,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900105",
+          "type": "standard",
+          "year": 2019,
+          "genres": [
+            "Documentary"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/salt-and-signal/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/salt-and-signal/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/salt-and-signal.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/salt-and-signal/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/salt-and-signal.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 5048,
+            "episodeNumber": 8,
+            "seasonNumber": 4,
+            "title": "Part 8",
+            "overview": "An episode.",
+            "airDate": "2026-01-22",
+            "airDateUtc": "2026-01-22T12:00:00Z",
+            "seriesId": 105,
+            "tvdbId": 5005048
+          }
+        ],
+        "episodeFile": {
+          "id": 75048,
+          "relativePath": "Season 04/Salt & Signal - S04E08.mkv",
+          "path": "/data/media/TV/Salt & Signal (2019)/Season 04/Salt & Signal - S04E08.mkv",
+          "quality": "HDTV-720p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH5048"
+      }
+    }
+  ],
+  "arr": {
+    "series/105": {
+      "id": 105,
+      "title": "Salt & Signal",
+      "year": 2019,
+      "network": "Public Example",
+      "status": "continuing",
+      "overview": "Coastal radio stations.",
+      "certification": "TV-G",
+      "ratings": {
+        "votes": 100,
+        "value": 7.0
+      },
+      "statistics": {
+        "episodeFileCount": 26
+      },
+      "seasons": [
+        {
+          "seasonNumber": 1,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 6,
+            "totalEpisodeCount": 6,
+            "episodeCount": 6
+          }
+        },
+        {
+          "seasonNumber": 2,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 6,
+            "totalEpisodeCount": 6,
+            "episodeCount": 6
+          }
+        },
+        {
+          "seasonNumber": 3,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 6,
+            "totalEpisodeCount": 6,
+            "episodeCount": 6
+          }
+        },
+        {
+          "seasonNumber": 4,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 8,
+            "totalEpisodeCount": 10,
+            "episodeCount": 10
+          }
+        }
+      ]
+    }
+  },
+  "plex": {
+    "tvdb://900105": {
+      "ratingKey": "5501",
+      "type": "show"
+    }
+  },
+  "plex_seasons": {
+    "5501:4": "5504"
+  },
+  "rt": {}
+}

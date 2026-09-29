@@ -1,0 +1,405 @@
+{
+  "description": "Four 4K movies at once on the private route: '4 new 4K movies' digest.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr4k",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 310,
+          "title": "Cinder",
+          "year": 2020,
+          "releaseDate": "2020-03-01",
+          "folderPath": "/data/media/Movies 4K/Cinder (2020)",
+          "tmdbId": 800310,
+          "imdbId": "tt9800310",
+          "overview": "An overview.",
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/uhd-0/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/uhd-0.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/uhd-0/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/uhd-0.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/uhd-0/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/uhd-0.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800310,
+          "imdbId": "tt9800310",
+          "title": "Cinder",
+          "year": 2020
+        },
+        "movieFile": {
+          "id": 60310,
+          "relativePath": "Cinder (2020).mkv",
+          "path": "/data/media/Movies 4K/Cinder (2020)/Cinder (2020).mkv",
+          "quality": "WEBDL-2160p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 7.1,
+            "audioCodec": "TrueHD Atmos",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 2160,
+            "width": 3840,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x265",
+            "videoDynamicRange": "HDR",
+            "videoDynamicRangeType": "DV HDR10Plus"
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM310"
+      }
+    },
+    {
+      "source": "radarr4k",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 311,
+          "title": "Bellwether",
+          "year": 2021,
+          "releaseDate": "2021-03-01",
+          "folderPath": "/data/media/Movies 4K/Bellwether (2021)",
+          "tmdbId": 800311,
+          "imdbId": "tt9800311",
+          "overview": "An overview.",
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/uhd-1/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/uhd-1.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/uhd-1/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/uhd-1.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/uhd-1/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/uhd-1.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800311,
+          "imdbId": "tt9800311",
+          "title": "Bellwether",
+          "year": 2021
+        },
+        "movieFile": {
+          "id": 60311,
+          "relativePath": "Bellwether (2021).mkv",
+          "path": "/data/media/Movies 4K/Bellwether (2021)/Bellwether (2021).mkv",
+          "quality": "WEBDL-2160p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 7.1,
+            "audioCodec": "TrueHD Atmos",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 2160,
+            "width": 3840,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x265",
+            "videoDynamicRange": "HDR",
+            "videoDynamicRangeType": "DV HDR10Plus"
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM311"
+      }
+    },
+    {
+      "source": "radarr4k",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 312,
+          "title": "Anchor Point",
+          "year": 2022,
+          "releaseDate": "2022-03-01",
+          "folderPath": "/data/media/Movies 4K/Anchor Point (2022)",
+          "tmdbId": 800312,
+          "imdbId": "tt9800312",
+          "overview": "An overview.",
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/uhd-2/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/uhd-2.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/uhd-2/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/uhd-2.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/uhd-2/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/uhd-2.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800312,
+          "imdbId": "tt9800312",
+          "title": "Anchor Point",
+          "year": 2022
+        },
+        "movieFile": {
+          "id": 60312,
+          "relativePath": "Anchor Point (2022).mkv",
+          "path": "/data/media/Movies 4K/Anchor Point (2022)/Anchor Point (2022).mkv",
+          "quality": "WEBDL-2160p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 7.1,
+            "audioCodec": "TrueHD Atmos",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 2160,
+            "width": 3840,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x265",
+            "videoDynamicRange": "HDR",
+            "videoDynamicRangeType": "DV HDR10Plus"
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM312"
+      }
+    },
+    {
+      "source": "radarr4k",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 313,
+          "title": "Driftwood",
+          "year": 2023,
+          "releaseDate": "2023-03-01",
+          "folderPath": "/data/media/Movies 4K/Driftwood (2023)",
+          "tmdbId": 800313,
+          "imdbId": "tt9800313",
+          "overview": "An overview.",
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/uhd-3/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/uhd-3.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/uhd-3/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/uhd-3.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/uhd-3/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/uhd-3.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800313,
+          "imdbId": "tt9800313",
+          "title": "Driftwood",
+          "year": 2023
+        },
+        "movieFile": {
+          "id": 60313,
+          "relativePath": "Driftwood (2023).mkv",
+          "path": "/data/media/Movies 4K/Driftwood (2023)/Driftwood (2023).mkv",
+          "quality": "WEBDL-2160p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 7.1,
+            "audioCodec": "TrueHD Atmos",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 2160,
+            "width": 3840,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x265",
+            "videoDynamicRange": "HDR",
+            "videoDynamicRangeType": "DV HDR10Plus"
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM313"
+      }
+    }
+  ],
+  "arr": {
+    "movie/310": {
+      "id": 310,
+      "title": "Cinder",
+      "year": 2020,
+      "overview": "An overview.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.5,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 100,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "movie/311": {
+      "id": 311,
+      "title": "Bellwether",
+      "year": 2021,
+      "overview": "An overview.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.6,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 101,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "movie/312": {
+      "id": 312,
+      "title": "Anchor Point",
+      "year": 2022,
+      "overview": "An overview.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.7,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 102,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "movie/313": {
+      "id": 313,
+      "title": "Driftwood",
+      "year": 2023,
+      "overview": "An overview.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.8,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 103,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    }
+  },
+  "plex": {
+    "tmdb://800310": {
+      "ratingKey": "73310",
+      "type": "movie"
+    },
+    "tmdb://800311": {
+      "ratingKey": "73311",
+      "type": "movie"
+    },
+    "tmdb://800312": {
+      "ratingKey": "73312",
+      "type": "movie"
+    },
+    "tmdb://800313": {
+      "ratingKey": "73313",
+      "type": "movie"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}

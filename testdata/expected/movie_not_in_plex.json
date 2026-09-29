@@ -1,0 +1,219 @@
+{
+  "add_results": [
+    "radarr A Map of Small Hours: +1"
+  ],
+  "pending": {
+    "radarr:movies": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "radarr:movie:205": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/a-map-of-small-hours.jpg",
+          "genres": [
+            "Animation",
+            "Family"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 205,
+          "imdbId": "tt9800205",
+          "overview": "A clock runs backwards.",
+          "path": "/data/media/Movies/A Map of Small Hours (2022)",
+          "poster": "https://images.example.org/poster/a-map-of-small-hours.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "A Map of Small Hours",
+          "tmdbId": 800205,
+          "year": 2022
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "radarr",
+      "subject": null,
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9800205/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=A+Map+of+Small+Hours",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [],
+        "footer": "Example Server · 1080p Blu-ray",
+        "gallery": [
+          "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+        ],
+        "headline": "New movie",
+        "lines": [
+          "Animation, Family"
+        ],
+        "overview": "A clock runs backwards.",
+        "poster": "https://images.example.org/poster/a-map-of-small-hours.jpg",
+        "title": "A Map of Small Hours (2022)",
+        "url": "https://www.imdb.com/title/tt9800205/"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9800205/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=A+Map+of+Small+Hours"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> A clock runs backwards.\n\nAnimation, Family",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p Blu-ray"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/a-map-of-small-hours.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "A Map of Small Hours (2022)",
+            "url": "https://www.imdb.com/title/tt9800205/"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> A clock runs backwards.\n\nAnimation, Family\n\n[IMDb](https://www.imdb.com/title/tt9800205/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=A+Map+of+Small+Hours)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p Blu-ray"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/a-map-of-small-hours.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "A Map of Small Hours (2022)",
+            "url": "https://www.imdb.com/title/tt9800205/"
+          }
+        ]
+      },
+      "source": "radarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/a-map-of-small-hours.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New movie\n## [A Map of Small Hours (2022)](https://www.imdb.com/title/tt9800205/)\nA clock runs backwards.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "Animation, Family",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p Blu-ray",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9800205/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=A+Map+of+Small+Hours"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "add_results": [
+    "radarr4k Cinder: +1",
+    "radarr4k Bellwether: +1",
+    "radarr4k Anchor Point: +1",
+    "radarr4k Driftwood: +1"
+  ],
+  "pending": {
+    "radarr4k:movies": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "radarr4k:movie:310": {
+          "audio": "TrueHD Atmos",
+          "channels": 7.1,
+          "fanart": "https://images.example.org/fanart/uhd-0.jpg",
+          "genres": [
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "DV HDR10Plus",
+          "id": 310,
+          "imdbId": "tt9800310",
+          "overview": "An overview.",
+          "path": "/data/media/Movies 4K/Cinder (2020)",
+          "poster": "https://images.example.org/poster/uhd-0.jpg",
+          "quality": "WEBDL-2160p",
+          "size": 9800000000,
+          "title": "Cinder",
+          "tmdbId": 800310,
+          "year": 2020
+        },
+        "radarr4k:movie:311": {
+          "audio": "TrueHD Atmos",
+          "channels": 7.1,
+          "fanart": "https://images.example.org/fanart/uhd-1.jpg",
+          "genres": [
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "DV HDR10Plus",
+          "id": 311,
+          "imdbId": "tt9800311",
+          "overview": "An overview.",
+          "path": "/data/media/Movies 4K/Bellwether (2021)",
+          "poster": "https://images.example.org/poster/uhd-1.jpg",
+          "quality": "WEBDL-2160p",
+          "size": 9800000000,
+          "title": "Bellwether",
+          "tmdbId": 800311,
+          "year": 2021
+        },
+        "radarr4k:movie:312": {
+          "audio": "TrueHD Atmos",
+          "channels": 7.1,
+          "fanart": "https://images.example.org/fanart/uhd-2.jpg",
+          "genres": [
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "DV HDR10Plus",
+          "id": 312,
+          "imdbId": "tt9800312",
+          "overview": "An overview.",
+          "path": "/data/media/Movies 4K/Anchor Point (2022)",
+          "poster": "https://images.example.org/poster/uhd-2.jpg",
+          "quality": "WEBDL-2160p",
+          "size": 9800000000,
+          "title": "Anchor Point",
+          "tmdbId": 800312,
+          "year": 2022
+        },
+        "radarr4k:movie:313": {
+          "audio": "TrueHD Atmos",
+          "channels": 7.1,
+          "fanart": "https://images.example.org/fanart/uhd-3.jpg",
+          "genres": [
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "DV HDR10Plus",
+          "id": 313,
+          "imdbId": "tt9800313",
+          "overview": "An overview.",
+          "path": "/data/media/Movies 4K/Driftwood (2023)",
+          "poster": "https://images.example.org/poster/uhd-3.jpg",
+          "quality": "WEBDL-2160p",
+          "size": 9800000000,
+          "title": "Driftwood",
+          "tmdbId": 800313,
+          "year": 2023
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "radarr4k",
+      "subject": null,
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [],
+        "color": 10181046,
+        "facts": [],
+        "footer": "Example Server",
+        "gallery": [
+          "https://images.example.org/fanart/uhd-2.jpg",
+          "https://images.example.org/fanart/uhd-1.jpg",
+          "https://images.example.org/fanart/uhd-0.jpg",
+          "https://images.example.org/fanart/uhd-3.jpg"
+        ],
+        "headline": "4 new 4K movies",
+        "lines": [
+          "**[Anchor Point (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73312)** · ★ 6.7 IMDb · 1h 42m",
+          "**[Bellwether (2021)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73311)** · ★ 6.6 IMDb · 1h 41m",
+          "**[Cinder (2020)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73310)** · ★ 6.5 IMDb · 1h 40m",
+          "**[Driftwood (2023)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73313)** · ★ 6.8 IMDb · 1h 43m"
+        ],
+        "overview": "",
+        "poster": null,
+        "title": "4 new 4K movies",
+        "url": null
+      },
+      "embed": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "4 new 4K movies"
+            },
+            "color": 10181046,
+            "description": "**[Anchor Point (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73312)** · ★ 6.7 IMDb · 1h 42m\n**[Bellwether (2021)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73311)** · ★ 6.6 IMDb · 1h 41m\n**[Cinder (2020)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73310)** · ★ 6.5 IMDb · 1h 40m\n**[Driftwood (2023)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73313)** · ★ 6.8 IMDb · 1h 43m",
+            "fields": [],
+            "footer": {
+              "text": "Example Server"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/uhd-2.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "4 new 4K movies"
+            },
+            "color": 10181046,
+            "description": "**[Anchor Point (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73312)** · ★ 6.7 IMDb · 1h 42m\n**[Bellwether (2021)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73311)** · ★ 6.6 IMDb · 1h 41m\n**[Cinder (2020)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73310)** · ★ 6.5 IMDb · 1h 40m\n**[Driftwood (2023)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73313)** · ★ 6.8 IMDb · 1h 43m",
+            "fields": [],
+            "footer": {
+              "text": "Example Server"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/uhd-2.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00"
+          }
+        ]
+      },
+      "source": "radarr4k",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 10181046,
+            "components": [
+              {
+                "content": "## 4 new 4K movies",
+                "type": 10
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**[Anchor Point (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73312)** · ★ 6.7 IMDb · 1h 42m\n**[Bellwether (2021)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73311)** · ★ 6.6 IMDb · 1h 41m\n**[Cinder (2020)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73310)** · ★ 6.5 IMDb · 1h 40m\n**[Driftwood (2023)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F73313)** · ★ 6.8 IMDb · 1h 43m",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/uhd-2.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/uhd-1.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/uhd-0.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/uhd-3.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server",
+                "type": 10
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

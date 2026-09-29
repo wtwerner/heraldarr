@@ -1,0 +1,199 @@
+{
+  "add_results": [
+    "sonarr The Quiet Engine: +1"
+  ],
+  "pending": {
+    "sonarr:106": {
+      "fast": true,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:6001": {
+          "aired": "2026-06-12T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Idle"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/the-quiet-engine.jpg",
+        "genres": [
+          "Animation"
+        ],
+        "id": 106,
+        "imdbId": "tt9900106",
+        "path": "/data/media/TV/The Quiet Engine (2024)",
+        "poster": "https://images.example.org/poster/the-quiet-engine.jpg",
+        "title": "The Quiet Engine",
+        "tvdbId": 900106,
+        "year": 2024
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900106/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=The+Quiet+Engine",
+            "🍅"
+          ]
+        ],
+        "color": 5793266,
+        "facts": [],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [],
+        "headline": "New episode",
+        "lines": [
+          "`S01E03` · Idle · aired <t:1781265600:R>"
+        ],
+        "overview": "",
+        "poster": "https://images.example.org/poster/the-quiet-engine.jpg",
+        "title": "The Quiet Engine (2024)",
+        "url": "https://www.imdb.com/title/tt9900106/"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900106/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=The+Quiet+Engine"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New episode"
+            },
+            "color": 5793266,
+            "description": "`S01E03` · Idle · aired <t:1781265600:R>",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-quiet-engine.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Quiet Engine (2024)",
+            "url": "https://www.imdb.com/title/tt9900106/"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New episode"
+            },
+            "color": 5793266,
+            "description": "`S01E03` · Idle · aired <t:1781265600:R>\n\n[IMDb](https://www.imdb.com/title/tt9900106/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=The+Quiet+Engine)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-quiet-engine.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Quiet Engine (2024)",
+            "url": "https://www.imdb.com/title/tt9900106/"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 5793266,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/the-quiet-engine.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New episode\n## [The Quiet Engine (2024)](https://www.imdb.com/title/tt9900106/)",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "`S01E03` · Idle · aired <t:1781265600:R>",
+                "type": 10
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900106/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=The+Quiet+Engine"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+{
+  "description": "Three movies in one quiet window: one card each.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 202,
+          "title": "Lantern Season",
+          "year": 2024,
+          "releaseDate": "2024-03-01",
+          "folderPath": "/data/media/Movies/Lantern Season (2024)",
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "overview": "Two rivals share a festival stall.",
+          "genres": [
+            "Romance"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lantern-season/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lantern-season.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lantern-season/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lantern-season.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lantern-season/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lantern-season.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "title": "Lantern Season",
+          "year": 2024
+        },
+        "movieFile": {
+          "id": 60202,
+          "relativePath": "Lantern Season (2024).mkv",
+          "path": "/data/media/Movies/Lantern Season (2024)/Lantern Season (2024).mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM202"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 203,
+          "title": "The Brass Choir",
+          "year": 2023,
+          "releaseDate": "2023-03-01",
+          "folderPath": "/data/media/Movies/The Brass Choir (2023)",
+          "tmdbId": 800203,
+          "imdbId": "tt9800203",
+          "overview": "A mining town's band goes on strike.",
+          "genres": [
+            "Music",
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/the-brass-choir/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/the-brass-choir.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/the-brass-choir/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/the-brass-choir.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/the-brass-choir/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/the-brass-choir.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800203,
+          "imdbId": "tt9800203",
+          "title": "The Brass Choir",
+          "year": 2023
+        },
+        "movieFile": {
+          "id": 60203,
+          "relativePath": "The Brass Choir (2023).mkv",
+          "path": "/data/media/Movies/The Brass Choir (2023)/The Brass Choir (2023).mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM203"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 204,
+          "title": "Undertow",
+          "year": 2025,
+          "releaseDate": "2025-03-01",
+          "folderPath": "/data/media/Movies/Undertow (2025)",
+          "tmdbId": 800204,
+          "imdbId": "tt9800204",
+          "overview": "Something pulls swimmers out past the buoys.",
+          "genres": [
+            "Horror"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/undertow/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/undertow.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/undertow/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/undertow.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/undertow/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/undertow.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800204,
+          "imdbId": "tt9800204",
+          "title": "Undertow",
+          "year": 2025
+        },
+        "movieFile": {
+          "id": 60204,
+          "relativePath": "Undertow (2025).mkv",
+          "path": "/data/media/Movies/Undertow (2025)/Undertow (2025).mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM204"
+      }
+    }
+  ],
+  "arr": {
+    "movie/202": {
+      "id": 202,
+      "title": "Lantern Season",
+      "year": 2024,
+      "overview": "Two rivals share a festival stall.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.1,
+          "type": "user"
+        }
+      },
+      "certification": "PG",
+      "runtime": 98,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "credit?movieId=202": [
+      {
+        "personName": "Sam Oduya",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Kit Lorne",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ],
+    "movie/203": {
+      "id": 203,
+      "title": "The Brass Choir",
+      "year": 2023,
+      "overview": "A mining town's band goes on strike.",
+      "ratings": {
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 100,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 59,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "credit?movieId=203": [],
+    "movie/204": {
+      "id": 204,
+      "title": "Undertow",
+      "year": 2025,
+      "overview": "Something pulls swimmers out past the buoys.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 5.8,
+          "type": "user"
+        },
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 42,
+          "type": "user"
+        }
+      },
+      "certification": "R",
+      "runtime": 91,
+      "youTubeTrailerId": "EXAMPLE0004",
+      "hasFile": true
+    },
+    "credit?movieId=204": [
+      {
+        "personName": "Jon Harrow",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Mae Lind",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "Ezra Quill",
+        "type": "cast",
+        "character": "Someone",
+        "order": 1
+      },
+      {
+        "personName": "Ana Sol",
+        "type": "cast",
+        "character": "Someone",
+        "order": 2
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ]
+  },
+  "plex": {
+    "tmdb://800202": {
+      "ratingKey": "6202",
+      "type": "movie"
+    },
+    "tmdb://800204": {
+      "ratingKey": "6204",
+      "type": "movie"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}

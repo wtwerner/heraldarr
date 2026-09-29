@@ -1,0 +1,160 @@
+{
+  "description": "A 4K movie on the private route: 'New in 4K', purple, technical footer.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr4k",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 301,
+          "title": "The Long Meridian",
+          "year": 2025,
+          "releaseDate": "2025-03-01",
+          "folderPath": "/data/media/Movies 4K/The Long Meridian (2025)",
+          "tmdbId": 800301,
+          "imdbId": "tt9800301",
+          "overview": "A navigator discovers the map is lying.",
+          "genres": [
+            "Science Fiction",
+            "Thriller"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/the-long-meridian/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/the-long-meridian.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/the-long-meridian/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/the-long-meridian.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/the-long-meridian/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/the-long-meridian.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800301,
+          "imdbId": "tt9800301",
+          "title": "The Long Meridian",
+          "year": 2025
+        },
+        "movieFile": {
+          "id": 60301,
+          "relativePath": "The Long Meridian (2025).mkv",
+          "path": "/data/media/Movies 4K/The Long Meridian (2025)/The Long Meridian (2025).mkv",
+          "quality": "Remux-2160p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 58300000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 7.1,
+            "audioCodec": "TrueHD Atmos",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 2160,
+            "width": 3840,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x265",
+            "videoDynamicRange": "HDR",
+            "videoDynamicRangeType": "DV HDR10Plus"
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM301"
+      }
+    }
+  ],
+  "arr": {
+    "movie/301": {
+      "id": 301,
+      "title": "The Long Meridian",
+      "year": 2025,
+      "overview": "A navigator discovers the map is lying.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 7.4,
+          "type": "user"
+        },
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 91,
+          "type": "user"
+        }
+      },
+      "certification": "PG-13",
+      "runtime": 124,
+      "youTubeTrailerId": "EXAMPLE0001",
+      "hasFile": true
+    },
+    "credit?movieId=301": [
+      {
+        "personName": "Rae Okafor",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Lena Marsh",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "Tomas Vey",
+        "type": "cast",
+        "character": "Someone",
+        "order": 1
+      },
+      {
+        "personName": "Ida Brandt",
+        "type": "cast",
+        "character": "Someone",
+        "order": 2
+      },
+      {
+        "personName": "Olu Park",
+        "type": "cast",
+        "character": "Someone",
+        "order": 3
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ]
+  },
+  "plex": {
+    "tmdb://800301": {
+      "ratingKey": "7301",
+      "type": "movie"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {
+    "tt9800301": "m/the_long_meridian"
+  }
+}

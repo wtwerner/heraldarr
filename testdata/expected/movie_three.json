@@ -1,0 +1,686 @@
+{
+  "add_results": [
+    "radarr Lantern Season: +1",
+    "radarr The Brass Choir: +1",
+    "radarr Undertow: +1"
+  ],
+  "pending": {
+    "radarr:movies": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "radarr:movie:202": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/lantern-season.jpg",
+          "genres": [
+            "Romance"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 202,
+          "imdbId": "tt9800202",
+          "overview": "Two rivals share a festival stall.",
+          "path": "/data/media/Movies/Lantern Season (2024)",
+          "poster": "https://images.example.org/poster/lantern-season.jpg",
+          "quality": "WEBDL-1080p",
+          "size": 9800000000,
+          "title": "Lantern Season",
+          "tmdbId": 800202,
+          "year": 2024
+        },
+        "radarr:movie:203": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/the-brass-choir.jpg",
+          "genres": [
+            "Music",
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 203,
+          "imdbId": "tt9800203",
+          "overview": "A mining town's band goes on strike.",
+          "path": "/data/media/Movies/The Brass Choir (2023)",
+          "poster": "https://images.example.org/poster/the-brass-choir.jpg",
+          "quality": "WEBDL-1080p",
+          "size": 9800000000,
+          "title": "The Brass Choir",
+          "tmdbId": 800203,
+          "year": 2023
+        },
+        "radarr:movie:204": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/undertow.jpg",
+          "genres": [
+            "Horror"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 204,
+          "imdbId": "tt9800204",
+          "overview": "Something pulls swimmers out past the buoys.",
+          "path": "/data/media/Movies/Undertow (2025)",
+          "poster": "https://images.example.org/poster/undertow.jpg",
+          "quality": "WEBDL-1080p",
+          "size": 9800000000,
+          "title": "Undertow",
+          "tmdbId": 800204,
+          "year": 2025
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "radarr",
+      "subject": null,
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9800202/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Lantern+Season",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/lantern-season.jpg"
+        ],
+        "headline": "New movie",
+        "lines": [
+          "★ 6.1 IMDb · PG · 1h 38m · Romance",
+          "Directed by Sam Oduya · Starring Kit Lorne"
+        ],
+        "overview": "Two rivals share a festival stall.",
+        "poster": "https://images.example.org/poster/lantern-season.jpg",
+        "title": "Lantern Season (2024)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9800202/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Lantern+Season"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> Two rivals share a festival stall.\n\n★ 6.1 IMDb · PG · 1h 38m · Romance\nDirected by Sam Oduya · Starring Kit Lorne",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/lantern-season.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/lantern-season.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Lantern Season (2024)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> Two rivals share a festival stall.\n\n★ 6.1 IMDb · PG · 1h 38m · Romance\nDirected by Sam Oduya · Starring Kit Lorne\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202) · [IMDb](https://www.imdb.com/title/tt9800202/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Lantern+Season)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/lantern-season.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/lantern-season.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Lantern Season (2024)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202"
+          }
+        ]
+      },
+      "source": "radarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/lantern-season.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New movie\n## [Lantern Season (2024)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202)\nTwo rivals share a festival stall.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "★ 6.1 IMDb · PG · 1h 38m · Romance\nDirected by Sam Oduya · Starring Kit Lorne",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/lantern-season.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9800202/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Lantern+Season"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    },
+    {
+      "card": {
+        "buttons": [
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9800203/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=The+Brass+Choir",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/the-brass-choir.jpg"
+        ],
+        "headline": "New movie",
+        "lines": [
+          "🍅 100% · 59m · Music, Drama"
+        ],
+        "overview": "A mining town's band goes on strike.",
+        "poster": "https://images.example.org/poster/the-brass-choir.jpg",
+        "title": "The Brass Choir (2023)",
+        "url": "https://www.imdb.com/title/tt9800203/"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9800203/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=The+Brass+Choir"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> A mining town's band goes on strike.\n\n🍅 100% · 59m · Music, Drama",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/the-brass-choir.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-brass-choir.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Brass Choir (2023)",
+            "url": "https://www.imdb.com/title/tt9800203/"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> A mining town's band goes on strike.\n\n🍅 100% · 59m · Music, Drama\n\n[IMDb](https://www.imdb.com/title/tt9800203/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=The+Brass+Choir)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/the-brass-choir.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-brass-choir.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Brass Choir (2023)",
+            "url": "https://www.imdb.com/title/tt9800203/"
+          }
+        ]
+      },
+      "source": "radarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/the-brass-choir.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New movie\n## [The Brass Choir (2023)](https://www.imdb.com/title/tt9800203/)\nA mining town's band goes on strike.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "🍅 100% · 59m · Music, Drama",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/the-brass-choir.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9800203/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=The+Brass+Choir"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    },
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204",
+            "▶️"
+          ],
+          [
+            "Trailer",
+            "https://www.youtube.com/watch?v=EXAMPLE0004",
+            "🎞️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9800204/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Undertow",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/undertow.jpg"
+        ],
+        "headline": "New movie",
+        "lines": [
+          "★ 5.8 IMDb · 🍅 42% · R · 1h 31m · Horror",
+          "Directed by Jon Harrow · Starring Mae Lind, Ezra Quill, Ana Sol"
+        ],
+        "overview": "Something pulls swimmers out past the buoys.",
+        "poster": "https://images.example.org/poster/undertow.jpg",
+        "title": "Undertow (2025)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204"
+              },
+              {
+                "emoji": {
+                  "name": "🎞️"
+                },
+                "label": "Trailer",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.youtube.com/watch?v=EXAMPLE0004"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9800204/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Undertow"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> Something pulls swimmers out past the buoys.\n\n★ 5.8 IMDb · 🍅 42% · R · 1h 31m · Horror\nDirected by Jon Harrow · Starring Mae Lind, Ezra Quill, Ana Sol",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/undertow.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/undertow.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Undertow (2025)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New movie"
+            },
+            "color": 15048717,
+            "description": "> Something pulls swimmers out past the buoys.\n\n★ 5.8 IMDb · 🍅 42% · R · 1h 31m · Horror\nDirected by Jon Harrow · Starring Mae Lind, Ezra Quill, Ana Sol\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204) · [Trailer](https://www.youtube.com/watch?v=EXAMPLE0004) · [IMDb](https://www.imdb.com/title/tt9800204/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Undertow)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/undertow.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/undertow.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Undertow (2025)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204"
+          }
+        ]
+      },
+      "source": "radarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/undertow.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New movie\n## [Undertow (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204)\nSomething pulls swimmers out past the buoys.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "★ 5.8 IMDb · 🍅 42% · R · 1h 31m · Horror\nDirected by Jon Harrow · Starring Mae Lind, Ezra Quill, Ana Sol",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/undertow.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎞️"
+                    },
+                    "label": "Trailer",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.youtube.com/watch?v=EXAMPLE0004"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9800204/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Undertow"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

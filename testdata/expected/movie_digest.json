@@ -1,0 +1,256 @@
+{
+  "add_results": [
+    "radarr The Long Meridian: +1",
+    "radarr Lantern Season: +1",
+    "radarr The Brass Choir: +1",
+    "radarr Undertow: +1",
+    "radarr A Map of Small Hours: +1"
+  ],
+  "pending": {
+    "radarr:movies": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "radarr:movie:201": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/the-long-meridian.jpg",
+          "genres": [
+            "Science Fiction",
+            "Thriller",
+            "Drama",
+            "Mystery"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 201,
+          "imdbId": "tt9800201",
+          "overview": "A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. ",
+          "path": "/data/media/Movies/The Long Meridian (2025)",
+          "poster": "https://images.example.org/poster/the-long-meridian.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "The Long Meridian",
+          "tmdbId": 800201,
+          "year": 2025
+        },
+        "radarr:movie:202": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/lantern-season.jpg",
+          "genres": [
+            "Romance"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 202,
+          "imdbId": "tt9800202",
+          "overview": "Two rivals share a festival stall.",
+          "path": "/data/media/Movies/Lantern Season (2024)",
+          "poster": "https://images.example.org/poster/lantern-season.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "Lantern Season",
+          "tmdbId": 800202,
+          "year": 2024
+        },
+        "radarr:movie:203": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/the-brass-choir.jpg",
+          "genres": [
+            "Music",
+            "Drama"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 203,
+          "imdbId": "tt9800203",
+          "overview": "A mining town's band goes on strike.",
+          "path": "/data/media/Movies/The Brass Choir (2023)",
+          "poster": "https://images.example.org/poster/the-brass-choir.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "The Brass Choir",
+          "tmdbId": 800203,
+          "year": 2023
+        },
+        "radarr:movie:204": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/undertow.jpg",
+          "genres": [
+            "Horror"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 204,
+          "imdbId": "tt9800204",
+          "overview": "Something pulls swimmers out past the buoys.",
+          "path": "/data/media/Movies/Undertow (2025)",
+          "poster": "https://images.example.org/poster/undertow.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "Undertow",
+          "tmdbId": 800204,
+          "year": 2025
+        },
+        "radarr:movie:205": {
+          "audio": "EAC3",
+          "channels": 5.1,
+          "fanart": "https://images.example.org/fanart/a-map-of-small-hours.jpg",
+          "genres": [
+            "Animation",
+            "Family"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "",
+          "id": 205,
+          "imdbId": "tt9800205",
+          "overview": "A clock runs backwards.",
+          "path": "/data/media/Movies/A Map of Small Hours (2022)",
+          "poster": "https://images.example.org/poster/a-map-of-small-hours.jpg",
+          "quality": "Bluray-1080p",
+          "size": 9800000000,
+          "title": "A Map of Small Hours",
+          "tmdbId": 800205,
+          "year": 2022
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "radarr",
+      "subject": null,
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [],
+        "color": 15048717,
+        "facts": [],
+        "footer": "Example Server",
+        "gallery": [
+          "https://images.example.org/fanart/a-map-of-small-hours.jpg",
+          "https://images.example.org/fanart/lantern-season.jpg",
+          "https://images.example.org/fanart/the-brass-choir.jpg",
+          "https://images.example.org/fanart/the-long-meridian.jpg",
+          "https://images.example.org/fanart/undertow.jpg"
+        ],
+        "headline": "5 new movies",
+        "lines": [
+          "**[A Map of Small Hours (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6205)** · ★ 8.2 IMDb · 🍅 97% · 1h 27m",
+          "**[Lantern Season (2024)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202)** · ★ 6.1 IMDb · 1h 38m",
+          "**[The Brass Choir (2023)](https://www.imdb.com/title/tt9800203/)** · 🍅 100% · 59m",
+          "**[The Long Meridian (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201)** · ★ 7.4 IMDb · 🍅 91% · 2h 04m",
+          "**[Undertow (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204)** · ★ 5.8 IMDb · 🍅 42% · 1h 31m"
+        ],
+        "overview": "",
+        "poster": null,
+        "title": "5 new movies",
+        "url": null
+      },
+      "embed": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "5 new movies"
+            },
+            "color": 15048717,
+            "description": "**[A Map of Small Hours (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6205)** · ★ 8.2 IMDb · 🍅 97% · 1h 27m\n**[Lantern Season (2024)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202)** · ★ 6.1 IMDb · 1h 38m\n**[The Brass Choir (2023)](https://www.imdb.com/title/tt9800203/)** · 🍅 100% · 59m\n**[The Long Meridian (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201)** · ★ 7.4 IMDb · 🍅 91% · 2h 04m\n**[Undertow (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204)** · ★ 5.8 IMDb · 🍅 42% · 1h 31m",
+            "fields": [],
+            "footer": {
+              "text": "Example Server"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "5 new movies"
+            },
+            "color": 15048717,
+            "description": "**[A Map of Small Hours (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6205)** · ★ 8.2 IMDb · 🍅 97% · 1h 27m\n**[Lantern Season (2024)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202)** · ★ 6.1 IMDb · 1h 38m\n**[The Brass Choir (2023)](https://www.imdb.com/title/tt9800203/)** · 🍅 100% · 59m\n**[The Long Meridian (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201)** · ★ 7.4 IMDb · 🍅 91% · 2h 04m\n**[Undertow (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204)** · ★ 5.8 IMDb · 🍅 42% · 1h 31m",
+            "fields": [],
+            "footer": {
+              "text": "Example Server"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00"
+          }
+        ]
+      },
+      "source": "radarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "content": "## 5 new movies",
+                "type": 10
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**[A Map of Small Hours (2022)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6205)** · ★ 8.2 IMDb · 🍅 97% · 1h 27m\n**[Lantern Season (2024)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6202)** · ★ 6.1 IMDb · 1h 38m\n**[The Brass Choir (2023)](https://www.imdb.com/title/tt9800203/)** · 🍅 100% · 59m\n**[The Long Meridian (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201)** · ★ 7.4 IMDb · 🍅 91% · 2h 04m\n**[Undertow (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6204)** · ★ 5.8 IMDb · 🍅 42% · 1h 31m",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/lantern-season.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/the-brass-choir.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/the-long-meridian.jpg"
+                    }
+                  },
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/undertow.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server",
+                "type": 10
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+# heraldarr configuration. Every secret can be inline, {file: path} or {env: NAME}; files are best
+# (nothing shows up in `docker inspect`).
+
+server:
+  listen: ":8790"
+  data_dir: /config/data
+  # The *arr Webhook connection sends these as Username / Password.
+  auth:
+    username: heraldarr
+    password: {file: /config/secrets/webhook_password}
+
+# timing:                   # defaults shown
+#   quiet_episodes: 5m      # new episodes people follow (aired within following_window)
+#   quiet_backlog: 30m      # back-catalog series and seasons trickling in
+#   quiet_movies: 5m
+#   max_hold: 4h
+#   following_window: 336h  # 14 days
+#   digest_from: 4          # this many movies at once -> one digest card
+#   reannounce_after: 720h  # 30 days
+#   retry_interval: 2m
+#   retry_max: 30
+
+media_server:               # optional; without it cards have no "Open in Plex" button
+  type: plex
+  url: http://plex:32400
+  token: {file: /config/secrets/plex_token}
+  # preferences_xml: /plex/Preferences.xml   # instead of token: read it from Plex's own config
+  path_map:                 # how the *arrs' paths look to Plex
+    - {from: /data/media/, to: /media/}
+
+sources:
+  - name: sonarr
+    kind: sonarr
+    url: http://sonarr:8989
+    api_key: {file: /config/secrets/sonarr_api_key}
+    # config_xml: /sonarr/config.xml         # instead of api_key: read it from the app's config
+  - name: radarr
+    kind: radarr
+    url: http://radarr:7878
+    api_key: {file: /config/secrets/radarr_api_key}
+
+destinations:
+  - name: tv
+    webhook_url: {file: /config/secrets/discord_tv}
+    username: New TV
+    public: true
+  - name: movies
+    webhook_url: {file: /config/secrets/discord_movies}
+    username: New Movies
+    public: true
+
+routes:
+  - {sources: [sonarr], destination: tv}
+  - {sources: [radarr], destination: movies}
+  # A private 4K instance with technical footers (only allowed on non-public destinations):
+  # - sources: [radarr4k]
+  #   destination: private
+  #   style: {label: 4K, color: "#9B59B6", tech_details: true}

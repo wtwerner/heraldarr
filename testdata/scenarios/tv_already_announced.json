@@ -1,0 +1,212 @@
+{
+  "description": "Re-import of an episode announced within 30 days: queued nothing, second one goes out.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [
+    "sonarr:ep:2035"
+  ],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 102,
+          "title": "Glass Orchard",
+          "titleSlug": "glass-orchard",
+          "path": "/data/media/TV/Glass Orchard (2022)",
+          "tvdbId": 900102,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900102",
+          "type": "standard",
+          "year": 2022,
+          "genres": [
+            "Comedy"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/glass-orchard/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/glass-orchard/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/glass-orchard.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/glass-orchard/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/glass-orchard.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 2035,
+            "episodeNumber": 5,
+            "seasonNumber": 3,
+            "title": "The Graft",
+            "overview": "An episode.",
+            "airDate": "2026-06-14",
+            "airDateUtc": "2026-06-14T12:00:00Z",
+            "seriesId": 102,
+            "tvdbId": 5002035
+          }
+        ],
+        "episodeFile": {
+          "id": 72035,
+          "relativePath": "Season 03/Glass Orchard - S03E05.mkv",
+          "path": "/data/media/TV/Glass Orchard (2022)/Season 03/Glass Orchard - S03E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH2035"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 102,
+          "title": "Glass Orchard",
+          "titleSlug": "glass-orchard",
+          "path": "/data/media/TV/Glass Orchard (2022)",
+          "tvdbId": 900102,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900102",
+          "type": "standard",
+          "year": 2022,
+          "genres": [
+            "Comedy"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/glass-orchard/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/glass-orchard.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/glass-orchard/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/glass-orchard.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/glass-orchard/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/glass-orchard.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 2036,
+            "episodeNumber": 6,
+            "seasonNumber": 3,
+            "title": "Grafted",
+            "overview": "An episode.",
+            "airDate": "2026-06-15",
+            "airDateUtc": "2026-06-15T00:00:00Z",
+            "seriesId": 102,
+            "tvdbId": 5002036
+          }
+        ],
+        "episodeFile": {
+          "id": 72036,
+          "relativePath": "Season 03/Glass Orchard - S03E06.mkv",
+          "path": "/data/media/TV/Glass Orchard (2022)/Season 03/Glass Orchard - S03E06.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH2036"
+      }
+    }
+  ],
+  "arr": {
+    "series/102": {
+      "id": 102,
+      "title": "Glass Orchard",
+      "year": 2022,
+      "network": "Streamy",
+      "status": "continuing",
+      "overview": "Siblings run a failing orchard.",
+      "certification": "TV-MA",
+      "ratings": {
+        "votes": 100,
+        "value": 8.0
+      },
+      "statistics": {
+        "episodeFileCount": 26
+      },
+      "seasons": [
+        {
+          "seasonNumber": 1,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 10,
+            "totalEpisodeCount": 10,
+            "episodeCount": 10
+          }
+        },
+        {
+          "seasonNumber": 2,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 10,
+            "totalEpisodeCount": 10,
+            "episodeCount": 10
+          }
+        },
+        {
+          "seasonNumber": 3,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 6,
+            "totalEpisodeCount": 10,
+            "episodeCount": 10
+          }
+        }
+      ],
+      "nextAiring": "2026-06-21T12:00:00Z"
+    }
+  },
+  "plex": {
+    "tvdb://900102": {
+      "ratingKey": "5201",
+      "type": "show",
+      "audienceRating": 8.4,
+      "audienceRatingImage": "themoviedb://image.rating",
+      "contentRating": "TV-MA"
+    }
+  },
+  "plex_seasons": {
+    "5201:3": "5203"
+  },
+  "rt": {}
+}

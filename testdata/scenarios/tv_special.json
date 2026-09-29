@@ -1,0 +1,126 @@
+{
+  "description": "A single special (season 0) of a continuing series, aired 20 days ago.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 107,
+          "title": "Glass Orchard Specials",
+          "titleSlug": "glass-orchard-specials",
+          "path": "/data/media/TV/Glass Orchard Specials (2023)",
+          "tvdbId": 900107,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900107",
+          "type": "standard",
+          "year": 2023,
+          "genres": [
+            "Comedy"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/glass-orchard-specials/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/glass-orchard-specials.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/glass-orchard-specials/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/glass-orchard-specials.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/glass-orchard-specials/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/glass-orchard-specials.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 7001,
+            "episodeNumber": 2,
+            "seasonNumber": 0,
+            "title": "Holiday Harvest",
+            "overview": "An episode.",
+            "airDate": "2026-05-26",
+            "airDateUtc": "2026-05-26T12:00:00Z",
+            "seriesId": 107,
+            "tvdbId": 5007001
+          }
+        ],
+        "episodeFile": {
+          "id": 77001,
+          "relativePath": "Season 00/Glass Orchard Specials - S00E02.mkv",
+          "path": "/data/media/TV/Glass Orchard Specials (2023)/Season 00/Glass Orchard Specials - S00E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH7001"
+      }
+    }
+  ],
+  "arr": {
+    "series/107": {
+      "id": 107,
+      "title": "Glass Orchard Specials",
+      "year": 2023,
+      "network": "Streamy",
+      "status": "continuing",
+      "overview": "Specials.",
+      "certification": null,
+      "ratings": {
+        "votes": 100,
+        "value": 0
+      },
+      "statistics": {
+        "episodeFileCount": 10
+      },
+      "seasons": [
+        {
+          "seasonNumber": 0,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 2,
+            "totalEpisodeCount": 3,
+            "episodeCount": 3
+          }
+        },
+        {
+          "seasonNumber": 1,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 8,
+            "totalEpisodeCount": 8,
+            "episodeCount": 8
+          }
+        }
+      ]
+    }
+  },
+  "plex": {
+    "tvdb://900107": {
+      "ratingKey": "5701",
+      "type": "show"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}

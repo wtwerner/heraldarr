@@ -1,0 +1,488 @@
+{
+  "add_results": [
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1",
+    "sonarr Northbound: +1"
+  ],
+  "pending": {
+    "sonarr:104": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:4101": {
+          "aired": "2018-06-14T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-1"
+        },
+        "sonarr:ep:4102": {
+          "aired": "2018-06-21T12:00:00Z",
+          "number": 2,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-2"
+        },
+        "sonarr:ep:4103": {
+          "aired": "2018-06-28T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-3"
+        },
+        "sonarr:ep:4104": {
+          "aired": "2018-07-05T12:00:00Z",
+          "number": 4,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-4"
+        },
+        "sonarr:ep:4105": {
+          "aired": "2018-07-12T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-5"
+        },
+        "sonarr:ep:4106": {
+          "aired": "2018-07-19T12:00:00Z",
+          "number": 6,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-6"
+        },
+        "sonarr:ep:4107": {
+          "aired": "2018-07-26T12:00:00Z",
+          "number": 7,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-7"
+        },
+        "sonarr:ep:4108": {
+          "aired": "2018-08-02T12:00:00Z",
+          "number": 8,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Mile 1-8"
+        },
+        "sonarr:ep:4201": {
+          "aired": "2018-08-23T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-1"
+        },
+        "sonarr:ep:4202": {
+          "aired": "2018-08-30T12:00:00Z",
+          "number": 2,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-2"
+        },
+        "sonarr:ep:4203": {
+          "aired": "2018-09-06T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-3"
+        },
+        "sonarr:ep:4204": {
+          "aired": "2018-09-13T12:00:00Z",
+          "number": 4,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-4"
+        },
+        "sonarr:ep:4205": {
+          "aired": "2018-09-20T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-5"
+        },
+        "sonarr:ep:4206": {
+          "aired": "2018-09-27T12:00:00Z",
+          "number": 6,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-6"
+        },
+        "sonarr:ep:4207": {
+          "aired": "2018-10-04T12:00:00Z",
+          "number": 7,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-7"
+        },
+        "sonarr:ep:4208": {
+          "aired": "2018-10-11T12:00:00Z",
+          "number": 8,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Mile 2-8"
+        },
+        "sonarr:ep:4301": {
+          "aired": "2018-11-01T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-1"
+        },
+        "sonarr:ep:4302": {
+          "aired": "2018-11-08T12:00:00Z",
+          "number": 2,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-2"
+        },
+        "sonarr:ep:4303": {
+          "aired": "2018-11-15T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-3"
+        },
+        "sonarr:ep:4304": {
+          "aired": "2018-11-22T12:00:00Z",
+          "number": 4,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-4"
+        },
+        "sonarr:ep:4305": {
+          "aired": "2018-11-29T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-5"
+        },
+        "sonarr:ep:4306": {
+          "aired": "2018-12-06T12:00:00Z",
+          "number": 6,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-6"
+        },
+        "sonarr:ep:4307": {
+          "aired": "2018-12-13T12:00:00Z",
+          "number": 7,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-7"
+        },
+        "sonarr:ep:4308": {
+          "aired": "2018-12-20T12:00:00Z",
+          "number": 8,
+          "quality": "WEBDL-1080p",
+          "season": 3,
+          "title": "Mile 3-8"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/northbound.jpg",
+        "genres": [
+          "Drama",
+          "Western"
+        ],
+        "id": 104,
+        "imdbId": "tt9900104",
+        "path": "/data/media/TV/Northbound (2015)",
+        "poster": "https://images.example.org/poster/northbound.jpg",
+        "title": "Northbound",
+        "tvdbId": 900104,
+        "year": 2015
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900104/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Northbound",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [
+          [
+            "Network",
+            "Frontier"
+          ],
+          [
+            "Rating",
+            "★ 8.8 TMDB · TV-14"
+          ],
+          [
+            "Genres",
+            "Drama, Western"
+          ],
+          [
+            "Status",
+            "Ended 2019"
+          ]
+        ],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/northbound.jpg"
+        ],
+        "headline": "New series",
+        "lines": [
+          "**Seasons 1–3** · all 24 episodes"
+        ],
+        "overview": "A cattle drive across three winters.",
+        "poster": "https://images.example.org/poster/northbound.jpg",
+        "title": "Northbound (2015)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900104/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Northbound"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> A cattle drive across three winters.\n\n**Seasons 1–3** · all 24 episodes",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Frontier"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 8.8 TMDB · TV-14"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama, Western"
+              },
+              {
+                "inline": true,
+                "name": "Status",
+                "value": "Ended 2019"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/northbound.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/northbound.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Northbound (2015)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> A cattle drive across three winters.\n\n**Seasons 1–3** · all 24 episodes\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401) · [IMDb](https://www.imdb.com/title/tt9900104/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Northbound)",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Frontier"
+              },
+              {
+                "inline": true,
+                "name": "Rating",
+                "value": "★ 8.8 TMDB · TV-14"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama, Western"
+              },
+              {
+                "inline": true,
+                "name": "Status",
+                "value": "Ended 2019"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/northbound.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/northbound.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Northbound (2015)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/northbound.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New series\n## [Northbound (2015)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401)\nA cattle drive across three winters.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**Seasons 1–3** · all 24 episodes",
+                "type": 10
+              },
+              {
+                "content": "Frontier · ★ 8.8 TMDB · TV-14 · Drama, Western · Ended 2019",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/northbound.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5401"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900104/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Northbound"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

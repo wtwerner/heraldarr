@@ -1,0 +1,266 @@
+{
+  "add_results": [
+    "radarr4k The Long Meridian: +1"
+  ],
+  "pending": {
+    "radarr4k:movies": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "radarr4k:movie:301": {
+          "audio": "TrueHD Atmos",
+          "channels": 7.1,
+          "fanart": "https://images.example.org/fanart/the-long-meridian.jpg",
+          "genres": [
+            "Science Fiction",
+            "Thriller"
+          ],
+          "group": "EXAMPLE",
+          "hdr": "DV HDR10Plus",
+          "id": 301,
+          "imdbId": "tt9800301",
+          "overview": "A navigator discovers the map is lying.",
+          "path": "/data/media/Movies 4K/The Long Meridian (2025)",
+          "poster": "https://images.example.org/poster/the-long-meridian.jpg",
+          "quality": "Remux-2160p",
+          "size": 58300000000,
+          "title": "The Long Meridian",
+          "tmdbId": 800301,
+          "year": 2025
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "radarr4k",
+      "subject": null,
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301",
+            "▶️"
+          ],
+          [
+            "Trailer",
+            "https://www.youtube.com/watch?v=EXAMPLE0001",
+            "🎞️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9800301/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/m/the_long_meridian",
+            "🍅"
+          ]
+        ],
+        "color": 10181046,
+        "facts": [],
+        "footer": "Example Server · 4K Remux · DV HDR10+ · TrueHD Atmos 7.1 · 58.3 GB · EXAMPLE",
+        "gallery": [
+          "https://images.example.org/fanart/the-long-meridian.jpg"
+        ],
+        "headline": "New in 4K",
+        "lines": [
+          "★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller",
+          "Directed by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt"
+        ],
+        "overview": "A navigator discovers the map is lying.",
+        "poster": "https://images.example.org/poster/the-long-meridian.jpg",
+        "title": "The Long Meridian (2025)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301"
+              },
+              {
+                "emoji": {
+                  "name": "🎞️"
+                },
+                "label": "Trailer",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.youtube.com/watch?v=EXAMPLE0001"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9800301/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/m/the_long_meridian"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New in 4K"
+            },
+            "color": 10181046,
+            "description": "> A navigator discovers the map is lying.\n\n★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 4K Remux · DV HDR10+ · TrueHD Atmos 7.1 · 58.3 GB · EXAMPLE"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/the-long-meridian.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-long-meridian.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Long Meridian (2025)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New in 4K"
+            },
+            "color": 10181046,
+            "description": "> A navigator discovers the map is lying.\n\n★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301) · [Trailer](https://www.youtube.com/watch?v=EXAMPLE0001) · [IMDb](https://www.imdb.com/title/tt9800301/) · [Rotten Tomatoes](https://www.rottentomatoes.com/m/the_long_meridian)",
+            "fields": [],
+            "footer": {
+              "text": "Example Server · 4K Remux · DV HDR10+ · TrueHD Atmos 7.1 · 58.3 GB · EXAMPLE"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/the-long-meridian.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/the-long-meridian.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "The Long Meridian (2025)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301"
+          }
+        ]
+      },
+      "source": "radarr4k",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 10181046,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/the-long-meridian.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New in 4K\n## [The Long Meridian (2025)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301)\nA navigator discovers the map is lying.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/the-long-meridian.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 4K Remux · DV HDR10+ · TrueHD Atmos 7.1 · 58.3 GB · EXAMPLE",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F7301"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎞️"
+                    },
+                    "label": "Trailer",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.youtube.com/watch?v=EXAMPLE0001"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9800301/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/m/the_long_meridian"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

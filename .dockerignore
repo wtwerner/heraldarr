@@ -1,0 +1,8 @@
+.git
+.claude
+bin
+dist
+data
+testdata/expected
+testdata/scenarios
+config.yaml

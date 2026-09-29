@@ -1,0 +1,92 @@
+{
+  "description": "Plex never found it and Radarr lost the movie: no Plex button, IMDb link as heading.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 205,
+          "title": "A Map of Small Hours",
+          "year": 2022,
+          "releaseDate": "2022-03-01",
+          "folderPath": "/data/media/Movies/A Map of Small Hours (2022)",
+          "tmdbId": 800205,
+          "imdbId": "tt9800205",
+          "overview": "A clock runs backwards.",
+          "genres": [
+            "Animation",
+            "Family"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/a-map-of-small-hours/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/a-map-of-small-hours.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/a-map-of-small-hours/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/a-map-of-small-hours/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/a-map-of-small-hours.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800205,
+          "imdbId": "tt9800205",
+          "title": "A Map of Small Hours",
+          "year": 2022
+        },
+        "movieFile": {
+          "id": 60205,
+          "relativePath": "A Map of Small Hours (2022).mkv",
+          "path": "/data/media/Movies/A Map of Small Hours (2022)/A Map of Small Hours (2022).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM205"
+      }
+    }
+  ],
+  "arr": {},
+  "plex": {},
+  "plex_seasons": {},
+  "rt": {}
+}

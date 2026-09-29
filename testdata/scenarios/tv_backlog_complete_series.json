@@ -1,0 +1,1759 @@
+{
+  "description": "An ended series added from scratch: seasons 1-3, all 24 episodes.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4101,
+            "episodeNumber": 1,
+            "seasonNumber": 1,
+            "title": "Mile 1-1",
+            "overview": "An episode.",
+            "airDate": "2018-06-14",
+            "airDateUtc": "2018-06-14T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004101
+          }
+        ],
+        "episodeFile": {
+          "id": 74101,
+          "relativePath": "Season 01/Northbound - S01E01.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E01.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4101"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4102,
+            "episodeNumber": 2,
+            "seasonNumber": 1,
+            "title": "Mile 1-2",
+            "overview": "An episode.",
+            "airDate": "2018-06-21",
+            "airDateUtc": "2018-06-21T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004102
+          }
+        ],
+        "episodeFile": {
+          "id": 74102,
+          "relativePath": "Season 01/Northbound - S01E02.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4102"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4103,
+            "episodeNumber": 3,
+            "seasonNumber": 1,
+            "title": "Mile 1-3",
+            "overview": "An episode.",
+            "airDate": "2018-06-28",
+            "airDateUtc": "2018-06-28T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004103
+          }
+        ],
+        "episodeFile": {
+          "id": 74103,
+          "relativePath": "Season 01/Northbound - S01E03.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4103"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4104,
+            "episodeNumber": 4,
+            "seasonNumber": 1,
+            "title": "Mile 1-4",
+            "overview": "An episode.",
+            "airDate": "2018-07-05",
+            "airDateUtc": "2018-07-05T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004104
+          }
+        ],
+        "episodeFile": {
+          "id": 74104,
+          "relativePath": "Season 01/Northbound - S01E04.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4104"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4105,
+            "episodeNumber": 5,
+            "seasonNumber": 1,
+            "title": "Mile 1-5",
+            "overview": "An episode.",
+            "airDate": "2018-07-12",
+            "airDateUtc": "2018-07-12T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004105
+          }
+        ],
+        "episodeFile": {
+          "id": 74105,
+          "relativePath": "Season 01/Northbound - S01E05.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4105"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4106,
+            "episodeNumber": 6,
+            "seasonNumber": 1,
+            "title": "Mile 1-6",
+            "overview": "An episode.",
+            "airDate": "2018-07-19",
+            "airDateUtc": "2018-07-19T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004106
+          }
+        ],
+        "episodeFile": {
+          "id": 74106,
+          "relativePath": "Season 01/Northbound - S01E06.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E06.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4106"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4107,
+            "episodeNumber": 7,
+            "seasonNumber": 1,
+            "title": "Mile 1-7",
+            "overview": "An episode.",
+            "airDate": "2018-07-26",
+            "airDateUtc": "2018-07-26T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004107
+          }
+        ],
+        "episodeFile": {
+          "id": 74107,
+          "relativePath": "Season 01/Northbound - S01E07.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E07.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4107"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4108,
+            "episodeNumber": 8,
+            "seasonNumber": 1,
+            "title": "Mile 1-8",
+            "overview": "An episode.",
+            "airDate": "2018-08-02",
+            "airDateUtc": "2018-08-02T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004108
+          }
+        ],
+        "episodeFile": {
+          "id": 74108,
+          "relativePath": "Season 01/Northbound - S01E08.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 01/Northbound - S01E08.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4108"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4201,
+            "episodeNumber": 1,
+            "seasonNumber": 2,
+            "title": "Mile 2-1",
+            "overview": "An episode.",
+            "airDate": "2018-08-23",
+            "airDateUtc": "2018-08-23T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004201
+          }
+        ],
+        "episodeFile": {
+          "id": 74201,
+          "relativePath": "Season 02/Northbound - S02E01.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E01.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4201"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4202,
+            "episodeNumber": 2,
+            "seasonNumber": 2,
+            "title": "Mile 2-2",
+            "overview": "An episode.",
+            "airDate": "2018-08-30",
+            "airDateUtc": "2018-08-30T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004202
+          }
+        ],
+        "episodeFile": {
+          "id": 74202,
+          "relativePath": "Season 02/Northbound - S02E02.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4202"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4203,
+            "episodeNumber": 3,
+            "seasonNumber": 2,
+            "title": "Mile 2-3",
+            "overview": "An episode.",
+            "airDate": "2018-09-06",
+            "airDateUtc": "2018-09-06T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004203
+          }
+        ],
+        "episodeFile": {
+          "id": 74203,
+          "relativePath": "Season 02/Northbound - S02E03.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4203"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4204,
+            "episodeNumber": 4,
+            "seasonNumber": 2,
+            "title": "Mile 2-4",
+            "overview": "An episode.",
+            "airDate": "2018-09-13",
+            "airDateUtc": "2018-09-13T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004204
+          }
+        ],
+        "episodeFile": {
+          "id": 74204,
+          "relativePath": "Season 02/Northbound - S02E04.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4204"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4205,
+            "episodeNumber": 5,
+            "seasonNumber": 2,
+            "title": "Mile 2-5",
+            "overview": "An episode.",
+            "airDate": "2018-09-20",
+            "airDateUtc": "2018-09-20T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004205
+          }
+        ],
+        "episodeFile": {
+          "id": 74205,
+          "relativePath": "Season 02/Northbound - S02E05.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4205"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4206,
+            "episodeNumber": 6,
+            "seasonNumber": 2,
+            "title": "Mile 2-6",
+            "overview": "An episode.",
+            "airDate": "2018-09-27",
+            "airDateUtc": "2018-09-27T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004206
+          }
+        ],
+        "episodeFile": {
+          "id": 74206,
+          "relativePath": "Season 02/Northbound - S02E06.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E06.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4206"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4207,
+            "episodeNumber": 7,
+            "seasonNumber": 2,
+            "title": "Mile 2-7",
+            "overview": "An episode.",
+            "airDate": "2018-10-04",
+            "airDateUtc": "2018-10-04T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004207
+          }
+        ],
+        "episodeFile": {
+          "id": 74207,
+          "relativePath": "Season 02/Northbound - S02E07.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E07.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4207"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4208,
+            "episodeNumber": 8,
+            "seasonNumber": 2,
+            "title": "Mile 2-8",
+            "overview": "An episode.",
+            "airDate": "2018-10-11",
+            "airDateUtc": "2018-10-11T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004208
+          }
+        ],
+        "episodeFile": {
+          "id": 74208,
+          "relativePath": "Season 02/Northbound - S02E08.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 02/Northbound - S02E08.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4208"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4301,
+            "episodeNumber": 1,
+            "seasonNumber": 3,
+            "title": "Mile 3-1",
+            "overview": "An episode.",
+            "airDate": "2018-11-01",
+            "airDateUtc": "2018-11-01T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004301
+          }
+        ],
+        "episodeFile": {
+          "id": 74301,
+          "relativePath": "Season 03/Northbound - S03E01.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E01.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4301"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4302,
+            "episodeNumber": 2,
+            "seasonNumber": 3,
+            "title": "Mile 3-2",
+            "overview": "An episode.",
+            "airDate": "2018-11-08",
+            "airDateUtc": "2018-11-08T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004302
+          }
+        ],
+        "episodeFile": {
+          "id": 74302,
+          "relativePath": "Season 03/Northbound - S03E02.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4302"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4303,
+            "episodeNumber": 3,
+            "seasonNumber": 3,
+            "title": "Mile 3-3",
+            "overview": "An episode.",
+            "airDate": "2018-11-15",
+            "airDateUtc": "2018-11-15T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004303
+          }
+        ],
+        "episodeFile": {
+          "id": 74303,
+          "relativePath": "Season 03/Northbound - S03E03.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4303"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4304,
+            "episodeNumber": 4,
+            "seasonNumber": 3,
+            "title": "Mile 3-4",
+            "overview": "An episode.",
+            "airDate": "2018-11-22",
+            "airDateUtc": "2018-11-22T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004304
+          }
+        ],
+        "episodeFile": {
+          "id": 74304,
+          "relativePath": "Season 03/Northbound - S03E04.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4304"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4305,
+            "episodeNumber": 5,
+            "seasonNumber": 3,
+            "title": "Mile 3-5",
+            "overview": "An episode.",
+            "airDate": "2018-11-29",
+            "airDateUtc": "2018-11-29T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004305
+          }
+        ],
+        "episodeFile": {
+          "id": 74305,
+          "relativePath": "Season 03/Northbound - S03E05.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4305"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4306,
+            "episodeNumber": 6,
+            "seasonNumber": 3,
+            "title": "Mile 3-6",
+            "overview": "An episode.",
+            "airDate": "2018-12-06",
+            "airDateUtc": "2018-12-06T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004306
+          }
+        ],
+        "episodeFile": {
+          "id": 74306,
+          "relativePath": "Season 03/Northbound - S03E06.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E06.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4306"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4307,
+            "episodeNumber": 7,
+            "seasonNumber": 3,
+            "title": "Mile 3-7",
+            "overview": "An episode.",
+            "airDate": "2018-12-13",
+            "airDateUtc": "2018-12-13T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004307
+          }
+        ],
+        "episodeFile": {
+          "id": 74307,
+          "relativePath": "Season 03/Northbound - S03E07.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E07.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4307"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 104,
+          "title": "Northbound",
+          "titleSlug": "northbound",
+          "path": "/data/media/TV/Northbound (2015)",
+          "tvdbId": 900104,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900104",
+          "type": "standard",
+          "year": 2015,
+          "genres": [
+            "Drama",
+            "Western"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/northbound/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/northbound.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/northbound/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/northbound.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/northbound/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/northbound.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 4308,
+            "episodeNumber": 8,
+            "seasonNumber": 3,
+            "title": "Mile 3-8",
+            "overview": "An episode.",
+            "airDate": "2018-12-20",
+            "airDateUtc": "2018-12-20T12:00:00Z",
+            "seriesId": 104,
+            "tvdbId": 5004308
+          }
+        ],
+        "episodeFile": {
+          "id": 74308,
+          "relativePath": "Season 03/Northbound - S03E08.mkv",
+          "path": "/data/media/TV/Northbound (2015)/Season 03/Northbound - S03E08.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH4308"
+      }
+    }
+  ],
+  "arr": {
+    "series/104": {
+      "id": 104,
+      "title": "Northbound",
+      "year": 2015,
+      "network": "Frontier",
+      "status": "ended",
+      "overview": "A cattle drive across three winters.",
+      "certification": "TV-14",
+      "ratings": {
+        "votes": 100,
+        "value": 8.6
+      },
+      "statistics": {
+        "episodeFileCount": 24
+      },
+      "seasons": [
+        {
+          "seasonNumber": 0,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 0,
+            "totalEpisodeCount": 2,
+            "episodeCount": 2
+          }
+        },
+        {
+          "seasonNumber": 1,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 8,
+            "totalEpisodeCount": 8,
+            "episodeCount": 8
+          }
+        },
+        {
+          "seasonNumber": 2,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 8,
+            "totalEpisodeCount": 8,
+            "episodeCount": 8
+          }
+        },
+        {
+          "seasonNumber": 3,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 8,
+            "totalEpisodeCount": 8,
+            "episodeCount": 8
+          }
+        }
+      ],
+      "lastAired": "2019-08-11T12:00:00Z"
+    }
+  },
+  "plex": {
+    "tvdb://900104": {
+      "ratingKey": "5401",
+      "type": "show",
+      "audienceRating": 8.8,
+      "audienceRatingImage": "themoviedb://image.rating",
+      "contentRating": "TV-14"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}

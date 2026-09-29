@@ -1,0 +1,643 @@
+{
+  "description": "Five movies in one quiet window: one digest card with an image grid.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 201,
+          "title": "The Long Meridian",
+          "year": 2025,
+          "releaseDate": "2025-03-01",
+          "folderPath": "/data/media/Movies/The Long Meridian (2025)",
+          "tmdbId": 800201,
+          "imdbId": "tt9800201",
+          "overview": "A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. ",
+          "genres": [
+            "Science Fiction",
+            "Thriller",
+            "Drama",
+            "Mystery"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/the-long-meridian/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/the-long-meridian.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/the-long-meridian/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/the-long-meridian.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/the-long-meridian/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/the-long-meridian.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800201,
+          "imdbId": "tt9800201",
+          "title": "The Long Meridian",
+          "year": 2025
+        },
+        "movieFile": {
+          "id": 60201,
+          "relativePath": "The Long Meridian (2025).mkv",
+          "path": "/data/media/Movies/The Long Meridian (2025)/The Long Meridian (2025).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM201"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 202,
+          "title": "Lantern Season",
+          "year": 2024,
+          "releaseDate": "2024-03-01",
+          "folderPath": "/data/media/Movies/Lantern Season (2024)",
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "overview": "Two rivals share a festival stall.",
+          "genres": [
+            "Romance"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lantern-season/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lantern-season.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lantern-season/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lantern-season.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lantern-season/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lantern-season.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800202,
+          "imdbId": "tt9800202",
+          "title": "Lantern Season",
+          "year": 2024
+        },
+        "movieFile": {
+          "id": 60202,
+          "relativePath": "Lantern Season (2024).mkv",
+          "path": "/data/media/Movies/Lantern Season (2024)/Lantern Season (2024).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM202"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 203,
+          "title": "The Brass Choir",
+          "year": 2023,
+          "releaseDate": "2023-03-01",
+          "folderPath": "/data/media/Movies/The Brass Choir (2023)",
+          "tmdbId": 800203,
+          "imdbId": "tt9800203",
+          "overview": "A mining town's band goes on strike.",
+          "genres": [
+            "Music",
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/the-brass-choir/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/the-brass-choir.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/the-brass-choir/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/the-brass-choir.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/the-brass-choir/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/the-brass-choir.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800203,
+          "imdbId": "tt9800203",
+          "title": "The Brass Choir",
+          "year": 2023
+        },
+        "movieFile": {
+          "id": 60203,
+          "relativePath": "The Brass Choir (2023).mkv",
+          "path": "/data/media/Movies/The Brass Choir (2023)/The Brass Choir (2023).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM203"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 204,
+          "title": "Undertow",
+          "year": 2025,
+          "releaseDate": "2025-03-01",
+          "folderPath": "/data/media/Movies/Undertow (2025)",
+          "tmdbId": 800204,
+          "imdbId": "tt9800204",
+          "overview": "Something pulls swimmers out past the buoys.",
+          "genres": [
+            "Horror"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/undertow/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/undertow.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/undertow/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/undertow.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/undertow/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/undertow.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800204,
+          "imdbId": "tt9800204",
+          "title": "Undertow",
+          "year": 2025
+        },
+        "movieFile": {
+          "id": 60204,
+          "relativePath": "Undertow (2025).mkv",
+          "path": "/data/media/Movies/Undertow (2025)/Undertow (2025).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM204"
+      }
+    },
+    {
+      "source": "radarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Radarr",
+        "applicationUrl": "",
+        "movie": {
+          "id": 205,
+          "title": "A Map of Small Hours",
+          "year": 2022,
+          "releaseDate": "2022-03-01",
+          "folderPath": "/data/media/Movies/A Map of Small Hours (2022)",
+          "tmdbId": 800205,
+          "imdbId": "tt9800205",
+          "overview": "A clock runs backwards.",
+          "genres": [
+            "Animation",
+            "Family"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/a-map-of-small-hours/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/a-map-of-small-hours.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/a-map-of-small-hours/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/a-map-of-small-hours.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/a-map-of-small-hours/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/a-map-of-small-hours.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "remoteMovie": {
+          "tmdbId": 800205,
+          "imdbId": "tt9800205",
+          "title": "A Map of Small Hours",
+          "year": 2022
+        },
+        "movieFile": {
+          "id": 60205,
+          "relativePath": "A Map of Small Hours (2022).mkv",
+          "path": "/data/media/Movies/A Map of Small Hours (2022)/A Map of Small Hours (2022).mkv",
+          "quality": "Bluray-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "indexerFlags": "",
+          "size": 9800000000,
+          "dateAdded": "2026-06-15T12:00:00Z",
+          "mediaInfo": {
+            "audioChannels": 5.1,
+            "audioCodec": "EAC3",
+            "audioLanguages": [
+              "eng"
+            ],
+            "height": 1080,
+            "width": 1920,
+            "subtitles": [
+              "eng"
+            ],
+            "videoCodec": "x264",
+            "videoDynamicRange": "",
+            "videoDynamicRangeType": ""
+          }
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASHM205"
+      }
+    }
+  ],
+  "arr": {
+    "movie/201": {
+      "id": 201,
+      "title": "The Long Meridian",
+      "year": 2025,
+      "overview": "A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. ",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 7.4,
+          "type": "user"
+        },
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 91,
+          "type": "user"
+        }
+      },
+      "certification": "PG-13",
+      "runtime": 124,
+      "youTubeTrailerId": "EXAMPLE0001",
+      "hasFile": true,
+      "collection": {
+        "title": "The Meridian Collection",
+        "tmdbId": 1
+      }
+    },
+    "credit?movieId=201": [
+      {
+        "personName": "Rae Okafor",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Lena Marsh",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "Tomas Vey",
+        "type": "cast",
+        "character": "Someone",
+        "order": 1
+      },
+      {
+        "personName": "Ida Brandt",
+        "type": "cast",
+        "character": "Someone",
+        "order": 2
+      },
+      {
+        "personName": "Olu Park",
+        "type": "cast",
+        "character": "Someone",
+        "order": 3
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ],
+    "movie/202": {
+      "id": 202,
+      "title": "Lantern Season",
+      "year": 2024,
+      "overview": "Two rivals share a festival stall.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 6.1,
+          "type": "user"
+        }
+      },
+      "certification": "PG",
+      "runtime": 98,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "credit?movieId=202": [
+      {
+        "personName": "Sam Oduya",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Kit Lorne",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ],
+    "movie/203": {
+      "id": 203,
+      "title": "The Brass Choir",
+      "year": 2023,
+      "overview": "A mining town's band goes on strike.",
+      "ratings": {
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 100,
+          "type": "user"
+        }
+      },
+      "certification": null,
+      "runtime": 59,
+      "youTubeTrailerId": null,
+      "hasFile": true
+    },
+    "credit?movieId=203": [],
+    "movie/204": {
+      "id": 204,
+      "title": "Undertow",
+      "year": 2025,
+      "overview": "Something pulls swimmers out past the buoys.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 5.8,
+          "type": "user"
+        },
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 42,
+          "type": "user"
+        }
+      },
+      "certification": "R",
+      "runtime": 91,
+      "youTubeTrailerId": "EXAMPLE0004",
+      "hasFile": true
+    },
+    "credit?movieId=204": [
+      {
+        "personName": "Jon Harrow",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Mae Lind",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "Ezra Quill",
+        "type": "cast",
+        "character": "Someone",
+        "order": 1
+      },
+      {
+        "personName": "Ana Sol",
+        "type": "cast",
+        "character": "Someone",
+        "order": 2
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ],
+    "movie/205": {
+      "id": 205,
+      "title": "A Map of Small Hours",
+      "year": 2022,
+      "overview": "A clock runs backwards.",
+      "ratings": {
+        "imdb": {
+          "votes": 1000,
+          "value": 8.2,
+          "type": "user"
+        },
+        "rottenTomatoes": {
+          "votes": 0,
+          "value": 97,
+          "type": "user"
+        }
+      },
+      "certification": "G",
+      "runtime": 87,
+      "youTubeTrailerId": null,
+      "hasFile": true,
+      "collection": {
+        "title": "Small Hours",
+        "tmdbId": 1
+      }
+    },
+    "credit?movieId=205": [
+      {
+        "personName": "Pia Novak",
+        "type": "crew",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "personName": "Voice One",
+        "type": "cast",
+        "character": "Someone",
+        "order": 0
+      },
+      {
+        "personName": "Voice Two",
+        "type": "cast",
+        "character": "Someone",
+        "order": 1
+      },
+      {
+        "personName": "A. Producer",
+        "type": "crew",
+        "job": "Producer",
+        "department": "Production"
+      }
+    ]
+  },
+  "plex": {
+    "tmdb://800201": {
+      "ratingKey": "6201",
+      "type": "movie"
+    },
+    "tmdb://800202": {
+      "ratingKey": "6202",
+      "type": "movie"
+    },
+    "tmdb://800204": {
+      "ratingKey": "6204",
+      "type": "movie"
+    },
+    "tmdb://800205": {
+      "ratingKey": "6205",
+      "type": "movie"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}
