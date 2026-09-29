@@ -1,0 +1,9 @@
+{
+  "movie": {"id": 402, "title": "The Cartographer's Winter", "year": 2024, "releaseDate": "2024-12-13", "folderPath": "/data/media/Movies 4K/The Cartographer's Winter (2024)", "tmdbId": 700402, "imdbId": "tt9000402", "overview": "", "genres": [], "images": [], "tags": []},
+  "renamedMovieFiles": [
+    {"id": 6402, "relativePath": "The Cartographer's Winter (2024) [Remux-2160p].mkv", "path": "/data/media/Movies 4K/The Cartographer's Winter (2024)/The Cartographer's Winter (2024) [Remux-2160p].mkv", "quality": "Remux-2160p", "qualityVersion": 1, "size": 61200000000, "previousRelativePath": "The Cartographer's Winter (2024) Remux-2160p.mkv", "previousPath": "/data/media/Movies 4K/The Cartographer's Winter (2024)/The Cartographer's Winter (2024) Remux-2160p.mkv"}
+  ],
+  "eventType": "Rename",
+  "instanceName": "Radarr 4K",
+  "applicationUrl": ""
+}

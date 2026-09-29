@@ -1,0 +1,77 @@
+{
+  "series": {
+    "id": 301,
+    "title": "The Glass Orchard",
+    "titleSlug": "the-glass-orchard",
+    "path": "/data/media/TV/The Glass Orchard",
+    "tvdbId": 900301,
+    "tvMazeId": 0,
+    "tmdbId": 800301,
+    "imdbId": "tt9000301",
+    "type": "standard",
+    "year": 2024,
+    "genres": ["Drama", "Mystery"],
+    "images": [
+      {"coverType": "banner", "url": "/MediaCover/301/banner.jpg", "remoteUrl": "https://images.example.org/banner/glass-orchard.jpg"},
+      {"coverType": "poster", "url": "/MediaCover/301/poster.jpg", "remoteUrl": "https://images.example.org/poster/glass-orchard.jpg"},
+      {"coverType": "fanart", "url": "/MediaCover/301/fanart.jpg", "remoteUrl": "https://images.example.org/fanart/glass-orchard.jpg"}
+    ],
+    "tags": ["friends"],
+    "originalLanguage": {"id": 1, "name": "English"}
+  },
+  "episodes": [
+    {
+      "id": 3104,
+      "episodeNumber": 4,
+      "seasonNumber": 2,
+      "title": "Grafting",
+      "overview": "The orchard keeper finds a second key.",
+      "airDate": "2025-03-01",
+      "airDateUtc": "2025-03-02T02:00:00Z",
+      "seriesId": 301,
+      "tvdbId": 0
+    }
+  ],
+  "episodeFile": {
+    "id": 5104,
+    "relativePath": "Season 02/The Glass Orchard - S02E04 - Grafting WEBDL-1080p.mkv",
+    "path": "/data/media/TV/The Glass Orchard/Season 02/The Glass Orchard - S02E04 - Grafting WEBDL-1080p.mkv",
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "sceneName": "The.Glass.Orchard.S02E04.1080p.WEB.h264-EXAMPLE",
+    "size": 1873000000,
+    "dateAdded": "2025-03-02T03:14:15.123Z",
+    "languages": [{"id": 1, "name": "English"}],
+    "mediaInfo": {
+      "audioChannels": 5.1,
+      "audioCodec": "EAC3",
+      "audioLanguages": ["eng"],
+      "height": 1080,
+      "width": 1920,
+      "subtitles": ["eng"],
+      "videoCodec": "h264",
+      "videoDynamicRange": "",
+      "videoDynamicRangeType": ""
+    },
+    "sourcePath": "/downloads/tv/The.Glass.Orchard.S02E04.1080p.WEB.h264-EXAMPLE/file.mkv"
+  },
+  "release": {
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "releaseTitle": "The.Glass.Orchard.S02E04.1080p.WEB.h264-EXAMPLE",
+    "indexer": "Example Indexer",
+    "size": 1873000000,
+    "customFormatScore": 0,
+    "customFormats": []
+  },
+  "isUpgrade": false,
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "0123456789ABCDEF0123456789ABCDEF01234567",
+  "customFormatInfo": {"customFormats": [], "customFormatScore": 0},
+  "eventType": "Download",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}

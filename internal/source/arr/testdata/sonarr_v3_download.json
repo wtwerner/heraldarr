@@ -1,0 +1,36 @@
+{
+  "eventType": "Download",
+  "series": {
+    "id": 301,
+    "title": "The Glass Orchard",
+    "path": "/data/media/TV/The Glass Orchard",
+    "tvdbId": 900301,
+    "tvMazeId": 0,
+    "imdbId": "tt9000301",
+    "type": "standard"
+  },
+  "episodes": [
+    {
+      "id": 3104,
+      "episodeNumber": 4,
+      "seasonNumber": 2,
+      "title": "Grafting",
+      "airDate": "2025-03-01",
+      "airDateUtc": "2025-03-02T02:00:00Z"
+    }
+  ],
+  "episodeFile": {
+    "id": 5104,
+    "relativePath": "Season 02/The Glass Orchard - S02E04 - Grafting WEBDL-1080p.mkv",
+    "path": "/downloads/tv/The.Glass.Orchard.S02E04.1080p.WEB.h264-EXAMPLE/file.mkv",
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "sceneName": "The.Glass.Orchard.S02E04.1080p.WEB.h264-EXAMPLE",
+    "size": 1873000000
+  },
+  "isUpgrade": false,
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "0123456789ABCDEF0123456789ABCDEF01234567"
+}

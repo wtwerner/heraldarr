@@ -1,0 +1,12 @@
+{
+  "series": {"id": 301, "title": "The Glass Orchard", "titleSlug": "the-glass-orchard", "path": "/data/media/TV/The Glass Orchard", "tvdbId": 900301, "tvMazeId": 0, "tmdbId": 800301, "imdbId": "tt9000301", "type": "standard", "year": 2024, "genres": ["Drama"], "images": [], "tags": []},
+  "episodes": [{"id": 3105, "episodeNumber": 5, "seasonNumber": 2, "title": "Rootstock", "overview": "", "airDate": "2025-03-08", "airDateUtc": "2025-03-09T02:00:00Z", "seriesId": 301, "tvdbId": 0}],
+  "release": {"quality": "WEBDL-1080p", "qualityVersion": 1, "releaseGroup": "EXAMPLE", "releaseTitle": "The.Glass.Orchard.S02E05.1080p.WEB.h264-EXAMPLE", "indexer": "Example Indexer", "size": 1901000000, "customFormatScore": 0, "customFormats": [], "languages": [{"id": 1, "name": "English"}]},
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "0123456789ABCDEF0123456789ABCDEF01234568",
+  "customFormatInfo": {"customFormats": [], "customFormatScore": 0},
+  "eventType": "Grab",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}
