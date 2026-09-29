@@ -28,7 +28,7 @@ const (
 	defaultRetryAfter = 2 * time.Second
 	// retryMargin is added to every wait Discord asks for.
 	retryMargin = 500 * time.Millisecond
-	// maxRetryAfter: a longer 429 wait is returned as an error for the batcher to retry later.
+	// maxRetryAfter: a longer 429 or bucket wait is returned as an error for the batcher to retry later.
 	maxRetryAfter = 30 * time.Second
 	// detailMax is how much of Discord's error body goes into logs and errors.
 	detailMax = 500
@@ -64,7 +64,7 @@ type Notifier struct {
 	clock     domain.Clock
 	userAgent string
 	sleep     func(context.Context, time.Duration) error
-	log       *slog.Logger
+	log       *slog.Logger // nil: slog.Default() at the time of logging
 
 	mu      sync.Mutex
 	buckets map[string]*bucket // by webhook URL without its query
@@ -78,9 +78,16 @@ func New(client *http.Client, clock domain.Clock, userAgent string) *Notifier {
 		client = &http.Client{Timeout: timeout}
 	}
 	return &Notifier{
-		client: client, clock: clock, userAgent: userAgent, sleep: sleep, log: slog.Default(),
+		client: client, clock: clock, userAgent: userAgent, sleep: sleep,
 		buckets: map[string]*bucket{},
 	}
+}
+
+func (n *Notifier) logger() *slog.Logger {
+	if n.log != nil {
+		return n.log
+	}
+	return slog.Default()
 }
 
 // bucket is one webhook's rate limit, from the X-RateLimit headers of its last response.
@@ -125,7 +132,7 @@ func (n *Notifier) Post(ctx context.Context, dest domain.Destination, layouts []
 			return domain.PostResult{}, err
 		}
 		if r != nil {
-			n.log.Warn("discord refused a layout", "destination", dest.Name, "layout", l.Name,
+			n.logger().Warn("discord refused a layout", "destination", dest.Name, "layout", l.Name,
 				"status", r.Status, "detail", r.Detail)
 			refused.Refusals = append(refused.Refusals, *r)
 			continue
@@ -140,13 +147,17 @@ func (n *Notifier) Post(ctx context.Context, dest domain.Destination, layouts []
 func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, target string, body []byte) (string, *Refusal, error) {
 	for attempt := 1; ; attempt++ {
 		if d := b.until.Sub(n.clock.Now()); d > 0 {
-			n.log.Debug("discord rate limit, waiting", "destination", destName, "wait", d)
+			if d > maxRetryAfter {
+				return "", nil, fmt.Errorf("discord %q: post %s layout: rate limited for %s", destName, layout, d)
+			}
+			n.logger().Debug("discord rate limit, waiting", "destination", destName, "wait", d)
 			if err := n.sleep(ctx, d); err != nil {
 				return "", nil, err
 			}
 		}
 		status, header, resp, err := n.do(ctx, target, body)
 		if err != nil {
+			// Also after a timeout Discord may have posted it; the batcher's retry can repeat the card.
 			return "", nil, fmt.Errorf("discord %q: post %s layout: %w", destName, layout, err)
 		}
 		n.limit(b, header)
@@ -163,7 +174,7 @@ func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, target
 				return "", nil, fmt.Errorf("discord %q: post %s layout: rate limited (retry after %s, attempt %d)",
 					destName, layout, wait, attempt)
 			}
-			n.log.Info("discord rate limited, retrying", "destination", destName, "layout", layout,
+			n.logger().Info("discord rate limited, retrying", "destination", destName, "layout", layout,
 				"wait", wait+retryMargin, "attempt", attempt)
 			if err := n.sleep(ctx, wait+retryMargin); err != nil {
 				return "", nil, err
@@ -193,6 +204,9 @@ func (n *Notifier) do(ctx context.Context, target string, body []byte) (int, htt
 	defer func() { _ = resp.Body.Close() }()
 	raw, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if err != nil {
+		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			return resp.StatusCode, resp.Header, nil, nil // posted: a retry would post it twice
+		}
 		return 0, nil, nil, fmt.Errorf("read response: %w", redactErr(err))
 	}
 	return resp.StatusCode, resp.Header, raw, nil
@@ -249,11 +263,12 @@ func seconds(s string) (time.Duration, bool) {
 	return toDuration(f)
 }
 
+// toDuration converts seconds, clamping absurd values to a day (they are refused as too long).
 func toDuration(sec float64) (time.Duration, bool) {
-	if math.IsNaN(sec) || sec < 0 || sec > 24*3600 {
+	if math.IsNaN(sec) || sec < 0 {
 		return 0, false
 	}
-	return time.Duration(sec * float64(time.Second)), true
+	return time.Duration(min(sec, 24*3600) * float64(time.Second)), true
 }
 
 // withCommon adds the destination's identity and disables pings; the layout's own keys win.

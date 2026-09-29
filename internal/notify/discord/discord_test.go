@@ -336,6 +336,20 @@ func TestRateLimitedTooLongIsTransient(t *testing.T) {
 	}
 }
 
+func TestRateLimitedAbsurdlyLongIsTransient(t *testing.T) {
+	s := newStub(t, reply{status: 429, body: `{"retry_after":1e12}`})
+	h := newHarness(t)
+	if _, err := h.Post(context.Background(), dest(s.webhook("1")), layouts); err == nil {
+		t.Fatal("want an error")
+	}
+	if len(h.slept) != 0 {
+		t.Errorf("slept %v; a huge retry_after is too long, not missing", h.slept)
+	}
+	if n := len(s.requests()); n != 1 {
+		t.Errorf("%d requests, want 1", n)
+	}
+}
+
 func TestServerErrorIsTransient(t *testing.T) {
 	s := newStub(t, reply{status: 502, body: `bad gateway`})
 	h := newHarness(t)
@@ -361,8 +375,60 @@ func TestNetworkErrorIsTransient(t *testing.T) {
 	webhook := s.webhook("1")
 	s.Close()
 	h := newHarness(t)
-	if _, err := h.Post(context.Background(), dest(webhook), layouts); err == nil {
+	_, err := h.Post(context.Background(), dest(webhook), layouts)
+	if err == nil {
 		t.Fatal("want an error")
+	}
+	if _, ok := errors.AsType[*RefusedError](err); ok {
+		t.Errorf("a network error is transient, not a refusal: %v", err)
+	}
+}
+
+func TestPostedWithoutMessageID(t *testing.T) {
+	s := newStub(t, reply{status: 204})
+	h := newHarness(t)
+	res, err := h.Post(context.Background(), dest(s.webhook("1")), layouts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := (domain.PostResult{Layout: "v2"}); res != want {
+		t.Errorf("result = %+v, want %+v", res, want)
+	}
+}
+
+// A 2xx whose body is cut off was still posted: retrying would post the card twice.
+func TestPostedWithUnreadableBody(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		conn, rw, err := http.NewResponseController(w).Hijack()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		defer func() { _ = conn.Close() }()
+		_, _ = rw.WriteString("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 100\r\n\r\n{\"id\":")
+		_ = rw.Flush()
+	}))
+	defer srv.Close()
+	h := newHarness(t)
+	res, err := h.Post(context.Background(), dest(srv.URL+"/api/webhooks/1/"+token), layouts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := (domain.PostResult{Layout: "v2"}); res != want {
+		t.Errorf("result = %+v, want %+v", res, want)
+	}
+}
+
+func TestRefusalDetailIsTruncated(t *testing.T) {
+	s := newStub(t, reply{status: 400, body: strings.Repeat("é", detailMax+100)})
+	h := newHarness(t)
+	_, err := h.Post(context.Background(), dest(s.webhook("1")), layouts[:1])
+	refused, ok := errors.AsType[*RefusedError](err)
+	if !ok {
+		t.Fatalf("err = %v, want a *RefusedError", err)
+	}
+	if got := []rune(refused.Refusals[0].Detail); len(got) != detailMax {
+		t.Errorf("detail has %d runes, want %d", len(got), detailMax)
 	}
 }
 
@@ -444,6 +510,25 @@ func TestBucketDoesNotWaitAfterReset(t *testing.T) {
 	}
 	if len(h.slept) != 0 {
 		t.Errorf("slept %v after the bucket reset", h.slept)
+	}
+}
+
+func TestBucketWaitTooLongIsTransient(t *testing.T) {
+	exhausted := map[string]string{"X-RateLimit-Remaining": "0", "X-RateLimit-Reset-After": "3600"}
+	s := newStub(t, reply{status: 200, body: `{"id":"1"}`, headers: exhausted})
+	h := newHarness(t)
+	ctx := context.Background()
+	if _, err := h.Post(ctx, dest(s.webhook("1")), layouts); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.Post(ctx, dest(s.webhook("1")), layouts); err == nil {
+		t.Fatal("want an error: an hour-long wait should go back to the batcher")
+	}
+	if len(h.slept) != 0 {
+		t.Errorf("slept %v", h.slept)
+	}
+	if n := len(s.requests()); n != 1 {
+		t.Errorf("%d requests, want 1", n)
 	}
 }
 
