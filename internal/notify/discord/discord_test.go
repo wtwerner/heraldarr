@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -164,6 +165,46 @@ func TestAppendsToExistingQuery(t *testing.T) {
 	}
 	if q := s.requests()[0].rawQuery; q != "thread_id=77&wait=true&with_components=true" {
 		t.Errorf("query = %q", q)
+	}
+}
+
+func TestEmptyIdentityIsLeftOut(t *testing.T) {
+	s := newStub(t, ok("1"))
+	h := newHarness(t)
+	d := dest(s.webhook("1"))
+	d.Username, d.AvatarURL = "", ""
+	if _, err := h.Post(context.Background(), d, layouts[:1]); err != nil {
+		t.Fatal(err)
+	}
+	body := s.requests()[0].body
+	for _, k := range []string{"username", "avatar_url"} {
+		if v, ok := body[k]; ok {
+			t.Errorf("%s = %q sent; an empty value should be left out", k, v)
+		}
+	}
+	if _, ok := body["allowed_mentions"]; !ok {
+		t.Error("allowed_mentions missing")
+	}
+}
+
+func TestContextCancelledWaitingForTurn(t *testing.T) {
+	s := newStub(t, ok("1"))
+	h := newHarness(t)
+	webhook := s.webhook("1")
+	u, err := url.Parse(webhook)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b := h.bucket(u)
+	b.turn <- struct{}{} // another post holds the webhook
+	defer func() { <-b.turn }()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := h.Post(ctx, dest(webhook), layouts); !errors.Is(err, context.Canceled) {
+		t.Errorf("err = %v, want context.Canceled", err)
+	}
+	if n := len(s.requests()); n != 0 {
+		t.Errorf("%d requests while another post held the webhook", n)
 	}
 }
 

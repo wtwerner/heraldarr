@@ -271,11 +271,16 @@ func toDuration(sec float64) (time.Duration, bool) {
 	return time.Duration(min(sec, 24*3600) * float64(time.Second)), true
 }
 
-// withCommon adds the destination's identity and disables pings; the layout's own keys win.
+// withCommon adds the destination's identity and disables pings; the layout's own keys win. An
+// empty username or avatar is left out, not sent as "" (Discord validates both), so the webhook's
+// own is used.
 func withCommon(dest domain.Destination, body map[string]any) map[string]any {
-	out := map[string]any{
-		"username": dest.Username, "avatar_url": dest.AvatarURL,
-		"allowed_mentions": map[string]any{"parse": []any{}},
+	out := map[string]any{"allowed_mentions": map[string]any{"parse": []any{}}}
+	if dest.Username != "" {
+		out["username"] = dest.Username
+	}
+	if dest.AvatarURL != "" {
+		out["avatar_url"] = dest.AvatarURL
 	}
 	for k, v := range body {
 		out[k] = v
