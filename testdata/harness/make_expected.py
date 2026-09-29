@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Parity oracle: runs every testdata/scenarios/*.json through the reference Python implementation
-(arr_discord.py, not vendored here; its path comes from $REFERENCE_PY) with
+(a single Python file, not vendored here; its path comes from $REFERENCE_PY) with
 its network calls stubbed by the scenario data and a frozen clock, and writes what it produced to
 testdata/expected/<scenario>.json:
 
@@ -33,8 +33,8 @@ EXPECTED = ROOT / "testdata" / "expected"
 
 def load_reference():
     if not REF.is_file():
-        sys.exit("set REFERENCE_PY to the reference implementation (arr_discord.py)")
-    spec = importlib.util.spec_from_file_location("arr_discord", REF)
+        sys.exit("set REFERENCE_PY to the reference implementation (a .py file)")
+    spec = importlib.util.spec_from_file_location("reference", REF)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

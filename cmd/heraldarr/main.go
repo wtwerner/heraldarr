@@ -36,7 +36,7 @@ Usage:
                                        (one series, or several movies);
                                        prints the Discord JSON, or posts it to a non-public
                                        destination with -to
-  heraldarr import-legacy DIR          import an arr-discord data/ folder (stop the server first)
+  heraldarr import-legacy DIR          import the Python predecessor's data/ folder (stop the server first)
   heraldarr version
 
 Every command takes -config PATH (default $HERALDARR_CONFIG or /config/config.yaml).

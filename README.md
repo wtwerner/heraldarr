@@ -38,7 +38,7 @@ the username and password from `server.auth`. Its **Test** button should succeed
 | `heraldarr preview radarr 12,34 -to private` | render items already on disk as new and post them to a non-public destination (without `-to`: print the JSON) |
 | `heraldarr preview sonarr 7 S02` | same for a series, a season or `S02E05,S02E06` |
 | `heraldarr flush` | post everything pending now |
-| `heraldarr import-legacy DIR` | import an older `arr-discord` data folder (stop the server first: it keeps pending batches in memory) |
+| `heraldarr import-legacy DIR` | import state from the Python predecessor's `data/` folder (`posted.json`, `rt_cache.json`, `history.jsonl`); stop the server first |
 
 Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST /flush`.
 
