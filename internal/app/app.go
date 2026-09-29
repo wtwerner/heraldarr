@@ -70,6 +70,7 @@ const FlushInterval = 30 * time.Second
 func (a *App) Run(ctx context.Context) {
 	t := time.NewTicker(FlushInterval)
 	defer t.Stop()
+	a.Flush(ctx, false) // whatever came due while the service was down
 	for {
 		force := false
 		select {

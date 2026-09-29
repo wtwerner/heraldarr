@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/wtwerner/heraldarr/internal/batcher"
@@ -25,9 +26,9 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 ) ([]domain.ItemKey, batcher.Outcome, error) {
 	src, ok := a.Sources[b.Source]
 	if !ok {
-		// Configuration changed since the batch was queued: nowhere to post it.
-		a.Log.Warn("dropping batch of a source that is no longer configured", "batch", b.Key)
-		return b.Keys(), batcher.Posted, nil
+		// Configuration changed since the batch was queued: a failed try, so it is retried (the
+		// source may come back) and eventually dropped without being recorded as posted.
+		return nil, batcher.Failed, fmt.Errorf("source %q is no longer configured", b.Source)
 	}
 	if dest == nil {
 		dest = &src.Destination
@@ -164,7 +165,7 @@ func (a *App) lookup(ctx context.Context, b *domain.Batch, force bool) (map[stri
 				if err := a.Media.Scan(ctx, want[k].path); err != nil {
 					// As in the reference: the media server is in trouble, so post without links now.
 					a.Log.Warn("media server scan request failed; posting without links", "path", want[k].path, "err", err)
-					return found, false
+					return nil, false
 				}
 			}
 		}
@@ -173,7 +174,13 @@ func (a *App) lookup(ctx context.Context, b *domain.Batch, force bool) (map[stri
 		return nil, true
 	}
 	for _, k := range missing {
-		if it, err := a.Media.Find(ctx, want[k].guids, want[k].path, b.Kind, true); err == nil && it != nil {
+		it, err := a.Media.Find(ctx, want[k].guids, want[k].path, b.Kind, true)
+		if err != nil {
+			// As in the reference, any media server error means no links on this card at all.
+			a.Log.Warn("media server lookup failed; posting without links", "batch", batchName(b), "err", err)
+			return nil, false
+		}
+		if it != nil {
 			found[k] = it
 		}
 	}

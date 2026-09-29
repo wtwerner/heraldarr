@@ -174,8 +174,12 @@ func preview(cfg *config.Config, log *slog.Logger, pos []string, to string) erro
 		return fmt.Errorf("unknown source %q", source)
 	}
 	ids := strings.Split(pos[1], ",")
-	if svc.Sources[source].Kind == domain.KindTV && len(ids) > 1 {
+	isTV := svc.Sources[source].Kind == domain.KindTV
+	switch {
+	case isTV && len(ids) > 1:
 		return errors.New("preview: one series at a time")
+	case !isTV && len(pos) == 3:
+		return fmt.Errorf("preview: %q is a movie source; season/episode selectors are for series", source)
 	}
 	var dest *domain.Destination
 	if to != "" {
@@ -228,11 +232,14 @@ func preview(cfg *config.Config, log *slog.Logger, pos []string, to string) erro
 
 // callServer makes a request to the running server on this machine.
 func callServer(cfg *config.Config, method, path string) error {
-	_, port, err := net.SplitHostPort(cfg.Server.Listen)
+	host, port, err := net.SplitHostPort(cfg.Server.Listen)
 	if err != nil {
 		return fmt.Errorf("server.listen: %w", err)
 	}
-	req, err := http.NewRequestWithContext(context.Background(), method, "http://127.0.0.1:"+port+path, http.NoBody)
+	if ip := net.ParseIP(host); host == "" || (ip != nil && ip.IsUnspecified()) {
+		host = "127.0.0.1" // listening on every address: loopback is one of them
+	}
+	req, err := http.NewRequestWithContext(context.Background(), method, "http://"+net.JoinHostPort(host, port)+path, http.NoBody)
 	if err != nil {
 		return err
 	}

@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -41,6 +43,12 @@ type post struct {
 	layouts []domain.Layout
 }
 
+func (c *capture) count() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return len(c.posts)
+}
+
 func (c *capture) Post(ctx context.Context, d domain.Destination, l []domain.Layout) (domain.PostResult, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -68,11 +76,34 @@ type env struct {
 	srv   http.Handler
 	clock *testkit.Clock
 	out   *capture
+	media *media
 	sc    *testkit.Scenario
 	exp   *testkit.Expected
 }
 
-func newEnv(t *testing.T, name string, media bool) *env {
+// media wraps the scenario's media server: it records scan requests and can be made to fail.
+type media struct {
+	testkit.Media
+	mu               sync.Mutex
+	scans            []string
+	scanErr, findErr error
+}
+
+func (m *media) Scan(_ context.Context, path string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.scans = append(m.scans, path)
+	return m.scanErr
+}
+
+func (m *media) Find(ctx context.Context, guids []string, path string, kind domain.Kind, fresh bool) (*domain.MediaItem, error) {
+	if m.findErr != nil {
+		return nil, m.findErr
+	}
+	return m.Media.Find(ctx, guids, path, kind, fresh)
+}
+
+func newEnv(t *testing.T, name string, withMedia bool) *env {
 	t.Helper()
 	sc, exp := testkit.Load(t, name)
 	st, err := store.Open(filepath.Join(t.TempDir(), "heraldarr.db"))
@@ -97,11 +128,13 @@ func newEnv(t *testing.T, name string, media bool) *env {
 		Timing: timing, DigestFrom: 4, WaitChecks: 4, Auth: &app.BasicAuth{Username: "u", Password: "p"},
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
-	if media {
-		d.Media = testkit.Media{Sc: sc}
+	var m *media
+	if withMedia {
+		m = &media{Media: testkit.Media{Sc: sc}}
+		d.Media = m
 	}
 	a := app.New(d)
-	return &env{app: a, srv: a.Handler(), clock: clock, out: out, sc: sc, exp: exp}
+	return &env{app: a, srv: a.Handler(), clock: clock, out: out, media: m, sc: sc, exp: exp}
 }
 
 func (e *env) send(t *testing.T) {
@@ -169,6 +202,52 @@ func TestWaitsForQuietThenMediaServer(t *testing.T) {
 	if len(e.out.posts) != 1 {
 		t.Fatalf("got %d posts after the media checks ran out, want 1", len(e.out.posts))
 	}
+	if len(e.media.scans) != 1 {
+		t.Errorf("scan requests = %v, want one (on the first check)", e.media.scans)
+	}
+	if links := plexLinks(t, e.out.posts); links != 0 {
+		t.Errorf("card has %d media-server links, want none", links)
+	}
+}
+
+// As in the reference's plex_lookup, any media server error means no deep links on the card at
+// all, even for items it did find, and the post goes out right away.
+func TestMediaServerErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		fail func(*media)
+	}{
+		{"scan request fails", func(m *media) { m.scanErr = errors.New("scan refused") }},
+		{"lookup fails", func(m *media) { m.findErr = errors.New("plex down") }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			e := newEnv(t, "movie_three", true) // two of the three movies are in the library
+			ctx := context.Background()
+			e.send(t)
+			tc.fail(e.media)
+			e.clock.Advance(timing.QuietMovies)
+			e.app.Flush(ctx, false)
+			if len(e.out.posts) != 3 {
+				t.Fatalf("got %d posts, want all 3 right away", len(e.out.posts))
+			}
+			if links := plexLinks(t, e.out.posts); links != 0 {
+				t.Errorf("%d media-server links after an error, want none", links)
+			}
+		})
+	}
+}
+
+func plexLinks(t *testing.T, posts []post) int {
+	t.Helper()
+	n := 0
+	for _, p := range posts {
+		b, err := json.Marshal(p.layouts[0].Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		n += strings.Count(string(b), "app.plex.tv")
+	}
+	return n
 }
 
 // Discord unreachable: nothing is lost, and it goes out on a later flush.
@@ -220,8 +299,8 @@ func TestAuthAndEndpoints(t *testing.T) {
 	}
 }
 
-// A shutdown before a flush starts releases every due batch untouched.
-func TestShutdownBeforeFlush(t *testing.T) {
+// A flush that starts after shutdown began posts nothing and loses nothing.
+func TestFlushAfterShutdown(t *testing.T) {
 	e := newEnv(t, "movie_single", true)
 	e.send(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -266,6 +345,50 @@ func TestShutdownMidDelivery(t *testing.T) {
 		if b.Tries != 0 {
 			t.Errorf("shutdown counted as a failed try: %+v", b)
 		}
+	}
+}
+
+// A shutdown during one batch releases the other due batches untouched; they go out next time.
+func TestShutdownReleasesOtherBatches(t *testing.T) {
+	e := newEnv(t, "movie_single", true)
+	uhd, _ := testkit.Load(t, "movie_4k_private")
+	e.sc.Events = append(e.sc.Events, uhd.Events...) // a second batch: radarr4k:movies
+	e.send(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	e.out.after = func(int) { cancel() }
+	e.app.Flush(ctx, true)
+	if len(e.out.posts) != 1 {
+		t.Fatalf("got %d posts before the shutdown, want 1", len(e.out.posts))
+	}
+	e.out.after = nil
+	e.app.Flush(context.Background(), true)
+	if len(e.out.posts) != 2 || e.out.posts[1].dest.Name == e.out.posts[0].dest.Name {
+		t.Fatalf("the released batch didn't go out on the next flush: %d posts", len(e.out.posts))
+	}
+}
+
+// Run flushes on start and whenever Kick asks (POST /flush), and returns when its context ends.
+func TestRunAndKick(t *testing.T) {
+	e := newEnv(t, "movie_single", true)
+	e.send(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	ran := make(chan struct{})
+	go func() { e.app.Run(ctx); close(ran) }()
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/flush", http.NoBody)
+	req.SetBasicAuth("u", "p")
+	e.srv.ServeHTTP(httptest.NewRecorder(), req) // force: inside the quiet window
+	deadline := time.Now().Add(5 * time.Second)
+	for e.out.count() == 0 && time.Now().Before(deadline) {
+		time.Sleep(10 * time.Millisecond)
+	}
+	if e.out.count() != 1 {
+		t.Errorf("POST /flush: got %d posts, want 1", e.out.count())
+	}
+	cancel()
+	select {
+	case <-ran:
+	case <-time.After(5 * time.Second):
+		t.Fatal("Run didn't return after cancel")
 	}
 }
 
