@@ -146,6 +146,16 @@ func TestDonePrunesLedgerHourly(t *testing.T) {
 		return p[k]
 	}
 
+	send := func(sent []domain.ItemKey, outcome batcher.Outcome) {
+		t.Helper()
+		if due, _ := b.Due(ctx, true); len(due) != 1 {
+			t.Fatal("want the batch handed out")
+		}
+		if err := b.Done(ctx, due[0].Key, sent, outcome); err != nil {
+			t.Fatal(err)
+		}
+	}
+
 	stale("radarr:movie:1")
 	if err := b.Done(ctx, due[0].Key, keys[:1], batcher.Failed); err != nil {
 		t.Fatal(err)
@@ -155,16 +165,12 @@ func TestDonePrunesLedgerHourly(t *testing.T) {
 	}
 	stale("radarr:movie:2")
 	clock.Advance(59 * time.Minute)
-	if err := b.Done(ctx, due[0].Key, keys[1:2], batcher.Failed); err != nil {
-		t.Fatal(err)
-	}
+	send(keys[1:2], batcher.Failed)
 	if !inLedger("radarr:movie:2") {
 		t.Fatal("pruned again within the hour")
 	}
 	clock.Advance(time.Minute)
-	if err := b.Done(ctx, due[0].Key, keys[2:], batcher.Posted); err != nil {
-		t.Fatal(err)
-	}
+	send(keys[2:], batcher.Posted)
 	if inLedger("radarr:movie:2") {
 		t.Fatal("not pruned after an hour")
 	}
@@ -198,7 +204,14 @@ func TestFollowingFallsBackWhenArrUnreachable(t *testing.T) {
 
 // Concurrent webhooks and flushes lose nothing: every item ends up posted or still pending.
 func TestConcurrentAddAndFlush(t *testing.T) {
-	b, clock, store, _, _ := setup(t, "movie_single")
+	if !batcher.Implemented() {
+		t.Skip("batcher not implemented yet (Wave 1)")
+	}
+	// The flusher advances the clock a minute a loop with no bound: keep the ledger out of its reach.
+	long := cfg
+	long.Reannounce = 100 * 365 * 24 * time.Hour
+	clock, store := testkit.NewClock(time.Date(2026, 6, 15, 12, 0, 0, 0, time.UTC)), testkit.NewMemStore()
+	b := batcher.New(long, clock, store, kinds(), nil)
 	ctx := context.Background()
 	const writers, each = 4, 25
 	var wg sync.WaitGroup

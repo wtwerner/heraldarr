@@ -6,10 +6,11 @@ package batcher
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
 	"slices"
-	"strings"
 	"sync"
 	"time"
 
@@ -50,6 +51,8 @@ const (
 // pruneEvery is how often Done trims the posted ledger to the reannounce window.
 const pruneEvery = time.Hour
 
+// Batcher is the only writer of batches: it keeps them in memory, loaded from the store on first
+// use, and writes every change through. One Batcher per store.
 type Batcher struct {
 	cfg   Config
 	clock domain.Clock
@@ -57,8 +60,9 @@ type Batcher struct {
 	kinds map[string]domain.Kind
 	arrs  func(source string) domain.ArrClient
 
-	mu        sync.Mutex                  // serializes each read-modify-write of the store's batches
-	inflight  map[string][]domain.ItemKey // batch key -> the item keys Due last handed out
+	mu        sync.Mutex
+	batches   map[string]*domain.Batch    // what the store holds; nil until loaded. Never mutated in place.
+	inflight  map[string][]domain.ItemKey // handed out by Due, not yet reported by Done: key -> item keys
 	lastPrune time.Time
 }
 
@@ -98,19 +102,43 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 		return "", fmt.Errorf("add: %s import has no %s subject", imp.Source, kind)
 	}
 
+	added, lookup, err := b.merge(ctx, imp, kind, key, keys)
+	if err != nil {
+		return "", fmt.Errorf("add: %w", err)
+	}
+	if lookup {
+		// Outside the lock: a slow or unreachable *arr must not hold up other webhooks or the flush.
+		detail, lookupErr := b.arrs(imp.Source).Series(ctx, imp.Series.ID)
+		if err := b.settleFollowing(ctx, key, detail, lookupErr); err != nil {
+			return "", fmt.Errorf("add: %w", err)
+		}
+	}
+	if added == 0 {
+		return fmt.Sprintf("%s %s: already announced", imp.Source, name), nil
+	}
+	return fmt.Sprintf("%s %s: +%d", imp.Source, name, added), nil
+}
+
+// merge puts the import's unposted items into their batch. lookup reports that "following" needs
+// the *arr: until settleFollowing runs, the batch keeps its previous value.
+func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind, key string,
+	keys []domain.ItemKey,
+) (added int, lookup bool, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	now := b.clock.Now()
 	posted, err := b.store.PostedSince(ctx, keys, now.Add(-b.cfg.Reannounce))
 	if err != nil {
-		return "", fmt.Errorf("add: %w", err)
+		return 0, false, err
 	}
-	batches, err := b.store.LoadBatches(ctx)
+	batches, err := b.loaded(ctx)
 	if err != nil {
-		return "", fmt.Errorf("add: %w", err)
+		return 0, false, err
 	}
-	bt, existed := batches[key]
-	if !existed {
+	var bt *domain.Batch
+	if cur, ok := batches[key]; ok {
+		bt = clone(cur)
+	} else {
 		bt = &domain.Batch{Key: key, Source: imp.Source, Kind: kind, First: now}
 		if kind == domain.KindTV {
 			s := *imp.Series
@@ -118,7 +146,6 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 		}
 	}
 
-	added := 0
 	for i, k := range keys {
 		if posted[k] {
 			continue
@@ -138,29 +165,52 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 	}
 	// Like the reference, even an import that adds nothing counts as activity on the batch.
 	bt.Last = now
-	if kind == domain.KindTV {
-		bt.Following = b.following(ctx, bt, now)
+	if kind == domain.KindTV && bt.Len() > 0 {
+		if recent, _ := b.recent(bt, now); recent {
+			bt.Following = true
+		} else {
+			lookup = true
+		}
 	}
-
-	switch {
-	case bt.Len() > 0:
-		err = b.store.SaveBatch(ctx, bt)
-	case existed:
-		err = b.store.DeleteBatch(ctx, key)
-	}
-	if err != nil {
-		return "", fmt.Errorf("add: %w", err)
-	}
-	if added == 0 {
-		return fmt.Sprintf("%s %s: already announced", imp.Source, name), nil
-	}
-	return fmt.Sprintf("%s %s: +%d", imp.Source, name, added), nil
+	return added, lookup, b.put(ctx, bt)
 }
 
-// following: every episode aired within FollowingWindow (weekly episodes, a premiere, a same-day
-// season drop), or every season in the batch already had files before it. An *arr that can't
-// answer means not following: the longer quiet window is the patient choice.
-func (b *Batcher) following(ctx context.Context, bt *domain.Batch, now time.Time) bool {
+// settleFollowing decides "following" for the batch as it is now, given the *arr's series.
+func (b *Batcher) settleFollowing(ctx context.Context, key string, detail *domain.SeriesDetail, lookupErr error) error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	cur := b.batches[key]
+	if cur == nil { // sent and gone meanwhile
+		return nil
+	}
+	recent, perSeason := b.recent(cur, b.clock.Now())
+	following := recent
+	switch {
+	case recent:
+	case lookupErr != nil:
+		// The patient choice: the longer quiet window.
+		slog.Warn("following: series lookup failed, treating as back catalog",
+			"source", cur.Source, "series", cur.Series.Title, "err", lookupErr)
+	default:
+		// Counts are after the import, so more files than the batch brings means some were there before.
+		following = true
+		for season, n := range perSeason {
+			if detail.Seasons[season].EpisodeFileCount <= n {
+				following = false
+			}
+		}
+	}
+	if following == cur.Following {
+		return nil
+	}
+	bt := clone(cur)
+	bt.Following = following
+	return b.put(ctx, bt)
+}
+
+// recent reports whether every episode in the batch aired within FollowingWindow (weekly
+// episodes, a premiere, a same-day season drop), and counts its episodes per season.
+func (b *Batcher) recent(bt *domain.Batch, now time.Time) (bool, map[int]int) {
 	recent := true
 	perSeason := map[int]int{}
 	for _, e := range bt.Episodes {
@@ -169,42 +219,39 @@ func (b *Batcher) following(ctx context.Context, bt *domain.Batch, now time.Time
 		}
 		perSeason[e.Season]++
 	}
-	if recent {
-		return true
-	}
-	detail, err := b.arrs(bt.Source).Series(ctx, bt.Series.ID)
-	if err != nil {
-		slog.Warn("following: series lookup failed, treating as back catalog",
-			"source", bt.Source, "series", bt.Series.Title, "err", err)
-		return false
-	}
-	// Counts are after the import, so more files than this batch brings means some were there before.
-	for season, n := range perSeason {
-		if detail.Seasons[season].EpisodeFileCount <= n {
-			return false
-		}
-	}
-	return true
+	return recent, perSeason
 }
 
 // Due returns snapshots of the batches ready to send now (all non-empty ones when force, ignoring
-// NotBefore), ordered by key.
+// NotBefore), ordered by key. Each batch it returns is handed out: it isn't returned again, even
+// when forced, until Done reports on it, so the caller must call Done for every one.
 func (b *Batcher) Due(ctx context.Context, force bool) ([]*domain.Batch, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	now := b.clock.Now()
-	batches, err := b.store.LoadBatches(ctx)
+	batches, err := b.loaded(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("due: %w", err)
 	}
 	var out []*domain.Batch
-	for _, bt := range batches {
-		if bt.Len() > 0 && (force || b.due(bt, now)) {
-			out = append(out, bt)
-			b.inflight[bt.Key] = bt.Keys()
+	for _, key := range slices.Sorted(maps.Keys(batches)) {
+		bt := batches[key]
+		if _, sending := b.inflight[key]; sending || bt.Len() == 0 {
+			continue
 		}
+		if !force && !b.due(bt, now) {
+			continue
+		}
+		if bt, err = b.dropPosted(ctx, bt, now); err != nil {
+			return nil, fmt.Errorf("due: %w", err)
+		}
+		if bt.Len() == 0 {
+			continue
+		}
+		snap := clone(bt)
+		b.inflight[key] = snap.Keys()
+		out = append(out, snap)
 	}
-	slices.SortFunc(out, func(x, y *domain.Batch) int { return strings.Compare(x.Key, y.Key) })
 	return out, nil
 }
 
@@ -222,36 +269,58 @@ func (b *Batcher) due(bt *domain.Batch, now time.Time) bool {
 	return now.Sub(bt.Last) >= quiet || now.Sub(bt.First) >= b.cfg.MaxHold
 }
 
-// Done records a delivery attempt of the batch with this key. sent are the keys that went out
+// dropPosted removes items the ledger says went out: left behind when a Done marked them posted
+// but couldn't save the batch. The ledger is the authority, so they are never sent twice.
+func (b *Batcher) dropPosted(ctx context.Context, bt *domain.Batch, now time.Time) (*domain.Batch, error) {
+	posted, err := b.store.PostedSince(ctx, bt.Keys(), now.Add(-b.cfg.Reannounce))
+	if err != nil || len(posted) == 0 {
+		return bt, err
+	}
+	slog.Warn("dropping items already posted", "batch", bt.Key, "items", len(posted))
+	bt = clone(bt)
+	for k := range posted {
+		delete(bt.Episodes, k)
+		delete(bt.Movies, k)
+	}
+	return bt, b.put(ctx, bt)
+}
+
+// Done records a delivery attempt of a batch Due handed out. sent are the keys that went out
 // (they are marked posted even when the outcome is Failed part-way through).
 func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, outcome Outcome) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	now := b.clock.Now()
 	handed, ok := b.inflight[key]
+	if !ok {
+		return fmt.Errorf("done %s: not handed out by Due", key)
+	}
 	delete(b.inflight, key)
 
+	// Two writes that can't share a transaction; each one alone keeps sent items from going out
+	// again: the ledger through dropPosted, the batch by no longer holding them.
+	var errs []error
 	if len(sent) > 0 {
 		if err := b.store.MarkPosted(ctx, sent, now); err != nil {
-			return fmt.Errorf("done %s: %w", key, err)
+			errs = append(errs, fmt.Errorf("mark posted: %w", err))
 		}
-		if now.Sub(b.lastPrune) >= pruneEvery {
-			if _, err := b.store.PrunePosted(ctx, now.Add(-b.cfg.Reannounce)); err != nil {
-				return fmt.Errorf("done %s: prune: %w", key, err)
-			}
-			b.lastPrune = now
+		b.prune(ctx, now)
+	}
+	if cur := b.batches[key]; cur != nil {
+		if err := b.put(ctx, b.outcome(cur, handed, sent, outcome, now)); err != nil {
+			errs = append(errs, err)
 		}
 	}
+	if len(errs) > 0 {
+		return fmt.Errorf("done %s: %w", key, errors.Join(errs...))
+	}
+	return nil
+}
 
-	// Re-read: new items may have arrived while the batch was being sent.
-	batches, err := b.store.LoadBatches(ctx)
-	if err != nil {
-		return fmt.Errorf("done %s: %w", key, err)
-	}
-	bt := batches[key]
-	if bt == nil {
-		return nil
-	}
+// outcome returns the batch after a delivery attempt of the handed-out items. Items that arrived
+// during the attempt are in cur but not in handed.
+func (b *Batcher) outcome(cur *domain.Batch, handed, sent []domain.ItemKey, outcome Outcome, now time.Time) *domain.Batch {
+	bt := clone(cur)
 	gone := slices.Clone(sent)
 	switch outcome {
 	case Waiting:
@@ -260,14 +329,11 @@ func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, o
 	case Failed:
 		bt.Tries++
 		if bt.Tries < b.cfg.RetryMax {
-			slog.Warn("send failed, retrying", "batch", key, "tries", bt.Tries, "in", b.cfg.RetryInterval)
+			slog.Warn("send failed, retrying", "batch", bt.Key, "tries", bt.Tries, "in", b.cfg.RetryInterval)
 			bt.NotBefore = now.Add(b.cfg.RetryInterval)
 			break
 		}
-		slog.Error("send failed, giving up", "batch", key, "tries", bt.Tries)
-		if !ok { // no Due snapshot (not expected): drop everything
-			handed = bt.Keys()
-		}
+		slog.Error("send failed, giving up", "batch", bt.Key, "tries", bt.Tries)
 		gone = append(gone, handed...)
 		fallthrough // as in the reference, what arrived during the last try starts a fresh window
 	case Posted:
@@ -277,13 +343,63 @@ func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, o
 		delete(bt.Episodes, k)
 		delete(bt.Movies, k)
 	}
+	return bt
+}
+
+// prune trims the ledger to the reannounce window, at most once per pruneEvery. It is
+// housekeeping: a failure is logged and tried again next time.
+func (b *Batcher) prune(ctx context.Context, now time.Time) {
+	if now.Sub(b.lastPrune) < pruneEvery {
+		return
+	}
+	b.lastPrune = now
+	if _, err := b.store.PrunePosted(ctx, now.Add(-b.cfg.Reannounce)); err != nil {
+		slog.Warn("pruning the posted ledger failed", "err", err)
+	}
+}
+
+// loaded returns the batches, loading them from the store on first use. Callers hold b.mu.
+func (b *Batcher) loaded(ctx context.Context) (map[string]*domain.Batch, error) {
+	if b.batches == nil {
+		m, err := b.store.LoadBatches(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if m == nil {
+			m = map[string]*domain.Batch{}
+		}
+		b.batches = m
+	}
+	return b.batches, nil
+}
+
+// put writes bt through to the store (deleting it when empty), then to memory, so memory never
+// holds what the store doesn't. Callers hold b.mu and have loaded the batches.
+func (b *Batcher) put(ctx context.Context, bt *domain.Batch) error {
 	if bt.Len() == 0 {
-		err = b.store.DeleteBatch(ctx, key)
-	} else {
-		err = b.store.SaveBatch(ctx, bt)
+		if _, ok := b.batches[bt.Key]; !ok {
+			return nil
+		}
+		if err := b.store.DeleteBatch(ctx, bt.Key); err != nil {
+			return err
+		}
+		delete(b.batches, bt.Key)
+		return nil
 	}
-	if err != nil {
-		return fmt.Errorf("done %s: %w", key, err)
+	if err := b.store.SaveBatch(ctx, bt); err != nil {
+		return err
 	}
+	b.batches[bt.Key] = bt
 	return nil
+}
+
+func clone(bt *domain.Batch) *domain.Batch {
+	c := *bt
+	if bt.Series != nil {
+		s := *bt.Series
+		c.Series = &s
+	}
+	c.Episodes = maps.Clone(bt.Episodes)
+	c.Movies = maps.Clone(bt.Movies)
+	return &c
 }
