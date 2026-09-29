@@ -90,6 +90,29 @@ func TestValidationErrors(t *testing.T) {
 	}
 }
 
+func TestPublicURL(t *testing.T) {
+	for _, tc := range []struct{ url, want string }{
+		{"http://heraldarr:8790", ""},
+		{"https://example.org/heraldarr/", ""},
+		{"ftp://example.org", "must start with http:// or https://"},
+		{"heraldarr:8790", "must start with http:// or https://"},
+		{"http://", "has no host"},
+		{"http://user:pw@example.org", "must not contain a username or password"},
+		{"http://example.org/?a=1", "query or fragment"},
+		{"http://exa mple.org", "invalid character"},
+	} {
+		cfg, err := Parse([]byte("server: {public_url: \"" + tc.url + "\"}\n" + minimal))
+		switch {
+		case tc.want == "" && err != nil:
+			t.Errorf("%s: %v", tc.url, err)
+		case tc.want == "" && cfg.Server.PublicURL != tc.url:
+			t.Errorf("%s: PublicURL = %q", tc.url, cfg.Server.PublicURL)
+		case tc.want != "" && (err == nil || !strings.Contains(err.Error(), "server.public_url") || !strings.Contains(err.Error(), tc.want)):
+			t.Errorf("%s: got %v, want an error containing %q", tc.url, err, tc.want)
+		}
+	}
+}
+
 func TestColor(t *testing.T) {
 	_, err := Parse([]byte(strings.Replace(minimal, "public: true", "public: false", 1) +
 		`  - {sources: [], destination: tv, style: {color: "#9B59B6"}}` + "\n"))

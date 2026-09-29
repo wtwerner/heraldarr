@@ -76,7 +76,9 @@ With `docker run`, the same is `-v /path/to/sonarr/config.xml:/sonarr/config.xml
 `config.yaml`, replace `token:` with `preferences_xml: /plex/Preferences.xml`, or a source's
 `api_key:` with `config_xml: /sonarr/config.xml` (each takes one or the other, not both).
 
-**3. Edit `config/config.yaml`.** Set each source's `url` to where heraldarr can reach it.
+**3. Edit `config/config.yaml`.** Set each source's `url` to where heraldarr can reach it, and
+`server.public_url` to where Sonarr and Radarr can reach heraldarr: `http://heraldarr:8790` when
+they share a Docker network with it, otherwise `http://<heraldarr host>:8790`.
 
 - With Plex: set `media_server.url`, and `path_map` so that a file path as Sonarr/Radarr see it
   becomes the path Plex sees (`/data/media/` → `/media/` in the example). The "Open in Plex"
@@ -97,17 +99,26 @@ docker compose up -d
 docker compose logs heraldarr     # "heraldarr listening" with your sources
 ```
 
-**5. Connect Sonarr and Radarr.** *Coming soon:* `heraldarr setup` will create these connections
-for you from `config.yaml` ([#28](https://github.com/wtwerner/heraldarr/issues/28)). Until then,
-in each Sonarr/Radarr: Settings → Connect → + → **Webhook**:
+**5. Connect Sonarr and Radarr.** `setup` adds a **Webhook** connection named `heraldarr` to each
+of them (or updates the one already there): `<public_url>/hook/<source name>`, POST, the username
+and password from `server.auth`, and only **On Import** checked.
 
-- Notification triggers: **On Import** only
-- URL: `http://<heraldarr host>:8790/hook/<source name>`, e.g. `/hook/sonarr`
-- Method: POST; Username `heraldarr`, Password the contents of `config/secrets/webhook_password`
+```bash
+docker compose exec heraldarr /heraldarr setup -dry-run   # show what would change
+docker compose exec heraldarr /heraldarr setup
+# sonarr: created "heraldarr" (On Import → http://heraldarr:8790/hook/sonarr), test event accepted
+```
 
-**6. Press Test.** A green tick means the URL and password work. heraldarr accepts the Test event
-and posts nothing for it. A 401 means the username or password is wrong, a 404 the source name in
-the URL.
+**6. Check the Test event.** Each *arr sends heraldarr a Test event before it saves, so
+`test event accepted` means the URL and password work (heraldarr posts nothing for it). If an *arr
+reports `Unable to send test message`, it can't reach `public_url`, or the password differs from
+the one the running server loaded. A 401 means the username or password is wrong, a 404 the
+source name in the URL. Run `setup` again after changing `config.yaml`: it updates the connections
+in place.
+
+To set a connection up by hand instead: Settings → Connect → + → **Webhook**, **On Import** only,
+URL `<public_url>/hook/<source name>`, method POST, Username `heraldarr`, Password the contents of
+`config/secrets/webhook_password`, then press Test.
 
 **7. The first card.** The next import is posted once its series has been quiet for 5 minutes
 (30 for back catalog; 5 for movies). With Plex, heraldarr first makes sure Plex has the item, so
@@ -137,6 +148,7 @@ Secrets can be inline, read from a file (`{file: …}`, recommended) or read fro
 |---|---|
 | `heraldarr serve` | run the webhook receiver and poster (the image's default) |
 | `heraldarr validate` | check the configuration |
+| `heraldarr setup [-name NAME] [-dry-run]` | create or update the Webhook connection in every Sonarr/Radarr |
 | `heraldarr preview radarr 12,34 -to private` | render items already on disk as new and post them to a non-public destination (without `-to`: print the JSON) |
 | `heraldarr preview sonarr 7 S02` | same for a series, a season or `S02E05,S02E06` |
 | `heraldarr flush` | post everything pending now (asks the running server) |
