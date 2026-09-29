@@ -256,7 +256,7 @@ func (c *Config) RouteFor(source string) (Route, bool) {
 // Credentials belong in server.auth, not in the URL: the *arr would show them. Errors don't quote
 // the URL, which may hold such credentials.
 func checkPublicURL(raw string) error {
-	if !strings.HasPrefix(raw, "http://") && !strings.HasPrefix(raw, "https://") {
+	if lower := strings.ToLower(raw); !strings.HasPrefix(lower, "http://") && !strings.HasPrefix(lower, "https://") {
 		return errors.New("must start with http:// or https://")
 	}
 	u, err := url.Parse(raw)

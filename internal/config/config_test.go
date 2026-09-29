@@ -99,6 +99,8 @@ func TestPublicURL(t *testing.T) {
 		{"http://", "has no host"},
 		{"http://user:pw@example.org", "must not contain a username or password"},
 		{"http://example.org/?a=1", "query or fragment"},
+		{"http://example.org/#x", "query or fragment"},
+		{"HTTPS://example.org", ""},
 		{"http://exa mple.org", "invalid character"},
 		{"http://user:pw-in-url@exa mple.org", "not a valid URL"},
 		{"user:pw-in-url@example.org", "must start with http:// or https://"},

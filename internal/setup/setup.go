@@ -5,7 +5,7 @@
 // Webhook template in GET /notification/schema; set the URL, POST, the server.auth credentials
 // and On Import as the only trigger; save it. Creating without forceSave makes the *arr send its
 // Test event to heraldarr first and refuse the save if that fails; an update skips that when
-// nothing changed, so it asks for the Test event (POST /notification/test) before saving. Either
+// nothing changed, so then it asks for the Test event (POST /notification/test) first. Either
 // way a success proves the URL and the credentials work.
 package setup
 
@@ -140,6 +140,9 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 		case creating:
 			return fmt.Sprintf("would create %q\n%s", wt.name, indent(summary(wt))), nil
 		case len(changes) > 0:
+			if hidden {
+				changes = append(changes, "password: not compared (the *arr hides it)")
+			}
 			return fmt.Sprintf("would update %q\n%s", wt.name, indent(changes)), nil
 		case hidden:
 			return fmt.Sprintf("%q is up to date (the *arr hides the password, so it wasn't compared)", wt.name), nil
@@ -158,9 +161,11 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 		return "", fmt.Errorf("connection %q has no id", wt.name)
 	}
 	// A save that changes nothing sends no Test event, so ask for one: a re-run is still the
-	// end-to-end check.
-	if err := api.do(ctx, http.MethodPost, "notification/test", conn, nil); err != nil {
-		return "", fmt.Errorf("testing %q: %w", wt.name, err)
+	// end-to-end check. (A masked password that did change makes heraldarr get two; harmless.)
+	if len(changes) == 0 {
+		if err := api.do(ctx, http.MethodPost, "notification/test", conn, nil); err != nil {
+			return "", fmt.Errorf("testing %q: %w", wt.name, err)
+		}
 	}
 	if err := api.do(ctx, http.MethodPut, "notification/"+id.String(), conn, nil); err != nil {
 		return "", fmt.Errorf("updating %q: %w", wt.name, err)

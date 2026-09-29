@@ -77,6 +77,10 @@ func (f *fakeArr) serve(w http.ResponseWriter, r *http.Request) {
 		return !f.reject
 	}
 	decode := func() map[string]any {
+		if r.Header.Get("Content-Type") != "application/json" {
+			http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
+			return nil
+		}
 		var conn map[string]any
 		if err := json.NewDecoder(r.Body).Decode(&conn); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -364,8 +368,25 @@ func TestUpdatesInPlace(t *testing.T) {
 	if h := field(t, conns[1], "headers").([]any); len(h) != 1 {
 		t.Errorf("headers = %v, want the existing one kept", h)
 	}
-	if !strings.Contains(out, `sonarr: updated "heraldarr"`) || !strings.Contains(out, "test event accepted") {
-		t.Errorf("output = %q", out)
+	if want := "onUpgrade, tags, url, method, username), test event accepted"; !strings.Contains(out, `sonarr: updated "heraldarr" (`) ||
+		!strings.Contains(out, want) || strings.Contains(out, "no changes") {
+		t.Errorf("output = %q, want the changed settings: %q", out, want)
+	}
+	if n := f.testEvents(); n != 1 {
+		t.Errorf("%d Test events, want 1 (the save's own)", n)
+	}
+}
+
+func TestMissingField(t *testing.T) {
+	c := staleHook(7, "heraldarr")
+	c["fields"] = c["fields"].([]any)[1:] // no url
+	f := newFakeArr(t, c)
+	out, err := run(t, testConfig(source("sonarr", f)), Options{})
+	if err == nil || !strings.Contains(out, `no "url" field`) {
+		t.Errorf("err = %v, output %q", err, out)
+	}
+	if _, writes := f.snapshot(); len(writes) != 0 {
+		t.Errorf("wrote %q", writes)
 	}
 }
 
@@ -508,6 +529,7 @@ func TestDryRunChangesNothing(t *testing.T) {
 		"onUpgrade: true → false",
 		"onImportComplete: true → false",
 		"tags: [3] → []",
+		"password: not compared (the *arr hides it)",
 		`radarr: would create "heraldarr"`,
 		"url: " + public + "/hook/radarr",
 		"triggers: On Import only",
