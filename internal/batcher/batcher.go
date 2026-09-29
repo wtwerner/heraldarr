@@ -227,7 +227,8 @@ func (b *Batcher) recent(bt *domain.Batch, now time.Time) (bool, map[int]int) {
 
 // Due returns snapshots of the batches ready to send now (all non-empty ones when force, ignoring
 // NotBefore), ordered by key. Each batch it returns is handed out: it isn't returned again, even
-// when forced, until Done reports on it, so the caller must call Done for every one.
+// when forced, until Done reports on it, so the caller must call Done for every one. On error it
+// hands out nothing.
 func (b *Batcher) Due(ctx context.Context, force bool) ([]*domain.Batch, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -251,9 +252,12 @@ func (b *Batcher) Due(ctx context.Context, force bool) ([]*domain.Batch, error) 
 		if bt.Len() == 0 {
 			continue
 		}
-		snap := clone(bt)
-		b.inflight[key] = snap.Keys()
-		out = append(out, snap)
+		out = append(out, clone(bt))
+	}
+	// Only now that nothing can fail: a batch marked in flight but never returned would be
+	// skipped by every later Due, with no Done to release it.
+	for _, bt := range out {
+		b.inflight[bt.Key] = bt.Keys()
 	}
 	return out, nil
 }
