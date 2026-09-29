@@ -46,6 +46,9 @@ func TestQualityLabel(t *testing.T) {
 		"Raw-HD":             "Raw-HD",
 		"Unknown":            "Unknown",
 		"Bluray-1080p Remux": "1080p Remux", // Remux is checked before Bluray
+		// Parity: the source match ignores case, but the resolution match doesn't (#13).
+		"WEBDL-2160P":  "WEB",
+		"BLURAY-1080P": "Blu-ray",
 	} {
 		if got := qualityLabel(q); got != want {
 			t.Errorf("qualityLabel(%q) = %q, want %q", q, got, want)
@@ -127,8 +130,17 @@ func TestMostCommonQualityTieIsFirstInEpisodeOrder(t *testing.T) {
 	if got := usualQuality(eps); got != "720p HDTV" {
 		t.Errorf("tie: %q, want the first in episode order", got)
 	}
-	if got := usualQuality(eps[1:]); got != "1080p WEB" {
-		t.Errorf("tie, other order: %q", got)
+	// The same 2–2 tie with the other label first.
+	reversed := []domain.Episode{eps[1], eps[0], eps[3], eps[2], eps[4]}
+	if got := usualQuality(reversed); got != "1080p WEB" {
+		t.Errorf("tie, other order: %q, want the first in episode order", got)
+	}
+	// A 1–1 tie, both orders.
+	if got := usualQuality([]domain.Episode{eps[0], eps[1]}); got != "720p HDTV" {
+		t.Errorf("1–1 tie: %q", got)
+	}
+	if got := usualQuality([]domain.Episode{eps[1], eps[0]}); got != "1080p WEB" {
+		t.Errorf("1–1 tie, other order: %q", got)
 	}
 	eps = append(eps, domain.Episode{Quality: "WEBRip-1080p"})
 	if got := usualQuality(eps); got != "1080p WEB" {
@@ -228,11 +240,25 @@ func TestStyle(t *testing.T) {
 
 	b := tvBatch(domain.Episode{Season: 1, Number: 1}, domain.Episode{Season: 1, Number: 2})
 	tv := TV(TVInput{Common: Common{Style: domain.Style{Label: "4K", Color: 0x654321}}, Batch: b})
-	if tv.Headline != "2 new 4K episodes" || tv.Color != 0x654321 {
+	if tv.Headline != "2 new episodes" || tv.Color != 0x654321 { // the reference never labels TV
 		t.Errorf("tv: %q %#x", tv.Headline, tv.Color)
 	}
 	if tv := TV(TVInput{Batch: b}); tv.Headline != "2 new episodes" || tv.Color != colorEpisodes {
 		t.Errorf("tv zero style: %q %#x", tv.Headline, tv.Color)
+	}
+}
+
+func TestCollectionLine(t *testing.T) {
+	for collection, want := range map[string]string{
+		"Small Hours":             "Part of the Small Hours",
+		"The Meridian Collection": "Part of the Meridian Collection",
+		// Parity: every "the The " is rewritten, not just the leading article (#13).
+		"Tales of the The Endless": "Part of the Tales of the Endless",
+	} {
+		card := Movie(MovieInput{Movie: domain.Movie{Title: "X"}, Detail: &domain.MovieDetail{Collection: collection}}, Common{})
+		if got := card.Lines[len(card.Lines)-1]; got != want {
+			t.Errorf("%q: %q, want %q", collection, got, want)
+		}
 	}
 }
 
@@ -242,7 +268,7 @@ func TestTVHeadlines(t *testing.T) {
 	b := tvBatch(domain.Episode{Season: 1, Number: 1})
 	for _, tc := range []struct {
 		label, want string
-	}{{"", "New series"}, {"4K", "New 4K series"}} {
+	}{{"", "New series"}, {"4K", "New series"}} {
 		if got := TV(TVInput{Common: Common{Style: domain.Style{Label: tc.label}}, Batch: b, Detail: d}).Headline; got != tc.want {
 			t.Errorf("series %q: %q", tc.label, got)
 		}
@@ -255,7 +281,7 @@ func TestTVHeadlines(t *testing.T) {
 		t.Errorf("season: %q", got)
 	}
 	b = tvBatch(domain.Episode{Season: 2, Number: 1}, domain.Episode{Season: 3, Number: 1})
-	if got := TV(TVInput{Batch: b, Detail: d, Common: Common{Style: domain.Style{Label: "4K"}}}).Headline; got != "New 4K seasons" {
+	if got := TV(TVInput{Batch: b, Detail: d, Common: Common{Style: domain.Style{Label: "4K"}}}).Headline; got != "New seasons" {
 		t.Errorf("seasons: %q", got)
 	}
 	if got := TV(TVInput{Batch: tvBatch(domain.Episode{Season: 1, Number: 3}), Detail: d}).Headline; got != "New episode" {

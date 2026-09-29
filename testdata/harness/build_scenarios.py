@@ -217,6 +217,17 @@ scenario("tv_already_announced", "Re-import of an episode announced within 30 da
          plex={guid_tv(s): plex_show("5201", rating=8.4, cert="TV-MA")}, seasons={"5201:3": "5203"},
          posted=["sonarr:ep:2035"])
 
+s = series(108, "Lamplight Relay", 2018, ["Drama"], "lamplight-relay")
+eps = [episode(8000 + se * 100 + n, 108, se, n, f"Relay {se}-{n}", days(2000) + timedelta(days=7 * (se * 10 + n)))
+       for se in (1, 2) for n in range(1, 6)]
+scenario("tv_whole_seasons_stale_stats",
+         "Two whole seasons arrive, but Sonarr's stats still count 4 of season 2's 5 files: the season 2 line "
+         "isn't 'complete', yet the whole-seasons line still replaces both.",
+         [sonarr_import(s, [e]) for e in eps],
+         arr={"series/108": series_detail(s, "Example Network", "ended", {1: (5, 5), 2: (4, 5)},
+                                          "Night-shift signal operators.", last_aired=days(1500))},
+         plex={guid_tv(s): plex_show("5801")})
+
 # --- Movie scenarios ------------------------------------------------------------------------------
 
 M = [

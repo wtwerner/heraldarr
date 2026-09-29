@@ -48,14 +48,6 @@ func (c Common) color(def int) int {
 	return def
 }
 
-// labelled puts the style's label before a noun: "series" -> "4K series".
-func (c Common) labelled(noun string) string {
-	if c.Style.Label == "" {
-		return noun
-	}
-	return c.Style.Label + " " + noun
-}
-
 // TVInput is one series batch plus everything looked up for it at send time.
 type TVInput struct {
 	Common
@@ -118,22 +110,20 @@ func TV(in TVInput) domain.Card {
 		kindSeason
 		kindEpisodes
 	)
+	// Style.Label is not applied: the reference never labels TV headlines (see the divergence issue).
 	var kind, color int
 	var headline string
 	switch {
 	case newSeries:
-		kind, color, headline = kindSeries, colorSeries, "New "+in.labelled("series")
-	case newSeasons > 0:
-		kind, color, headline = kindSeason, colorSeason, "New "+in.labelled("season")
-		if newSeasons > 1 {
-			headline += "s"
-		}
+		kind, color, headline = kindSeries, colorSeries, "New series"
+	case newSeasons > 1:
+		kind, color, headline = kindSeason, colorSeason, "New seasons"
+	case newSeasons == 1:
+		kind, color, headline = kindSeason, colorSeason, "New season"
+	case len(eps) == 1:
+		kind, color, headline = kindEpisodes, colorEpisodes, "New episode"
 	default:
-		kind, color = kindEpisodes, colorEpisodes
-		headline = "New " + in.labelled("episode")
-		if len(eps) != 1 {
-			headline = fmt.Sprintf("%d new %ss", len(eps), in.labelled("episode"))
-		}
+		kind, color, headline = kindEpisodes, colorEpisodes, fmt.Sprintf("%d new episodes", len(eps))
 	}
 
 	var lines []string
@@ -346,7 +336,10 @@ func Digest(movies []MovieInput, c Common) domain.Card {
 			gallery = append(gallery, img)
 		}
 	}
-	title := fmt.Sprintf("%d new %s", len(movies), c.labelled("movies"))
+	title := fmt.Sprintf("%d new movies", len(movies))
+	if c.Style.Label != "" {
+		title = fmt.Sprintf("%d new %s movies", len(movies), c.Style.Label)
+	}
 	return domain.Card{
 		Headline: title,
 		Title:    title,
