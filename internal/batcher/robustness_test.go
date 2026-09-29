@@ -21,6 +21,14 @@ type flakyStore struct {
 	*testkit.MemStore
 	failPrune, failSave, failMark atomic.Bool
 	loads                         atomic.Int32
+	postedFailsIn                 atomic.Int32 // n > 0: the nth PostedSince call from now fails, once
+}
+
+func (s *flakyStore) PostedSince(ctx context.Context, keys []domain.ItemKey, since time.Time) (map[domain.ItemKey]bool, error) {
+	if s.postedFailsIn.Load() > 0 && s.postedFailsIn.Add(-1) == 0 {
+		return nil, errFlaky
+	}
+	return s.MemStore.PostedSince(ctx, keys, since)
 }
 
 func (s *flakyStore) LoadBatches(ctx context.Context) (map[string]*domain.Batch, error) {
@@ -133,6 +141,25 @@ func TestDueHandsOutOnce(t *testing.T) {
 	}
 	if left := handOut(t, b, true); !slices.Equal(left.Keys(), []domain.ItemKey{"radarr:movie:9003"}) {
 		t.Fatalf("left: %v", left.Keys())
+	}
+}
+
+// A Due that fails partway hands out nothing, so it leaves nothing in flight: once the store
+// recovers, every batch goes out.
+func TestDueFailurePartwayStrandsNothing(t *testing.T) {
+	b, store := flaky(t)
+	ctx := context.Background()
+	mustAdd(t, b, domain.Import{Source: "radarr4k", Movie: &domain.Movie{ID: 9006, Title: "Placeholder 9006"}})
+	store.postedFailsIn.Store(2) // radarr4k:movies is checked first, then radarr:movies fails
+	if due, err := b.Due(ctx, true); !errors.Is(err, errFlaky) || len(due) != 0 {
+		t.Fatalf("Due: got %d batches, %v; want none and the store error", len(due), err)
+	}
+	var keys []string
+	for _, d := range mustDue(t, b) {
+		keys = append(keys, d.Key)
+	}
+	if want := []string{"radarr4k:movies", "radarr:movies"}; !slices.Equal(keys, want) {
+		t.Fatalf("after recovery Due handed out %v, want %v", keys, want)
 	}
 }
 
