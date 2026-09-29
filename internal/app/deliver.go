@@ -7,7 +7,6 @@ import (
 
 	"github.com/wtwerner/heraldarr/internal/batcher"
 	"github.com/wtwerner/heraldarr/internal/domain"
-	"github.com/wtwerner/heraldarr/internal/notify/discord"
 	"github.com/wtwerner/heraldarr/internal/render"
 )
 
@@ -54,19 +53,20 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 		}
 		cards = append(cards, card{b.Keys(), c})
 	} else {
+		digest := b.Len() >= a.DigestFrom
 		var movies []render.MovieInput
 		for _, k := range b.Keys() {
 			m := b.Movies[k]
-			in := render.MovieInput{
-				Key: k, Movie: m, URL: a.url(found[string(k)]),
-				RottenTomatoes: a.RT.RottenTomatoes(ctx, m.IMDbID, m.Title),
+			in := render.MovieInput{Key: k, Movie: m, URL: a.url(found[string(k)])}
+			if !digest { // digest cards have no Rotten Tomatoes button
+				in.RottenTomatoes = a.RT.RottenTomatoes(ctx, m.IMDbID, m.Title)
 			}
 			if d, err := src.Arr.Movie(ctx, m.ID); err == nil {
 				in.Detail = d
 			} // deleted or unreachable: the webhook data is enough
 			movies = append(movies, in)
 		}
-		if len(movies) >= a.DigestFrom {
+		if digest {
 			cards = append(cards, card{b.Keys(), render.Digest(movies, common)})
 		} else {
 			for _, in := range movies {
@@ -78,15 +78,9 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 	var sent []domain.ItemKey
 	for _, c := range cards {
 		res, err := a.Notifier.Post(ctx, *dest, render.Layouts(c.card, a.Clock.Now()))
-		var refused *discord.RefusedError
-		switch {
-		case errors.As(err, &refused):
-			// Discord rejects this card in every layout; resending won't change that.
-			a.Log.Error("discord refused the card in every layout; dropping it", "batch", batchName(b),
-				"title", c.card.Title, "err", err)
-			sent = append(sent, c.keys...)
-			continue
-		case err != nil:
+		if err != nil {
+			// As in the reference, a card Discord refuses in every layout is a failed try too
+			// (a deleted or rotated webhook refuses with 401/404): retried, then dropped.
 			return sent, batcher.Failed, err
 		}
 		sent = append(sent, c.keys...)
@@ -94,6 +88,10 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 			"layout", res.Layout, "items", len(c.keys))
 		if !record {
 			continue
+		}
+		// Recorded per card, so a crash mid-batch doesn't post the earlier cards again.
+		if err := a.Store.MarkPosted(ctx, c.keys, a.Clock.Now()); err != nil {
+			a.Log.Warn("recording posted items", "err", err)
 		}
 		if err := a.Store.AppendHistory(ctx, domain.HistoryEntry{
 			At: a.Clock.Now(), Source: b.Source,
@@ -164,7 +162,9 @@ func (a *App) lookup(ctx context.Context, b *domain.Batch, force bool) (map[stri
 		if b.MediaChecks == 0 {
 			for _, k := range missing {
 				if err := a.Media.Scan(ctx, want[k].path); err != nil {
-					a.Log.Warn("media server scan request failed", "path", want[k].path, "err", err)
+					// As in the reference: the media server is in trouble, so post without links now.
+					a.Log.Warn("media server scan request failed; posting without links", "path", want[k].path, "err", err)
+					return found, false
 				}
 			}
 		}

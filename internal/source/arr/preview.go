@@ -45,15 +45,15 @@ func (c *Client) SeriesImport(ctx context.Context, source string, id int, select
 		ID      int     `json:"id"`
 		Quality quality `json:"quality"`
 	}
+	want, err := parseSelector(selector) // before any request: a typo shouldn't cost three calls
+	if err != nil {
+		return domain.Import{}, err
+	}
 	q := "?seriesId=" + strconv.Itoa(id)
 	for path, v := range map[string]any{"series/" + strconv.Itoa(id): &s, "episode" + q: &eps, "episodefile" + q: &files} {
 		if err := c.getJSON(ctx, path, v); err != nil {
 			return domain.Import{}, err
 		}
-	}
-	want, err := parseSelector(selector)
-	if err != nil {
-		return domain.Import{}, err
 	}
 	qualities := map[int]string{}
 	for _, f := range files {

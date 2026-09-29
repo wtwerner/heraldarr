@@ -3,10 +3,12 @@ package app_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -14,7 +16,10 @@ import (
 
 	"github.com/wtwerner/heraldarr/internal/app"
 	"github.com/wtwerner/heraldarr/internal/batcher"
+	"github.com/wtwerner/heraldarr/internal/config"
 	"github.com/wtwerner/heraldarr/internal/domain"
+	"github.com/wtwerner/heraldarr/internal/notify/discord"
+	"github.com/wtwerner/heraldarr/internal/source/arr"
 	"github.com/wtwerner/heraldarr/internal/store"
 	"github.com/wtwerner/heraldarr/internal/testkit"
 )
@@ -28,6 +33,7 @@ type capture struct {
 	mu    sync.Mutex
 	posts []post
 	fail  error
+	after func(n int) // called after the n-th successful post
 }
 
 type post struct {
@@ -35,13 +41,19 @@ type post struct {
 	layouts []domain.Layout
 }
 
-func (c *capture) Post(_ context.Context, d domain.Destination, l []domain.Layout) (domain.PostResult, error) {
+func (c *capture) Post(ctx context.Context, d domain.Destination, l []domain.Layout) (domain.PostResult, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return domain.PostResult{}, err // like the real notifier's HTTP request
+	}
 	if c.fail != nil {
 		return domain.PostResult{}, c.fail
 	}
 	c.posts = append(c.posts, post{d, l})
+	if c.after != nil {
+		c.after(len(c.posts))
+	}
 	return domain.PostResult{Layout: l[0].Name, MessageID: "1"}, nil
 }
 
@@ -76,7 +88,7 @@ func newEnv(t *testing.T, name string, media bool) *env {
 	sources := map[string]app.Source{}
 	for n, s := range testkit.Sources {
 		sources[n] = app.Source{
-			Name: n, Kind: s.Kind, Arr: testkit.Arr{Sc: sc}, Style: s.Style,
+			Kind: s.Kind, Arr: testkit.Arr{Sc: sc}, Style: s.Style,
 			Destination: domain.Destination{Name: n + "-dest", WebhookURL: "https://discord.invalid/" + n},
 		}
 	}
@@ -208,8 +220,8 @@ func TestAuthAndEndpoints(t *testing.T) {
 	}
 }
 
-// A shutdown during delivery neither counts as a failed try nor loses the batch.
-func TestShutdownMidDelivery(t *testing.T) {
+// A shutdown before a flush starts releases every due batch untouched.
+func TestShutdownBeforeFlush(t *testing.T) {
 	e := newEnv(t, "movie_single", true)
 	e.send(t)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -218,5 +230,129 @@ func TestShutdownMidDelivery(t *testing.T) {
 	e.app.Flush(context.Background(), true)
 	if len(e.out.posts) != 1 {
 		t.Fatalf("got %d posts after restart, want 1", len(e.out.posts))
+	}
+}
+
+// A shutdown in the middle of a batch keeps the cards that went out, isn't a failed try, and the
+// rest go out on the next flush without repeating the first.
+func TestShutdownMidDelivery(t *testing.T) {
+	e := newEnv(t, "movie_three", true)
+	e.send(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	e.out.after = func(n int) {
+		if n == 1 {
+			cancel() // SIGTERM right after the first card went out
+		}
+	}
+	e.app.Flush(ctx, true)
+	if len(e.out.posts) != 1 {
+		t.Fatalf("got %d posts before the shutdown, want 1", len(e.out.posts))
+	}
+	e.out.after = nil
+	e.app.Flush(context.Background(), true)
+	if len(e.out.posts) != 3 {
+		t.Fatalf("got %d posts in total, want 3 (the first not repeated)", len(e.out.posts))
+	}
+	titles := map[string]bool{}
+	for _, p := range e.out.posts {
+		b, _ := json.Marshal(p.layouts[0].Body)
+		titles[string(b)] = true
+	}
+	if len(titles) != 3 {
+		t.Error("a card was posted twice")
+	}
+	pending, _ := e.app.Store.LoadBatches(context.Background())
+	for _, b := range pending {
+		if b.Tries != 0 {
+			t.Errorf("shutdown counted as a failed try: %+v", b)
+		}
+	}
+}
+
+// As in the reference, a card Discord refuses in every layout is retried, not dropped.
+func TestRefusedIsRetried(t *testing.T) {
+	e := newEnv(t, "movie_single", true)
+	ctx := context.Background()
+	e.send(t)
+	e.out.fail = &discord.RefusedError{Destination: "radarr-dest"}
+	e.app.Flush(ctx, true)
+	e.out.fail = nil
+	e.clock.Advance(timing.QuietMovies)
+	e.app.Flush(ctx, false)
+	if len(e.out.posts) != 1 {
+		t.Fatalf("got %d posts after Discord accepted again, want 1", len(e.out.posts))
+	}
+}
+
+func TestPreview(t *testing.T) {
+	e := newEnv(t, "movie_4k_private", true)
+	ctx := context.Background()
+	imp, _, err := arr.ParseWebhook("radarr4k", domain.KindMovie, e.sc.Events[0].Payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	public := &domain.Destination{Name: "friends", Public: true}
+	if _, err := e.app.Preview(ctx, "radarr4k", []domain.Import{imp}, public); err == nil {
+		t.Error("preview to a public destination must be refused")
+	}
+	layouts, err := e.app.Preview(ctx, "radarr4k", []domain.Import{imp}, nil)
+	if err != nil || len(layouts) != 1 {
+		t.Fatalf("preview = %d cards, %v", len(layouts), err)
+	}
+	testkit.EqualJSON(t, "preview v2", layouts[0][0].Body, e.exp.Posts[0].V2)
+	private := &domain.Destination{Name: "private"}
+	if _, err := e.app.Preview(ctx, "radarr4k", []domain.Import{imp}, private); err != nil || len(e.out.posts) != 1 {
+		t.Fatalf("preview to private: %v, %d posts", err, len(e.out.posts))
+	}
+	if p, _ := e.app.Store.PostedSince(ctx, []domain.ItemKey{domain.MovieKey("radarr4k", imp.Movie.ID)}, time.Time{}); len(p) != 0 {
+		t.Error("a preview was recorded as posted")
+	}
+}
+
+func TestFromConfig(t *testing.T) {
+	dir := t.TempDir()
+	write := func(name, body string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	hook := write("hook", "https://discord.invalid/api/webhooks/1/x")
+	xml := write("config.xml", "<Config><ApiKey>k</ApiKey></Config>")
+	prefs := write("Preferences.xml", `<Preferences PlexOnlineToken="t"/>`)
+	cfg, err := config.Parse([]byte(`
+server: {data_dir: ` + filepath.Join(dir, "data") + `}
+media_server: {url: "http://plex:32400", preferences_xml: ` + prefs + `}
+sources:
+  - {name: sonarr, kind: sonarr, url: "http://sonarr:8989", config_xml: ` + xml + `}
+  - {name: radarr4k, kind: radarr, url: "http://radarr:7878", api_key: k}
+destinations:
+  - {name: tv, webhook_url: {file: ` + hook + `}, public: true, username: TV}
+  - {name: private, webhook_url: {file: ` + hook + `}}
+routes:
+  - {sources: [sonarr], destination: tv}
+  - {sources: [radarr4k], destination: private, style: {label: 4K, color: "#9B59B6", tech_details: true}}
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc, err := app.FromConfig(cfg, "test", slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = svc.Close() }()
+	tv, uhd := svc.Sources["sonarr"], svc.Sources["radarr4k"]
+	if tv.Kind != domain.KindTV || !tv.Destination.Public || tv.Destination.Username != "TV" || tv.Style.TechDetails {
+		t.Errorf("sonarr source: %+v", tv)
+	}
+	if uhd.Kind != domain.KindMovie || uhd.Destination.Public || uhd.Style != (domain.Style{Label: "4K", Color: 0x9B59B6, TechDetails: true}) {
+		t.Errorf("radarr4k source: %+v", uhd)
+	}
+	if svc.Media == nil || svc.WaitChecks != 4 || svc.Timing.MediaWait != 3*time.Minute || svc.DigestFrom != 4 {
+		t.Errorf("media/timing not wired: waitChecks=%d mediaWait=%s", svc.WaitChecks, svc.Timing.MediaWait)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "data", "heraldarr.db")); err != nil {
+		t.Errorf("store not created in data_dir: %v", err)
 	}
 }

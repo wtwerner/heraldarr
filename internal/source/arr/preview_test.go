@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 )
 
@@ -44,7 +45,7 @@ func TestSeriesAndMovieImport(t *testing.T) {
 		for _, e := range imp.Episodes {
 			got = append(got, e.ID)
 		}
-		if len(got) != len(want) {
+		if !slices.Equal(got, want) {
 			t.Errorf("%q: got %v, want %v", sel, got, want)
 		}
 	}

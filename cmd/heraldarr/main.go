@@ -32,10 +32,11 @@ Usage:
   heraldarr flush                      post everything pending now (asks the running server)
   heraldarr health                     exit 0 if the running server is healthy
   heraldarr preview SOURCE ID[,ID…] [S02|S02E05,S02E06] [-to DESTINATION]
-                                       render items already on disk as if they just arrived;
+                                       render items already on disk as if they just arrived
+                                       (one series, or several movies);
                                        prints the Discord JSON, or posts it to a non-public
                                        destination with -to
-  heraldarr import-legacy DIR          import a reference data/ folder (posted ledger, caches)
+  heraldarr import-legacy DIR          import an arr-discord data/ folder (stop the server first)
   heraldarr version
 
 Every command takes -config PATH (default $HERALDARR_CONFIG or /config/config.yaml).
@@ -53,6 +54,12 @@ func run(args []string) error {
 		fmt.Print(usage)
 		return errors.New("no command")
 	}
+	for _, a := range args {
+		if a == "-h" || a == "--help" || a == "-help" {
+			fmt.Print(usage)
+			return nil
+		}
+	}
 	fs := flag.NewFlagSet("heraldarr", flag.ContinueOnError)
 	configPath := fs.String("config", envOr("HERALDARR_CONFIG", "/config/config.yaml"), "configuration file")
 	to := fs.String("to", "", "preview: destination to post to")
@@ -69,7 +76,7 @@ func run(args []string) error {
 	case "version":
 		fmt.Println(version)
 		return nil
-	case "help", "-h", "--help":
+	case "help":
 		fmt.Print(usage)
 		return nil
 	}
@@ -122,10 +129,15 @@ func serve(cfg *config.Config, log *slog.Logger) error {
 	defer func() { _ = svc.Close() }()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	srv := &http.Server{Addr: cfg.Server.Listen, Handler: svc.Handler(), ReadHeaderTimeout: 10 * time.Second}
+	srv := &http.Server{
+		Addr: cfg.Server.Listen, Handler: svc.Handler(),
+		ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second,
+		IdleTimeout: 2 * time.Minute,
+	}
 	errc := make(chan error, 1)
 	go func() { errc <- srv.ListenAndServe() }()
-	go svc.Run(ctx)
+	ran := make(chan struct{})
+	go func() { svc.Run(ctx); close(ran) }()
 	names := make([]string, 0, len(cfg.Sources))
 	for _, s := range cfg.Sources {
 		names = append(names, s.Name)
@@ -135,14 +147,16 @@ func serve(cfg *config.Config, log *slog.Logger) error {
 		"quiet_episodes", t.QuietEpisodes, "quiet_backlog", t.QuietBacklog, "quiet_movies", t.QuietMovies,
 		"digest_from", t.DigestFrom, "max_hold", t.MaxHold, "auth", cfg.Server.Auth != nil, "media_server", cfg.MediaServer != nil)
 	select {
-	case err := <-errc:
-		return err
+	case err = <-errc:
+		stop() // the listener failed: stop the flush loop too
 	case <-ctx.Done():
+		log.Info("shutting down")
+		shut, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		err = srv.Shutdown(shut)
 	}
-	log.Info("shutting down")
-	shut, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	return srv.Shutdown(shut)
+	<-ran // the flush loop records what it sent before the store closes
+	return err
 }
 
 func preview(cfg *config.Config, log *slog.Logger, pos []string, to string) error {
@@ -159,6 +173,10 @@ func preview(cfg *config.Config, log *slog.Logger, pos []string, to string) erro
 	if !ok {
 		return fmt.Errorf("unknown source %q", source)
 	}
+	ids := strings.Split(pos[1], ",")
+	if svc.Sources[source].Kind == domain.KindTV && len(ids) > 1 {
+		return errors.New("preview: one series at a time")
+	}
 	var dest *domain.Destination
 	if to != "" {
 		d, ok := svc.Destinations[to]
@@ -169,10 +187,10 @@ func preview(cfg *config.Config, log *slog.Logger, pos []string, to string) erro
 	}
 	ctx := context.Background()
 	var imps []domain.Import
-	for _, s := range strings.Split(pos[1], ",") {
+	for _, s := range ids {
 		id, err := strconv.Atoi(strings.TrimSpace(s))
 		if err != nil {
-			return fmt.Errorf("bad id %q", s)
+			return fmt.Errorf("bad id %q: %w", s, err)
 		}
 		var imp domain.Import
 		if svc.Sources[source].Kind == domain.KindTV {

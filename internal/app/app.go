@@ -18,7 +18,6 @@ type RottenTomatoes interface {
 
 // Source is one configured *arr instance and where its cards go.
 type Source struct {
-	Name        string
 	Kind        domain.Kind
 	Arr         domain.ArrClient
 	Destination domain.Destination
@@ -98,24 +97,36 @@ func (a *App) Flush(ctx context.Context, force bool) {
 		a.Log.Error("flush: loading due batches", "err", err)
 		return
 	}
-	for _, b := range due {
+	for i, b := range due {
+		if ctx.Err() != nil {
+			// Shutting down: release what Due handed out, untouched, for the next start.
+			a.release(ctx, due[i:])
+			return
+		}
 		sent, outcome, err := a.deliver(ctx, b, force, nil, true)
 		if ctx.Err() != nil {
-			// Shutting down mid-delivery isn't a failure: keep what went out, retry the rest on the
-			// next start.
-			if len(sent) > 0 {
-				if err := a.batcher.Done(context.WithoutCancel(ctx), b.Key, sent, batcher.Posted); err != nil {
-					a.Log.Error("recording delivery outcome", "batch", batchName(b), "err", err)
-				}
-			}
+			// Interrupted mid-delivery isn't a failure: keep what went out, retry the rest later.
+			a.done(ctx, b, sent, batcher.Aborted)
+			a.release(ctx, due[i+1:])
 			return
 		}
 		if err != nil {
 			a.Log.Warn("delivery failed, will retry", "batch", batchName(b), "err", err, "tries", b.Tries+1)
 		}
-		if err := a.batcher.Done(ctx, b.Key, sent, outcome); err != nil {
-			a.Log.Error("recording delivery outcome", "batch", batchName(b), "err", err)
-		}
+		a.done(ctx, b, sent, outcome)
+	}
+}
+
+func (a *App) release(ctx context.Context, batches []*domain.Batch) {
+	for _, b := range batches {
+		a.done(ctx, b, nil, batcher.Aborted)
+	}
+}
+
+// done reports an attempt to the batcher; it must happen even while shutting down.
+func (a *App) done(ctx context.Context, b *domain.Batch, sent []domain.ItemKey, outcome batcher.Outcome) {
+	if err := a.batcher.Done(context.WithoutCancel(ctx), b.Key, sent, outcome); err != nil {
+		a.Log.Error("recording delivery outcome", "batch", batchName(b), "err", err)
 	}
 }
 

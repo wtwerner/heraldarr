@@ -46,6 +46,9 @@ const (
 	Waiting
 	// Failed: a transient error; retry after RetryInterval, drop after RetryMax tries.
 	Failed
+	// Aborted: the attempt was interrupted (shutdown). Sent keys are recorded; the batch is
+	// otherwise left as it was, and not counted as a try.
+	Aborted
 )
 
 // pruneEvery is how often Done trims the posted ledger to the reannounce window.
@@ -338,6 +341,7 @@ func (b *Batcher) outcome(cur *domain.Batch, handed, sent []domain.ItemKey, outc
 		fallthrough // as in the reference, what arrived during the last try starts a fresh window
 	case Posted:
 		bt.First, bt.MediaChecks, bt.Tries, bt.NotBefore = now, 0, 0, time.Time{}
+	case Aborted:
 	}
 	for _, k := range gone {
 		delete(bt.Episodes, k)

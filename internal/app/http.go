@@ -3,9 +3,11 @@ package app
 import (
 	"crypto/subtle"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/wtwerner/heraldarr/internal/source/arr"
 )
@@ -55,8 +57,13 @@ func (a *App) hook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxBody))
-	if err != nil {
+	var tooBig *http.MaxBytesError
+	switch {
+	case errors.As(err, &tooBig):
 		reply(w, http.StatusRequestEntityTooLarge, map[string]any{"error": "body too large"})
+		return
+	case err != nil:
+		reply(w, http.StatusBadRequest, map[string]any{"error": "could not read body"})
 		return
 	}
 	imp, ok, err := arr.ParseWebhook(name, src.Kind, body)
@@ -100,7 +107,7 @@ func (a *App) pending(w http.ResponseWriter, r *http.Request) {
 	for _, b := range batches {
 		out = append(out, map[string]any{
 			"batch": batchName(b), "source": b.Source, "items": b.Len(),
-			"following": b.Following, "quiet_for_min": now.Sub(b.Last).Round(6e9).Minutes(),
+			"following": b.Following, "quiet_for_min": now.Sub(b.Last).Round(6 * time.Second).Minutes(),
 			"media_checks": b.MediaChecks, "tries": b.Tries,
 		})
 	}

@@ -66,7 +66,7 @@ func FromConfig(cfg *config.Config, version string, log *slog.Logger) (*Service,
 		}
 		r, _ := cfg.RouteFor(s.Name) // Validate guarantees every source has a route
 		sources[s.Name] = Source{
-			Name: s.Name, Kind: kind, Arr: client, Destination: svc.Destinations[r.Destination],
+			Kind: kind, Arr: client, Destination: svc.Destinations[r.Destination],
 			Style: domain.Style{Label: r.Style.Label, Color: int(r.Style.Color), TechDetails: r.Style.TechDetails},
 		}
 	}
