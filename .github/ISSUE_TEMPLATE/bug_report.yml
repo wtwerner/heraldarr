@@ -1,0 +1,66 @@
+name: Bug report
+description: Something posted wrong, twice, too late, or not at all.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remove every secret before you submit: Discord webhook URLs, API keys, the Plex token and
+        the webhook password. Anyone can read this issue.
+  - type: input
+    id: version
+    attributes:
+      label: heraldarr version
+      description: "`docker compose exec heraldarr /heraldarr version`, or the image tag."
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: arr-versions
+    attributes:
+      label: Sonarr / Radarr versions
+      description: System → Status in each one involved.
+      placeholder: Sonarr 4.0.x, Radarr 5.x
+    validations:
+      required: true
+  - type: input
+    id: media-server
+    attributes:
+      label: Media server and version
+      placeholder: Plex 1.41, or none
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what heraldarr posted (or didn't), and when.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: config.yaml (redacted)
+      description: Replace every inline secret with `REDACTED`.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "`docker compose logs heraldarr` around the time it happened; with `HERALDARR_DEBUG=1` if you can reproduce it."
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: redacted
+    attributes:
+      label: Secrets
+      options:
+        - label: I removed webhook URLs, API keys, tokens and passwords from everything above.
+          required: true
