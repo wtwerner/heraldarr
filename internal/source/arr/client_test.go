@@ -318,4 +318,44 @@ func TestClientConfigXMLKeyRotation(t *testing.T) {
 	}
 }
 
+// A redirect (a proxy's login page, another host) is never followed, so the key never leaves.
+func TestClientRedirectNotFollowed(t *testing.T) {
+	elsewhere := &fakeArr{}
+	target := serve(t, elsewhere)
+	for _, code := range []int{http.StatusFound, http.StatusTemporaryRedirect} {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, target.URL+"/login", code)
+		}))
+		t.Cleanup(srv.Close)
+		_, err := newClient(srv.URL).Series(context.Background(), 1)
+		var se *arr.StatusError
+		if !errors.As(err, &se) || se.Code != code {
+			t.Errorf("%d: got %v, want a StatusError", code, err)
+		}
+	}
+	if n := len(elsewhere.requests()); n != 0 {
+		t.Errorf("redirect followed %d times", n)
+	}
+}
+
+// Cancelled while fetching credits: the caller is going away, so Movie fails rather than
+// returning a movie without credits.
+func TestClientMovieCancelledDuringCredits(t *testing.T) {
+	sc, _ := testkit.Load(t, "movie_single")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v3/movie/201" {
+			_, _ = w.Write(sc.Arr["movie/201"])
+			return
+		}
+		cancel()
+		<-r.Context().Done()
+	}))
+	t.Cleanup(srv.Close)
+	if _, err := newClient(srv.URL).Movie(ctx, 201); !errors.Is(err, context.Canceled) {
+		t.Errorf("got %v, want context.Canceled", err)
+	}
+}
+
 var _ domain.ArrClient = (*arr.Client)(nil)

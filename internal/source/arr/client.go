@@ -80,7 +80,12 @@ func NewClient(baseURL string, key KeyFunc, version string, timeout time.Duratio
 		base: strings.TrimRight(baseURL, "/") + "/api/v3/",
 		key:  key,
 		ua:   "heraldarr/" + version,
-		http: &http.Client{Timeout: timeout},
+		http: &http.Client{
+			Timeout: timeout,
+			// Never follow: Go would forward X-Api-Key to the target, even on another host. The API
+			// doesn't redirect, so a redirect is a proxy's login page: a StatusError says so.
+			CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
+		},
 	}
 }
 
@@ -101,7 +106,7 @@ func (c *Client) Series(ctx context.Context, id int) (*domain.SeriesDetail, erro
 }
 
 // Movie reads GET /api/v3/movie/{id} and its credits. A credits failure is logged and leaves
-// Directors and Cast empty.
+// Directors and Cast empty, unless ctx is done: then Movie returns ctx's error.
 func (c *Client) Movie(ctx context.Context, id int) (*domain.MovieDetail, error) {
 	path := "movie/" + strconv.Itoa(id)
 	body, err := c.get(ctx, path)
@@ -110,6 +115,9 @@ func (c *Client) Movie(ctx context.Context, id int) (*domain.MovieDetail, error)
 	}
 	credits, err := c.get(ctx, "credit?movieId="+strconv.Itoa(id))
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, fmt.Errorf("GET %s: %w", path, ctx.Err())
+		}
 		slog.WarnContext(ctx, "arr: movie credits unavailable", "movie", id, "err", err)
 		credits = nil
 	}
@@ -138,11 +146,12 @@ func (c *Client) get(ctx context.Context, path string) ([]byte, error) {
 		return nil, err // *url.Error: method, URL (no key: that's a header) and cause
 	}
 	defer func() { _ = resp.Body.Close() }()
-	switch resp.StatusCode {
-	case http.StatusOK:
-	case http.StatusNotFound:
-		return nil, fmt.Errorf("GET %s: %w", path, domain.ErrNotFound)
-	default:
+	if resp.StatusCode != http.StatusOK {
+		// Drain a little so the connection is reused: 404 (a deleted item) is routine.
+		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 4<<10))
+		if resp.StatusCode == http.StatusNotFound {
+			return nil, fmt.Errorf("GET %s: %w", path, domain.ErrNotFound)
+		}
 		return nil, &StatusError{Path: path, Code: resp.StatusCode, Status: resp.Status}
 	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, maxBody+1))

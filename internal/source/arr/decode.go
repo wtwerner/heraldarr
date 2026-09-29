@@ -53,9 +53,8 @@ type webhook struct {
 		Title         string `json:"title"`
 		AirDateUTC    string `json:"airDateUtc"`
 	} `json:"episodes"`
-	EpisodeFile  *episodeFile  `json:"episodeFile"`
-	EpisodeFiles []episodeFile `json:"episodeFiles"` // Sonarr v4 On Import Complete
-	Movie        *struct {
+	EpisodeFile *episodeFile `json:"episodeFile"`
+	Movie       *struct {
 		ID         int      `json:"id"`
 		Title      string   `json:"title"`
 		Year       int      `json:"year"`
@@ -109,7 +108,7 @@ func ParseWebhook(source string, kind domain.Kind, body []byte) (imp domain.Impo
 			ID: s.ID, Title: s.Title, Year: s.Year, Path: s.Path, TVDBID: s.TVDBID,
 			IMDbID: s.IMDbID, Genres: s.Genres, Poster: pickImage(s.Images, "poster"), Fanart: pickImage(s.Images, "fanart"),
 		}
-		quality := usualQuality(w.EpisodeFiles)
+		quality := "" // On Import Complete has episodeFiles instead: no quality, as in the oracle
 		if w.EpisodeFile != nil {
 			quality = w.EpisodeFile.Quality
 		}
@@ -143,23 +142,6 @@ func ParseWebhook(source string, kind domain.Kind, body []byte) (imp domain.Impo
 		return imp, false, fmt.Errorf("unknown kind %q", kind)
 	}
 	return imp, true, nil
-}
-
-// usualQuality is the most common quality of an On Import Complete's files (the first on a tie).
-// The payload doesn't say which file holds which episode, and the card shows only the usual one.
-func usualQuality(files []episodeFile) string {
-	counts := map[string]int{}
-	best := ""
-	for _, f := range files {
-		if f.Quality == "" {
-			continue
-		}
-		counts[f.Quality]++
-		if counts[f.Quality] > counts[best] {
-			best = f.Quality
-		}
-	}
-	return best
 }
 
 type seriesResource struct {
@@ -279,12 +261,14 @@ func DecodeMovie(movieBody, creditsBody []byte) (*domain.MovieDetail, error) {
 	return d, nil
 }
 
-// parseTime reads an *arr timestamp. They are UTC; one without a zone is read as UTC. Zero: none.
+// parseTime reads an *arr timestamp, returned in UTC. One without a zone is read in the host's
+// local zone, as the oracle does. Zero: none.
 func parseTime(s string) time.Time {
-	for _, layout := range []string{time.RFC3339, "2006-01-02T15:04:05"} {
-		if t, err := time.Parse(layout, s); err == nil {
-			return t.UTC()
-		}
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return t.UTC()
+	}
+	if t, err := time.ParseInLocation("2006-01-02T15:04:05", s, time.Local); err == nil {
+		return t.UTC()
 	}
 	return time.Time{}
 }

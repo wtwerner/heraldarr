@@ -59,7 +59,7 @@ func TestParseWebhookVersions(t *testing.T) {
 		},
 		{
 			// On Import Complete: one event for the whole download, several files, no episode→file
-			// mapping. Every episode gets the files' usual quality (2 of 3 files are WEBDL-1080p).
+			// mapping. As in the oracle, the episodes get no quality (it reads only episodeFile).
 			"sonarr_v4_import_complete.json", "sonarr", domain.KindTV,
 			domain.Import{Source: "sonarr", Series: &domain.Series{
 				ID: 302, Title: "Lanterns Over Kettle Bay", Year: 2019, Path: "/data/media/TV/Lanterns Over Kettle Bay",
@@ -67,10 +67,10 @@ func TestParseWebhookVersions(t *testing.T) {
 				Poster: "https://images.example.org/poster/kettle-bay.jpg",
 				Fanart: "https://images.example.org/fanart/kettle-bay.jpg",
 			}, Episodes: []domain.Episode{
-				{ID: 3201, Season: 1, Number: 1, Title: "Low Tide", Aired: utc("2019-09-06T01:00:00Z"), Quality: "WEBDL-1080p"},
-				{ID: 3202, Season: 1, Number: 2, Title: "The Ferry Strike", Aired: utc("2019-09-13T01:00:00Z"), Quality: "WEBDL-1080p"},
-				{ID: 3203, Season: 1, Number: 3, Title: "Fog Horn (1)", Aired: utc("2019-09-20T01:00:00Z"), Quality: "WEBDL-1080p"},
-				{ID: 3204, Season: 1, Number: 4, Title: "Fog Horn (2)", Aired: utc("2019-09-20T01:30:00Z"), Quality: "WEBDL-1080p"},
+				{ID: 3201, Season: 1, Number: 1, Title: "Low Tide", Aired: utc("2019-09-06T01:00:00Z")},
+				{ID: 3202, Season: 1, Number: 2, Title: "The Ferry Strike", Aired: utc("2019-09-13T01:00:00Z")},
+				{ID: 3203, Season: 1, Number: 3, Title: "Fog Horn (1)", Aired: utc("2019-09-20T01:00:00Z")},
+				{ID: 3204, Season: 1, Number: 4, Title: "Fog Horn (2)", Aired: utc("2019-09-20T01:30:00Z")},
 			}},
 		},
 		{
@@ -168,13 +168,22 @@ func TestParseWebhookMalformed(t *testing.T) {
 	}
 }
 
-// Air dates are UTC; a timestamp without a zone is read as UTC rather than dropped.
+func local(s string) time.Time {
+	t, err := time.ParseInLocation("2006-01-02T15:04:05", s, time.Local)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+// Air dates come back in UTC. A timestamp without a zone is read in the host's local zone, as the
+// oracle does, rather than dropped.
 func TestParseWebhookAirDates(t *testing.T) {
 	for in, want := range map[string]time.Time{
 		"2025-03-02T02:00:00Z":        utc("2025-03-02T02:00:00Z"),
 		"2025-03-02T02:00:00.5Z":      utc("2025-03-02T02:00:00.5Z"),
-		"2025-03-02T02:00:00":         utc("2025-03-02T02:00:00Z"),
-		"2025-03-02T02:00:00.1234567": utc("2025-03-02T02:00:00.1234567Z"),
+		"2025-03-02T02:00:00":         local("2025-03-02T02:00:00"),
+		"2025-03-02T02:00:00.1234567": local("2025-03-02T02:00:00.1234567"),
 		"2025-03-01T21:00:00-05:00":   utc("2025-03-02T02:00:00Z"),
 		"":                            {},
 		"not a date":                  {},
