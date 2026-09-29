@@ -1,0 +1,59 @@
+{
+  "movie": {
+    "id": 401,
+    "title": "Harbor of Small Lights",
+    "year": 2023,
+    "releaseDate": "2023-10-06",
+    "folderPath": "/data/media/Movies/Harbor of Small Lights (2023)",
+    "tmdbId": 700401,
+    "imdbId": "tt9000401",
+    "overview": "A lighthouse keeper's daughter maps every boat that never came home."
+  },
+  "remoteMovie": {
+    "tmdbId": 700401,
+    "imdbId": "tt9000401",
+    "title": "Harbor of Small Lights",
+    "year": 2023
+  },
+  "movieFile": {
+    "id": 6401,
+    "relativePath": "Harbor of Small Lights (2023) Bluray-1080p.mkv",
+    "path": "/downloads/movies/Harbor.of.Small.Lights.2023.1080p.BluRay.x264-EXAMPLE/file.mkv",
+    "quality": "Bluray-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "sceneName": "Harbor.of.Small.Lights.2023.1080p.BluRay.x264-EXAMPLE",
+    "indexerFlags": "0",
+    "size": 9876543210,
+    "dateAdded": "2025-05-01T20:11:00Z",
+    "mediaInfo": {
+      "audioChannels": 7.1,
+      "audioCodec": "DTS-HD MA",
+      "audioLanguages": ["eng"],
+      "height": 1080,
+      "width": 1920,
+      "subtitles": ["eng", "spa"],
+      "videoCodec": "x264",
+      "videoDynamicRange": "",
+      "videoDynamicRangeType": ""
+    }
+  },
+  "release": {
+    "quality": "Bluray-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "releaseTitle": "Harbor.of.Small.Lights.2023.1080p.BluRay.x264-EXAMPLE",
+    "indexer": "Example Indexer",
+    "size": 9876543210,
+    "customFormatScore": 0,
+    "customFormats": []
+  },
+  "isUpgrade": false,
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "FEDCBA9876543210FEDCBA9876543210FEDCBA98",
+  "customFormatInfo": {"customFormats": [], "customFormatScore": 0},
+  "eventType": "Download",
+  "instanceName": "Radarr",
+  "applicationUrl": ""
+}

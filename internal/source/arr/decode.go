@@ -28,6 +28,10 @@ func pickImage(images []image, cover string) string {
 	return ""
 }
 
+type episodeFile struct {
+	Quality string `json:"quality"`
+}
+
 type webhook struct {
 	EventType    string            `json:"eventType"`
 	IsUpgrade    bool              `json:"isUpgrade"`
@@ -49,10 +53,8 @@ type webhook struct {
 		Title         string `json:"title"`
 		AirDateUTC    string `json:"airDateUtc"`
 	} `json:"episodes"`
-	EpisodeFile *struct {
-		Quality string `json:"quality"`
-	} `json:"episodeFile"`
-	Movie *struct {
+	EpisodeFile *episodeFile `json:"episodeFile"`
+	Movie       *struct {
 		ID         int      `json:"id"`
 		Title      string   `json:"title"`
 		Year       int      `json:"year"`
@@ -76,15 +78,24 @@ type webhook struct {
 	} `json:"movieFile"`
 }
 
-// ParseWebhook decodes a webhook body. ok is false for events other than Download (Test, Grab,
-// Rename…), which callers acknowledge and ignore.
+// ParseWebhook decodes a webhook body: Sonarr v3/v4 On Import and v4 On Import Complete, Radarr
+// v4/v5 On Import. ok is false for events other than Download (Test, Grab, Rename…), which
+// callers acknowledge and ignore whatever the rest of their body holds.
+//
+// On Import Complete carries no isUpgrade or deletedFiles, so its upgrades can't be told apart.
 func ParseWebhook(source string, kind domain.Kind, body []byte) (imp domain.Import, ok bool, err error) {
-	var w webhook
-	if err := json.Unmarshal(body, &w); err != nil {
+	var event struct {
+		EventType string `json:"eventType"`
+	}
+	if err := json.Unmarshal(body, &event); err != nil {
 		return imp, false, fmt.Errorf("bad json: %w", err)
 	}
-	if w.EventType != EventDownload {
+	if event.EventType != EventDownload {
 		return imp, false, nil
+	}
+	var w webhook
+	if err := json.Unmarshal(body, &w); err != nil {
+		return imp, false, fmt.Errorf("%s: unexpected Download payload: %w", source, err)
 	}
 	imp = domain.Import{Source: source, Upgrade: w.IsUpgrade || len(w.DeletedFiles) > 0}
 	switch kind {
@@ -97,7 +108,7 @@ func ParseWebhook(source string, kind domain.Kind, body []byte) (imp domain.Impo
 			ID: s.ID, Title: s.Title, Year: s.Year, Path: s.Path, TVDBID: s.TVDBID,
 			IMDbID: s.IMDbID, Genres: s.Genres, Poster: pickImage(s.Images, "poster"), Fanart: pickImage(s.Images, "fanart"),
 		}
-		quality := ""
+		quality := "" // On Import Complete has episodeFiles instead: no quality, as in the oracle
 		if w.EpisodeFile != nil {
 			quality = w.EpisodeFile.Quality
 		}
@@ -250,10 +261,14 @@ func DecodeMovie(movieBody, creditsBody []byte) (*domain.MovieDetail, error) {
 	return d, nil
 }
 
+// parseTime reads an *arr timestamp, returned in UTC. One without a zone is read in the host's
+// local zone, as the oracle does. Zero: none.
 func parseTime(s string) time.Time {
-	t, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		return time.Time{}
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return t.UTC()
 	}
-	return t.UTC()
+	if t, err := time.ParseInLocation("2006-01-02T15:04:05", s, time.Local); err == nil {
+		return t.UTC()
+	}
+	return time.Time{}
 }

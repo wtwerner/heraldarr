@@ -1,0 +1,12 @@
+{
+  "movie": {"id": 402, "title": "The Cartographer's Winter", "year": 2024, "releaseDate": "2024-12-13", "folderPath": "/data/media/Movies 4K/The Cartographer's Winter (2024)", "tmdbId": 700402, "imdbId": "tt9000402", "overview": "Snowed in at a mountain archive, two rivals redraw a border.", "genres": ["Drama"], "images": [], "tags": []},
+  "remoteMovie": {"tmdbId": 700402, "imdbId": "tt9000402", "title": "The Cartographer's Winter", "year": 2024},
+  "release": {"quality": "Remux-2160p", "qualityVersion": 1, "releaseGroup": "EXAMPLE", "releaseTitle": "The.Cartographers.Winter.2024.2160p.UHD.BluRay.REMUX-EXAMPLE", "indexer": "Example Indexer", "size": 61200000000, "customFormatScore": 0, "customFormats": []},
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "00112233445566778899AABBCCDDEEFF00112233",
+  "customFormatInfo": {"customFormats": [], "customFormatScore": 0},
+  "eventType": "Grab",
+  "instanceName": "Radarr 4K",
+  "applicationUrl": ""
+}

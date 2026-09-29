@@ -1,0 +1,88 @@
+{
+  "series": {
+    "id": 302,
+    "title": "Lanterns Over Kettle Bay",
+    "titleSlug": "lanterns-over-kettle-bay",
+    "path": "/data/media/TV/Lanterns Over Kettle Bay",
+    "tvdbId": 900302,
+    "tvMazeId": 0,
+    "tmdbId": 800302,
+    "imdbId": "tt9000302",
+    "type": "standard",
+    "year": 2019,
+    "genres": ["Comedy"],
+    "images": [
+      {"coverType": "poster", "url": "/MediaCover/302/poster.jpg", "remoteUrl": "https://images.example.org/poster/kettle-bay.jpg"},
+      {"coverType": "fanart", "url": "/MediaCover/302/fanart.jpg", "remoteUrl": "https://images.example.org/fanart/kettle-bay.jpg"}
+    ],
+    "tags": [],
+    "originalLanguage": {"id": 1, "name": "English"}
+  },
+  "episodes": [
+    {"id": 3201, "episodeNumber": 1, "seasonNumber": 1, "title": "Low Tide", "overview": "", "airDate": "2019-09-05", "airDateUtc": "2019-09-06T01:00:00Z", "seriesId": 302, "tvdbId": 0},
+    {"id": 3202, "episodeNumber": 2, "seasonNumber": 1, "title": "The Ferry Strike", "overview": "", "airDate": "2019-09-12", "airDateUtc": "2019-09-13T01:00:00Z", "seriesId": 302, "tvdbId": 0},
+    {"id": 3203, "episodeNumber": 3, "seasonNumber": 1, "title": "Fog Horn (1)", "overview": "", "airDate": "2019-09-19", "airDateUtc": "2019-09-20T01:00:00Z", "seriesId": 302, "tvdbId": 0},
+    {"id": 3204, "episodeNumber": 4, "seasonNumber": 1, "title": "Fog Horn (2)", "overview": "", "airDate": "2019-09-19", "airDateUtc": "2019-09-20T01:30:00Z", "seriesId": 302, "tvdbId": 0}
+  ],
+  "episodeFiles": [
+    {
+      "id": 5201,
+      "relativePath": "Season 01/Lanterns Over Kettle Bay - S01E01 - Low Tide HDTV-720p.mkv",
+      "path": "/data/media/TV/Lanterns Over Kettle Bay/Season 01/Lanterns Over Kettle Bay - S01E01 - Low Tide HDTV-720p.mkv",
+      "quality": "HDTV-720p",
+      "qualityVersion": 1,
+      "releaseGroup": "EXAMPLE",
+      "sceneName": "",
+      "size": 812000000,
+      "dateAdded": "2025-04-10T18:02:11Z",
+      "languages": [{"id": 1, "name": "English"}],
+      "mediaInfo": {"audioChannels": 2, "audioCodec": "AAC", "audioLanguages": ["eng"], "height": 720, "width": 1280, "subtitles": [], "videoCodec": "x264", "videoDynamicRange": "", "videoDynamicRangeType": ""}
+    },
+    {
+      "id": 5202,
+      "relativePath": "Season 01/Lanterns Over Kettle Bay - S01E02 - The Ferry Strike WEBDL-1080p.mkv",
+      "path": "/data/media/TV/Lanterns Over Kettle Bay/Season 01/Lanterns Over Kettle Bay - S01E02 - The Ferry Strike WEBDL-1080p.mkv",
+      "quality": "WEBDL-1080p",
+      "qualityVersion": 1,
+      "releaseGroup": "EXAMPLE",
+      "sceneName": "",
+      "size": 1540000000,
+      "dateAdded": "2025-04-10T18:02:12Z",
+      "languages": [{"id": 1, "name": "English"}],
+      "mediaInfo": {"audioChannels": 5.1, "audioCodec": "EAC3", "audioLanguages": ["eng"], "height": 1080, "width": 1920, "subtitles": ["eng"], "videoCodec": "h264", "videoDynamicRange": "", "videoDynamicRangeType": ""}
+    },
+    {
+      "id": 5203,
+      "relativePath": "Season 01/Lanterns Over Kettle Bay - S01E03-E04 - Fog Horn WEBDL-1080p.mkv",
+      "path": "/data/media/TV/Lanterns Over Kettle Bay/Season 01/Lanterns Over Kettle Bay - S01E03-E04 - Fog Horn WEBDL-1080p.mkv",
+      "quality": "WEBDL-1080p",
+      "qualityVersion": 1,
+      "releaseGroup": "EXAMPLE",
+      "sceneName": "",
+      "size": 2980000000,
+      "dateAdded": "2025-04-10T18:02:13Z",
+      "languages": [{"id": 1, "name": "English"}],
+      "mediaInfo": {"audioChannels": 5.1, "audioCodec": "EAC3", "audioLanguages": ["eng"], "height": 1080, "width": 1920, "subtitles": ["eng"], "videoCodec": "h264", "videoDynamicRange": "", "videoDynamicRangeType": ""}
+    }
+  ],
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "89ABCDEF0123456789ABCDEF0123456789ABCDEF",
+  "release": {
+    "quality": "WEBDL-1080p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "releaseTitle": "Lanterns.Over.Kettle.Bay.S01.1080p.WEB.h264-EXAMPLE",
+    "indexer": "Example Indexer",
+    "size": 5332000000,
+    "customFormatScore": 0,
+    "customFormats": [],
+    "releaseType": "seasonPack"
+  },
+  "fileCount": 3,
+  "sourcePath": "/downloads/tv/Lanterns.Over.Kettle.Bay.S01.1080p.WEB.h264-EXAMPLE",
+  "destinationPath": "/data/media/TV/Lanterns Over Kettle Bay",
+  "eventType": "Download",
+  "instanceName": "Sonarr",
+  "applicationUrl": ""
+}

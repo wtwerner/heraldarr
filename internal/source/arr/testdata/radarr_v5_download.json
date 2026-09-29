@@ -1,0 +1,66 @@
+{
+  "movie": {
+    "id": 402,
+    "title": "The Cartographer's Winter",
+    "year": 2024,
+    "releaseDate": "2024-12-13",
+    "folderPath": "/data/media/Movies 4K/The Cartographer's Winter (2024)",
+    "tmdbId": 700402,
+    "imdbId": "tt9000402",
+    "overview": "Snowed in at a mountain archive, two rivals redraw a border.",
+    "genres": ["Drama", "History"],
+    "images": [
+      {"coverType": "poster", "url": "/MediaCover/402/poster.jpg", "remoteUrl": "https://images.example.org/poster/cartographers-winter.jpg"},
+      {"coverType": "fanart", "url": "/MediaCover/402/fanart.jpg", "remoteUrl": "https://images.example.org/fanart/cartographers-winter.jpg"}
+    ],
+    "tags": ["4k"]
+  },
+  "remoteMovie": {
+    "tmdbId": 700402,
+    "imdbId": "tt9000402",
+    "title": "The Cartographer's Winter",
+    "year": 2024
+  },
+  "movieFile": {
+    "id": 6402,
+    "relativePath": "The Cartographer's Winter (2024) Remux-2160p.mkv",
+    "path": "/data/media/Movies 4K/The Cartographer's Winter (2024)/The Cartographer's Winter (2024) Remux-2160p.mkv",
+    "quality": "Remux-2160p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "sceneName": "The.Cartographers.Winter.2024.2160p.UHD.BluRay.REMUX.DV.HDR10.TrueHD.7.1.Atmos-EXAMPLE",
+    "indexerFlags": "0",
+    "size": 61200000000,
+    "dateAdded": "2025-06-20T09:30:00.5Z",
+    "mediaInfo": {
+      "audioChannels": 7.1,
+      "audioCodec": "TrueHD Atmos",
+      "audioLanguages": ["eng"],
+      "height": 2160,
+      "width": 3840,
+      "subtitles": ["eng"],
+      "videoCodec": "HEVC",
+      "videoDynamicRange": "HDR",
+      "videoDynamicRangeType": "DV HDR10"
+    },
+    "sourcePath": "/downloads/movies/The.Cartographers.Winter.2024.2160p.UHD.BluRay.REMUX.DV.HDR10.TrueHD.7.1.Atmos-EXAMPLE/file.mkv"
+  },
+  "release": {
+    "quality": "Remux-2160p",
+    "qualityVersion": 1,
+    "releaseGroup": "EXAMPLE",
+    "releaseTitle": "The.Cartographers.Winter.2024.2160p.UHD.BluRay.REMUX.DV.HDR10.TrueHD.7.1.Atmos-EXAMPLE",
+    "indexer": "Example Indexer",
+    "size": 61200000000,
+    "customFormatScore": 0,
+    "customFormats": []
+  },
+  "isUpgrade": false,
+  "downloadClient": "Example Client",
+  "downloadClientType": "qBittorrent",
+  "downloadId": "00112233445566778899AABBCCDDEEFF00112233",
+  "customFormatInfo": {"customFormats": [], "customFormatScore": 0},
+  "eventType": "Download",
+  "instanceName": "Radarr 4K",
+  "applicationUrl": ""
+}
