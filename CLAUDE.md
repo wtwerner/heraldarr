@@ -10,7 +10,8 @@ upgrades and repeats suppressed, Components V2 cards with media-server deep link
    and call it out at the top of the PR: seam changes merge first and need the maintainer's review.
 2. Work test-first. Done = `make check` green (a Stop hook runs it) and your package's parity
    tests un-skipped (`implemented = true`) and passing.
-3. Open a PR: `Closes #N`, what changed, and every place the behavior differs from the oracle.
+3. Ship with `/ship`: PR, independent review until approved, CI, squash merge. It hands off to
+   the maintainer when a PR touches seams, the oracle, CI or agent config.
 
 ## Parity
 
