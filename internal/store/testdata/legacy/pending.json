@@ -1,0 +1,19 @@
+{
+ "sonarr:101": {
+  "source": "sonarr",
+  "subject": {"id": 101, "title": "Example Show", "year": 2024, "path": "/data/media/TV/Example Show", "tvdbId": 9001, "imdbId": "tt0000003", "genres": ["Drama"], "poster": "https://example.org/poster.jpg", "fanart": null},
+  "items": {
+   "sonarr:ep:503": {"season": 2, "number": 3, "title": "The Third", "aired": "2026-09-27T01:00:00Z", "quality": "WEBDL-1080p"},
+   "sonarr:ep:504": {"season": 2, "number": 4, "title": null, "aired": null, "quality": null}
+  },
+  "first": 1782000000.5, "last": 1782000060, "fast": true, "plex_checks": 1, "tries": 0, "not_before": 1782000240
+ },
+ "radarr:movies": {
+  "source": "radarr",
+  "subject": null,
+  "items": {
+   "radarr:movie:78": {"id": 78, "title": "Another Movie", "year": 2025, "path": "/data/media/Movies/Another Movie (2025)", "tmdbId": 4242, "imdbId": null, "genres": [], "overview": "A fictional film.", "poster": null, "fanart": null, "quality": "Bluray-2160p", "size": 1099511627776, "group": "EXAMPLE", "hdr": "DV HDR10", "audio": "TrueHD Atmos", "channels": 7.1}
+  },
+  "first": 1782000100, "last": 1782000100, "fast": false, "plex_checks": 0, "tries": 2, "not_before": 0
+ }
+}

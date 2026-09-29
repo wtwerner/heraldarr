@@ -1,0 +1,2 @@
+{"at": "2026-09-27T20:15:00", "source": "sonarr", "title": "Example Show", "headline": "2 new episodes", "items": 2, "fast": true}
+{"at": "2026-09-28T09:00:05", "source": "radarr", "title": "Example Movie (2025)", "headline": "New movie", "items": 1, "fast": null}
