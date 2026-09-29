@@ -1,0 +1,361 @@
+{
+  "add_results": [
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1",
+    "sonarr Lamplight Relay: +1"
+  ],
+  "pending": {
+    "sonarr:108": {
+      "fast": false,
+      "first": 1781524800.0,
+      "items": {
+        "sonarr:ep:8101": {
+          "aired": "2021-03-10T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Relay 1-1"
+        },
+        "sonarr:ep:8102": {
+          "aired": "2021-03-17T12:00:00Z",
+          "number": 2,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Relay 1-2"
+        },
+        "sonarr:ep:8103": {
+          "aired": "2021-03-24T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Relay 1-3"
+        },
+        "sonarr:ep:8104": {
+          "aired": "2021-03-31T12:00:00Z",
+          "number": 4,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Relay 1-4"
+        },
+        "sonarr:ep:8105": {
+          "aired": "2021-04-07T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 1,
+          "title": "Relay 1-5"
+        },
+        "sonarr:ep:8201": {
+          "aired": "2021-05-19T12:00:00Z",
+          "number": 1,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Relay 2-1"
+        },
+        "sonarr:ep:8202": {
+          "aired": "2021-05-26T12:00:00Z",
+          "number": 2,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Relay 2-2"
+        },
+        "sonarr:ep:8203": {
+          "aired": "2021-06-02T12:00:00Z",
+          "number": 3,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Relay 2-3"
+        },
+        "sonarr:ep:8204": {
+          "aired": "2021-06-09T12:00:00Z",
+          "number": 4,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Relay 2-4"
+        },
+        "sonarr:ep:8205": {
+          "aired": "2021-06-16T12:00:00Z",
+          "number": 5,
+          "quality": "WEBDL-1080p",
+          "season": 2,
+          "title": "Relay 2-5"
+        }
+      },
+      "last": 1781524800.0,
+      "not_before": 0,
+      "plex_checks": 0,
+      "source": "sonarr",
+      "subject": {
+        "fanart": "https://images.example.org/fanart/lamplight-relay.jpg",
+        "genres": [
+          "Drama"
+        ],
+        "id": 108,
+        "imdbId": "tt9900108",
+        "path": "/data/media/TV/Lamplight Relay (2018)",
+        "poster": "https://images.example.org/poster/lamplight-relay.jpg",
+        "title": "Lamplight Relay",
+        "tvdbId": 900108,
+        "year": 2018
+      },
+      "tries": 0
+    }
+  },
+  "posts": [
+    {
+      "card": {
+        "buttons": [
+          [
+            "Open in Plex",
+            "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801",
+            "▶️"
+          ],
+          [
+            "IMDb",
+            "https://www.imdb.com/title/tt9900108/",
+            "🎬"
+          ],
+          [
+            "Rotten Tomatoes",
+            "https://www.rottentomatoes.com/search?search=Lamplight+Relay",
+            "🍅"
+          ]
+        ],
+        "color": 15048717,
+        "facts": [
+          [
+            "Network",
+            "Example Network"
+          ],
+          [
+            "Genres",
+            "Drama"
+          ],
+          [
+            "Status",
+            "Ended 2022"
+          ]
+        ],
+        "footer": "Example Server · 1080p WEB",
+        "gallery": [
+          "https://images.example.org/fanart/lamplight-relay.jpg"
+        ],
+        "headline": "New series",
+        "lines": [
+          "**Seasons 1–2** · all 10 episodes"
+        ],
+        "overview": "Night-shift signal operators.",
+        "poster": "https://images.example.org/poster/lamplight-relay.jpg",
+        "title": "Lamplight Relay (2018)",
+        "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801"
+      },
+      "embed": {
+        "components": [
+          {
+            "components": [
+              {
+                "emoji": {
+                  "name": "▶️"
+                },
+                "label": "Open in Plex",
+                "style": 5,
+                "type": 2,
+                "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801"
+              },
+              {
+                "emoji": {
+                  "name": "🎬"
+                },
+                "label": "IMDb",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.imdb.com/title/tt9900108/"
+              },
+              {
+                "emoji": {
+                  "name": "🍅"
+                },
+                "label": "Rotten Tomatoes",
+                "style": 5,
+                "type": 2,
+                "url": "https://www.rottentomatoes.com/search?search=Lamplight+Relay"
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> Night-shift signal operators.\n\n**Seasons 1–2** · all 10 episodes",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Example Network"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama"
+              },
+              {
+                "inline": true,
+                "name": "Status",
+                "value": "Ended 2022"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Lamplight Relay (2018)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801"
+          }
+        ]
+      },
+      "embed_inline": {
+        "components": [],
+        "embeds": [
+          {
+            "author": {
+              "name": "New series"
+            },
+            "color": 15048717,
+            "description": "> Night-shift signal operators.\n\n**Seasons 1–2** · all 10 episodes\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801) · [IMDb](https://www.imdb.com/title/tt9900108/) · [Rotten Tomatoes](https://www.rottentomatoes.com/search?search=Lamplight+Relay)",
+            "fields": [
+              {
+                "inline": true,
+                "name": "Network",
+                "value": "Example Network"
+              },
+              {
+                "inline": true,
+                "name": "Genres",
+                "value": "Drama"
+              },
+              {
+                "inline": true,
+                "name": "Status",
+                "value": "Ended 2022"
+              }
+            ],
+            "footer": {
+              "text": "Example Server · 1080p WEB"
+            },
+            "image": {
+              "url": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            "thumbnail": {
+              "url": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            "timestamp": "2026-06-15T12:00:00+00:00",
+            "title": "Lamplight Relay (2018)",
+            "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801"
+          }
+        ]
+      },
+      "source": "sonarr",
+      "v2": {
+        "components": [
+          {
+            "accent_color": 15048717,
+            "components": [
+              {
+                "accessory": {
+                  "media": {
+                    "url": "https://images.example.org/poster/lamplight-relay.jpg"
+                  },
+                  "type": 11
+                },
+                "components": [
+                  {
+                    "content": "-# New series\n## [Lamplight Relay (2018)](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801)\nNight-shift signal operators.",
+                    "type": 10
+                  }
+                ],
+                "type": 9
+              },
+              {
+                "divider": true,
+                "spacing": 1,
+                "type": 14
+              },
+              {
+                "content": "**Seasons 1–2** · all 10 episodes",
+                "type": 10
+              },
+              {
+                "content": "Example Network · Drama · Ended 2022",
+                "type": 10
+              },
+              {
+                "items": [
+                  {
+                    "media": {
+                      "url": "https://images.example.org/fanart/lamplight-relay.jpg"
+                    }
+                  }
+                ],
+                "type": 12
+              },
+              {
+                "content": "-# Example Server · 1080p WEB",
+                "type": 10
+              },
+              {
+                "components": [
+                  {
+                    "emoji": {
+                      "name": "▶️"
+                    },
+                    "label": "Open in Plex",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F5801"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🎬"
+                    },
+                    "label": "IMDb",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.imdb.com/title/tt9900108/"
+                  },
+                  {
+                    "emoji": {
+                      "name": "🍅"
+                    },
+                    "label": "Rotten Tomatoes",
+                    "style": 5,
+                    "type": 2,
+                    "url": "https://www.rottentomatoes.com/search?search=Lamplight+Relay"
+                  }
+                ],
+                "type": 1
+              }
+            ],
+            "type": 17
+          }
+        ],
+        "flags": 32768
+      }
+    }
+  ]
+}

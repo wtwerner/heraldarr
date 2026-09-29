@@ -1,0 +1,748 @@
+{
+  "description": "Two whole seasons arrive, but Sonarr's stats still count 4 of season 2's 5 files: the season 2 line isn't 'complete', yet the whole-seasons line still replaces both.",
+  "now": "2026-06-15T12:00:00Z",
+  "plex_server": {
+    "id": "0123456789abcdef0123456789abcdef01234567",
+    "name": "Example Server"
+  },
+  "posted": [],
+  "events": [
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8101,
+            "episodeNumber": 1,
+            "seasonNumber": 1,
+            "title": "Relay 1-1",
+            "overview": "An episode.",
+            "airDate": "2021-03-10",
+            "airDateUtc": "2021-03-10T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008101
+          }
+        ],
+        "episodeFile": {
+          "id": 78101,
+          "relativePath": "Season 01/Lamplight Relay - S01E01.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 01/Lamplight Relay - S01E01.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8101"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8102,
+            "episodeNumber": 2,
+            "seasonNumber": 1,
+            "title": "Relay 1-2",
+            "overview": "An episode.",
+            "airDate": "2021-03-17",
+            "airDateUtc": "2021-03-17T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008102
+          }
+        ],
+        "episodeFile": {
+          "id": 78102,
+          "relativePath": "Season 01/Lamplight Relay - S01E02.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 01/Lamplight Relay - S01E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8102"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8103,
+            "episodeNumber": 3,
+            "seasonNumber": 1,
+            "title": "Relay 1-3",
+            "overview": "An episode.",
+            "airDate": "2021-03-24",
+            "airDateUtc": "2021-03-24T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008103
+          }
+        ],
+        "episodeFile": {
+          "id": 78103,
+          "relativePath": "Season 01/Lamplight Relay - S01E03.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 01/Lamplight Relay - S01E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8103"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8104,
+            "episodeNumber": 4,
+            "seasonNumber": 1,
+            "title": "Relay 1-4",
+            "overview": "An episode.",
+            "airDate": "2021-03-31",
+            "airDateUtc": "2021-03-31T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008104
+          }
+        ],
+        "episodeFile": {
+          "id": 78104,
+          "relativePath": "Season 01/Lamplight Relay - S01E04.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 01/Lamplight Relay - S01E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8104"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8105,
+            "episodeNumber": 5,
+            "seasonNumber": 1,
+            "title": "Relay 1-5",
+            "overview": "An episode.",
+            "airDate": "2021-04-07",
+            "airDateUtc": "2021-04-07T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008105
+          }
+        ],
+        "episodeFile": {
+          "id": 78105,
+          "relativePath": "Season 01/Lamplight Relay - S01E05.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 01/Lamplight Relay - S01E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8105"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8201,
+            "episodeNumber": 1,
+            "seasonNumber": 2,
+            "title": "Relay 2-1",
+            "overview": "An episode.",
+            "airDate": "2021-05-19",
+            "airDateUtc": "2021-05-19T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008201
+          }
+        ],
+        "episodeFile": {
+          "id": 78201,
+          "relativePath": "Season 02/Lamplight Relay - S02E01.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 02/Lamplight Relay - S02E01.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8201"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8202,
+            "episodeNumber": 2,
+            "seasonNumber": 2,
+            "title": "Relay 2-2",
+            "overview": "An episode.",
+            "airDate": "2021-05-26",
+            "airDateUtc": "2021-05-26T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008202
+          }
+        ],
+        "episodeFile": {
+          "id": 78202,
+          "relativePath": "Season 02/Lamplight Relay - S02E02.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 02/Lamplight Relay - S02E02.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8202"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8203,
+            "episodeNumber": 3,
+            "seasonNumber": 2,
+            "title": "Relay 2-3",
+            "overview": "An episode.",
+            "airDate": "2021-06-02",
+            "airDateUtc": "2021-06-02T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008203
+          }
+        ],
+        "episodeFile": {
+          "id": 78203,
+          "relativePath": "Season 02/Lamplight Relay - S02E03.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 02/Lamplight Relay - S02E03.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8203"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8204,
+            "episodeNumber": 4,
+            "seasonNumber": 2,
+            "title": "Relay 2-4",
+            "overview": "An episode.",
+            "airDate": "2021-06-09",
+            "airDateUtc": "2021-06-09T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008204
+          }
+        ],
+        "episodeFile": {
+          "id": 78204,
+          "relativePath": "Season 02/Lamplight Relay - S02E04.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 02/Lamplight Relay - S02E04.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8204"
+      }
+    },
+    {
+      "source": "sonarr",
+      "payload": {
+        "eventType": "Download",
+        "instanceName": "Sonarr",
+        "applicationUrl": "",
+        "series": {
+          "id": 108,
+          "title": "Lamplight Relay",
+          "titleSlug": "lamplight-relay",
+          "path": "/data/media/TV/Lamplight Relay (2018)",
+          "tvdbId": 900108,
+          "tvMazeId": 0,
+          "tmdbId": 0,
+          "imdbId": "tt9900108",
+          "type": "standard",
+          "year": 2018,
+          "genres": [
+            "Drama"
+          ],
+          "images": [
+            {
+              "coverType": "poster",
+              "url": "/MediaCover/lamplight-relay/poster.jpg",
+              "remoteUrl": "https://images.example.org/poster/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "fanart",
+              "url": "/MediaCover/lamplight-relay/fanart.jpg",
+              "remoteUrl": "https://images.example.org/fanart/lamplight-relay.jpg"
+            },
+            {
+              "coverType": "banner",
+              "url": "/MediaCover/lamplight-relay/banner.jpg",
+              "remoteUrl": "https://images.example.org/banner/lamplight-relay.jpg"
+            }
+          ],
+          "tags": []
+        },
+        "episodes": [
+          {
+            "id": 8205,
+            "episodeNumber": 5,
+            "seasonNumber": 2,
+            "title": "Relay 2-5",
+            "overview": "An episode.",
+            "airDate": "2021-06-16",
+            "airDateUtc": "2021-06-16T12:00:00Z",
+            "seriesId": 108,
+            "tvdbId": 5008205
+          }
+        ],
+        "episodeFile": {
+          "id": 78205,
+          "relativePath": "Season 02/Lamplight Relay - S02E05.mkv",
+          "path": "/data/media/TV/Lamplight Relay (2018)/Season 02/Lamplight Relay - S02E05.mkv",
+          "quality": "WEBDL-1080p",
+          "qualityVersion": 1,
+          "releaseGroup": "EXAMPLE",
+          "sceneName": "Example.Release",
+          "size": 1500000000,
+          "dateAdded": "2026-06-15T12:00:00Z"
+        },
+        "isUpgrade": false,
+        "downloadClient": "qBittorrent",
+        "downloadClientType": "qBittorrent",
+        "downloadId": "HASH8205"
+      }
+    }
+  ],
+  "arr": {
+    "series/108": {
+      "id": 108,
+      "title": "Lamplight Relay",
+      "year": 2018,
+      "network": "Example Network",
+      "status": "ended",
+      "overview": "Night-shift signal operators.",
+      "certification": null,
+      "ratings": {
+        "votes": 100,
+        "value": 0
+      },
+      "statistics": {
+        "episodeFileCount": 9
+      },
+      "seasons": [
+        {
+          "seasonNumber": 1,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 5,
+            "totalEpisodeCount": 5,
+            "episodeCount": 5
+          }
+        },
+        {
+          "seasonNumber": 2,
+          "monitored": true,
+          "statistics": {
+            "episodeFileCount": 4,
+            "totalEpisodeCount": 5,
+            "episodeCount": 5
+          }
+        }
+      ],
+      "lastAired": "2022-05-07T12:00:00Z"
+    }
+  },
+  "plex": {
+    "tvdb://900108": {
+      "ratingKey": "5801",
+      "type": "show"
+    }
+  },
+  "plex_seasons": {},
+  "rt": {}
+}
