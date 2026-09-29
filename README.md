@@ -38,9 +38,13 @@ API key of each Sonarr/Radarr (Settings → General → Security).
 
 ```bash
 mkdir -p heraldarr/config/secrets && cd heraldarr
-curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/wtwerner/heraldarr/main/docker-compose.example.yml
-curl -fsSLo config/config.yaml https://raw.githubusercontent.com/wtwerner/heraldarr/main/config.example.yaml
+base=https://raw.githubusercontent.com/wtwerner/heraldarr/main
+curl -fsSLo docker-compose.yml "$base/docker-compose.example.yml"
+curl -fsSLo config/config.yaml "$base/config.example.yaml"
 ```
+
+In `docker-compose.yml`, set `user:` to your own IDs (`echo "$(id -u):$(id -g)"`), so heraldarr can
+read the secrets you write next and create `config/data/`.
 
 **2. Write the secrets, one per file.** The names match the `{file: …}` entries in
 `config.yaml`.
@@ -51,21 +55,30 @@ echo 'SONARR-API-KEY'  > config/secrets/sonarr_api_key
 echo 'RADARR-API-KEY'  > config/secrets/radarr_api_key
 echo 'https://discord.com/api/webhooks/…' > config/secrets/discord_tv
 echo 'https://discord.com/api/webhooks/…' > config/secrets/discord_movies
+echo 'PLEX-TOKEN'      > config/secrets/plex_token      # with Plex only, see below
+chmod 600 config/secrets/*
 ```
 
-**3. Edit `config/config.yaml`.** Set each source's `url` to where heraldarr can reach it. No Plex?
-Delete the `media_server` block: cards post without the "Open in Plex" button. Then check it:
+The Plex token is your server's `X-Plex-Token`: Plex's support article "Finding an authentication
+token" shows where to copy it, or point `preferences_xml` at Plex's `Preferences.xml` instead.
+
+**3. Edit `config/config.yaml`.** Set each source's `url` to where heraldarr can reach it.
+
+- With Plex: set `media_server.url`, and `path_map` so that a file path as Sonarr/Radarr see it
+  becomes the path Plex sees (`/data/media/` → `/media/` in the example). The "Open in Plex"
+  button needs both.
+- No Plex: delete the `media_server` block. Cards post without the "Open in Plex" button.
+
+Then check it:
 
 ```bash
 docker compose run --rm heraldarr validate
 # /config/config.yaml: ok (2 sources, 2 destinations, 2 routes)
 ```
 
-**4. Start it.** The image runs as uid 65532, which must be able to write `config/data/` (or set
-`user:` in `docker-compose.yml`, see its comments).
+**4. Start it.**
 
 ```bash
-sudo chown -R 65532:65532 config
 docker compose up -d
 docker compose logs heraldarr     # "heraldarr listening" with your sources
 ```
@@ -83,15 +96,17 @@ and posts nothing for it. A 401 means the username or password is wrong, a 404 t
 the URL.
 
 **7. The first card.** The next import is posted once its series has been quiet for 5 minutes
-(30 for back catalog; 5 for movies). To post what is waiting now:
+(30 for back catalog; 5 for movies). With Plex, heraldarr then waits for Plex to have the item so
+the button works: up to 4 checks, 3 minutes apart, before it posts without the button. To post
+what is waiting now:
 
 ```bash
 docker compose exec heraldarr /heraldarr flush
 ```
 
 To see a card without waiting for a download, add a destination named `private` with
-`public: false` (a test channel's webhook) and preview something already in your library, by its Sonarr/Radarr ID (the `id` field of
-`/api/v3/series` or `/api/v3/movie`):
+`public: false` (a test channel's webhook) and preview something already in your library, by its
+Sonarr/Radarr ID (the `id` field of `/api/v3/series` or `/api/v3/movie`):
 
 ```bash
 docker compose exec heraldarr /heraldarr preview radarr 12 -to private
@@ -105,10 +120,12 @@ Secrets can be inline, read from a file (`{file: …}`, recommended) or read fro
 
 | Command | |
 |---|---|
+| `heraldarr serve` | run the webhook receiver and poster (the image's default) |
 | `heraldarr validate` | check the configuration |
 | `heraldarr preview radarr 12,34 -to private` | render items already on disk as new and post them to a non-public destination (without `-to`: print the JSON) |
 | `heraldarr preview sonarr 7 S02` | same for a series, a season or `S02E05,S02E06` |
-| `heraldarr flush` | post everything pending now |
+| `heraldarr flush` | post everything pending now (asks the running server) |
+| `heraldarr health` | exit 0 if the running server is healthy (the image's health check) |
 | `heraldarr import-legacy DIR` | import state from the Python predecessor's `data/` folder (`posted.json`, `rt_cache.json`, `history.jsonl`); stop the server first |
 | `heraldarr version` | print the version |
 

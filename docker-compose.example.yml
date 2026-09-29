@@ -8,16 +8,16 @@
 # Secrets stay in files that config.yaml points at ({file: /config/secrets/<name>}), so they never
 # appear in this file, in `docker inspect` or in the environment.
 #
-# The image runs as uid:gid 65532:65532 (distroless "nonroot") and must be able to write
-# config/data/. Either `sudo chown -R 65532:65532 config`, or uncomment `user:` and set it to the
-# owner of config/ (`id -u`:`id -g`; 99:100 on Unraid).
+# heraldarr runs as `user:`, which must be able to read config/ and write config/data/. Set it to
+# the owner of config/: `echo "$(id -u):$(id -g)"` (99:100 on Unraid). Without it the image runs as
+# 65532:65532 (distroless "nonroot"), and config/ would have to belong to that user.
 
 services:
   heraldarr:
     image: ghcr.io/wtwerner/heraldarr:latest
     container_name: heraldarr
     restart: unless-stopped
-    # user: "1000:1000"
+    user: "1000:1000"
     volumes:
       - ./config:/config
     ports:
