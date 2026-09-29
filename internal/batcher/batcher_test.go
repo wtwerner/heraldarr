@@ -196,3 +196,23 @@ func TestWaitingAndFailed(t *testing.T) {
 		}
 	}
 }
+
+// Aborted releases the batch unchanged: not a try, sent keys recorded, due again right away.
+func TestAborted(t *testing.T) {
+	b, clock, store, sc, _ := setup(t, "movie_three")
+	ctx := context.Background()
+	addAll(t, b, sc)
+	clock.Advance(5 * time.Minute)
+	due, _ := b.Due(ctx, false)
+	keys := due[0].Keys()
+	if err := b.Done(ctx, due[0].Key, keys[:1], batcher.Aborted); err != nil {
+		t.Fatal(err)
+	}
+	again, _ := b.Due(ctx, false)
+	if len(again) != 1 || again[0].Tries != 0 || again[0].Len() != len(keys)-1 {
+		t.Fatalf("after Aborted: %+v", again)
+	}
+	if p, _ := store.PostedSince(ctx, keys[:1], sc.Now); !p[keys[0]] {
+		t.Error("sent key not recorded")
+	}
+}

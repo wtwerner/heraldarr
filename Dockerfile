@@ -12,5 +12,6 @@ FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/heraldarr /heraldarr
 VOLUME /config
 EXPOSE 8790
+HEALTHCHECK --interval=1m --timeout=10s CMD ["/heraldarr", "health"]
 ENTRYPOINT ["/heraldarr"]
 CMD ["serve"]

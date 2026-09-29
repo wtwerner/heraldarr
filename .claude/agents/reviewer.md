@@ -32,6 +32,10 @@ Verify before you claim: run `git fetch origin && git diff origin/main...origin/
 when a finding depends on behavior, `go test ./<pkg>/... -run <Test>` in a scratch checkout
 (`git worktree add /tmp/review-<n> origin/<branch>`, removed afterwards).
 
+Mutation-check the claims: for each behavior the PR or its tests say they guarantee, break it in
+the scratch checkout (flip an outcome, drop a call) and run the tests. A mutation that survives is
+a **major**: the behavior is stated but unpinned. Report the table of mutations and results.
+
 ## Verdict
 
 End with exactly one line, the first word machine-readable:
