@@ -151,7 +151,8 @@ func serve(cfg *config.Config, log *slog.Logger) error {
 		stop() // the listener failed: stop the flush loop too
 	case <-ctx.Done():
 		log.Info("shutting down")
-		shut, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		// Longer than an *arr lookup (20 s) a webhook may be waiting on.
+		shut, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		err = srv.Shutdown(shut)
 	}

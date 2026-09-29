@@ -91,10 +91,10 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 			continue
 		}
 		// Recorded per card, so a crash mid-batch doesn't post the earlier cards again.
-		if err := a.Store.MarkPosted(ctx, c.keys, a.Clock.Now()); err != nil {
+		if err := a.Store.MarkPosted(context.WithoutCancel(ctx), c.keys, a.Clock.Now()); err != nil {
 			a.Log.Warn("recording posted items", "err", err)
 		}
-		if err := a.Store.AppendHistory(ctx, domain.HistoryEntry{
+		if err := a.Store.AppendHistory(context.WithoutCancel(ctx), domain.HistoryEntry{
 			At: a.Clock.Now(), Source: b.Source,
 			Destination: dest.Name, Title: c.card.Title, Headline: c.card.Headline,
 			Items: len(c.keys), Following: b.Following, MessageID: res.MessageID,

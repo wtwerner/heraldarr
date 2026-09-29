@@ -77,8 +77,23 @@ type env struct {
 	clock *testkit.Clock
 	out   *capture
 	media *media
+	store *recordingStore
 	sc    *testkit.Scenario
 	exp   *testkit.Expected
+}
+
+// recordingStore is the real SQLite store, keeping a copy of the history it's asked to write.
+type recordingStore struct {
+	domain.Store
+	mu      sync.Mutex
+	history []domain.HistoryEntry
+}
+
+func (r *recordingStore) AppendHistory(ctx context.Context, e domain.HistoryEntry) error {
+	r.mu.Lock()
+	r.history = append(r.history, e)
+	r.mu.Unlock()
+	return r.Store.AppendHistory(ctx, e)
 }
 
 // media wraps the scenario's media server: it records scan requests and can be made to fail.
@@ -115,7 +130,7 @@ func newEnv(t *testing.T, name string, withMedia bool) *env {
 	if err := st.MarkPosted(ctx, sc.Posted, sc.Now); err != nil {
 		t.Fatal(err)
 	}
-	clock, out := testkit.NewClock(sc.Now), &capture{}
+	clock, out, rec := testkit.NewClock(sc.Now), &capture{}, &recordingStore{Store: st}
 	sources := map[string]app.Source{}
 	for n, s := range testkit.Sources {
 		sources[n] = app.Source{
@@ -124,7 +139,7 @@ func newEnv(t *testing.T, name string, withMedia bool) *env {
 		}
 	}
 	d := app.Deps{
-		Clock: clock, Store: st, Notifier: out, RT: rt(testkit.RottenTomatoes(sc)), Sources: sources,
+		Clock: clock, Store: rec, Notifier: out, RT: rt(testkit.RottenTomatoes(sc)), Sources: sources,
 		Timing: timing, DigestFrom: 4, WaitChecks: 4, Auth: &app.BasicAuth{Username: "u", Password: "p"},
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
@@ -134,7 +149,7 @@ func newEnv(t *testing.T, name string, withMedia bool) *env {
 		d.Media = m
 	}
 	a := app.New(d)
-	return &env{app: a, srv: a.Handler(), clock: clock, out: out, media: m, sc: sc, exp: exp}
+	return &env{app: a, srv: a.Handler(), clock: clock, out: out, media: m, store: rec, sc: sc, exp: exp}
 }
 
 func (e *env) send(t *testing.T) {
@@ -327,8 +342,9 @@ func TestShutdownMidDelivery(t *testing.T) {
 	if len(e.out.posts) != 1 {
 		t.Fatalf("got %d posts before the shutdown, want 1", len(e.out.posts))
 	}
+	assertUntouched(t, e, "radarr:movies", 2)
 	e.out.after = nil
-	e.app.Flush(context.Background(), true)
+	e.app.Flush(context.Background(), true) // restart (forced: one movie isn't in the library)
 	if len(e.out.posts) != 3 {
 		t.Fatalf("got %d posts in total, want 3 (the first not repeated)", len(e.out.posts))
 	}
@@ -340,10 +356,96 @@ func TestShutdownMidDelivery(t *testing.T) {
 	if len(titles) != 3 {
 		t.Error("a card was posted twice")
 	}
+}
+
+// assertUntouched: the stored batch holds want items and carries no failed try or retry delay.
+func assertUntouched(t *testing.T, e *env, key string, want int) {
+	t.Helper()
+	pending, err := e.app.Store.LoadBatches(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	b := pending[key]
+	switch {
+	case b == nil:
+		t.Fatalf("batch %s is gone", key)
+	case b.Len() != want:
+		t.Errorf("batch %s holds %d items, want %d", key, b.Len(), want)
+	case b.Tries != 0 || !b.NotBefore.IsZero():
+		t.Errorf("shutdown counted as a failed try: tries=%d notBefore=%s", b.Tries, b.NotBefore)
+	}
+}
+
+// Each card is recorded as posted as soon as it goes out, so a crash mid-batch can't repost it.
+func TestLedgerPerCard(t *testing.T) {
+	e := newEnv(t, "movie_three", true)
+	e.send(t)
+	checked := false
+	e.out.after = func(n int) {
+		if n != 2 {
+			return
+		}
+		// Runs during the second post: the first must already be in the ledger.
+		first := domain.MovieKey("radarr", 202)
+		p, err := e.app.Store.PostedSince(context.Background(), []domain.ItemKey{first}, time.Time{})
+		if err == nil {
+			checked = true
+		}
+		if !p[first] {
+			t.Error("first card not in the posted ledger before the second went out")
+		}
+	}
+	e.app.Flush(context.Background(), true)
+	if !checked || len(e.out.posts) != 3 {
+		t.Fatalf("checked=%v posts=%d", checked, len(e.out.posts))
+	}
+}
+
+// A batch whose source was removed from the config is a failed try, and never recorded as posted.
+func TestUnconfiguredSource(t *testing.T) {
+	e := newEnv(t, "movie_single", true)
+	e.send(t)
+	delete(e.app.Sources, "radarr")
+	e.app.Flush(context.Background(), true)
+	if len(e.out.posts) != 0 {
+		t.Fatalf("posted %d cards for an unconfigured source", len(e.out.posts))
+	}
 	pending, _ := e.app.Store.LoadBatches(context.Background())
-	for _, b := range pending {
-		if b.Tries != 0 {
-			t.Errorf("shutdown counted as a failed try: %+v", b)
+	if b := pending["radarr:movies"]; b == nil || b.Tries != 1 {
+		t.Fatalf("want the batch kept with one failed try, got %+v", b)
+	}
+	key := domain.MovieKey("radarr", 201)
+	if p, _ := e.app.Store.PostedSince(context.Background(), []domain.ItemKey{key}, time.Time{}); p[key] {
+		t.Error("recorded as posted")
+	}
+}
+
+// As in the reference, a series lookup failing for any reason but "deleted" is a failed try.
+func TestSeriesLookupFailureRetries(t *testing.T) {
+	e := newEnv(t, "tv_weekly_episode", true)
+	e.send(t)
+	delete(e.sc.Arr, "series/102") // the fake now answers "unreachable"
+	e.app.Flush(context.Background(), true)
+	if len(e.out.posts) != 0 {
+		t.Fatal("posted although the series lookup failed")
+	}
+	pending, _ := e.app.Store.LoadBatches(context.Background())
+	if b := pending["sonarr:102"]; b == nil || b.Tries != 1 {
+		t.Fatalf("want a failed try, got %+v", b)
+	}
+}
+
+// Every post is written to the history with its message ID.
+func TestHistory(t *testing.T) {
+	e := newEnv(t, "movie_three", true)
+	e.send(t)
+	e.app.Flush(context.Background(), true)
+	if len(e.store.history) != 3 {
+		t.Fatalf("history has %d entries, want 3", len(e.store.history))
+	}
+	for _, h := range e.store.history {
+		if h.MessageID == "" || h.Source != "radarr" || h.Destination != "radarr-dest" || h.Items != 1 {
+			t.Errorf("history entry %+v", h)
 		}
 	}
 }
@@ -360,8 +462,10 @@ func TestShutdownReleasesOtherBatches(t *testing.T) {
 	if len(e.out.posts) != 1 {
 		t.Fatalf("got %d posts before the shutdown, want 1", len(e.out.posts))
 	}
+	assertUntouched(t, e, "radarr:movies", 1) // batches go out in key order: radarr4k first
 	e.out.after = nil
-	e.app.Flush(context.Background(), true)
+	e.clock.Advance(timing.QuietMovies)
+	e.app.Flush(context.Background(), false)
 	if len(e.out.posts) != 2 || e.out.posts[1].dest.Name == e.out.posts[0].dest.Name {
 		t.Fatalf("the released batch didn't go out on the next flush: %d posts", len(e.out.posts))
 	}

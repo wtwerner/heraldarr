@@ -26,6 +26,8 @@ which needs the reference implementation (maintainer's machine). Need a new scen
 ## Conventions
 
 - Time comes from `domain.Clock`; logic packages read no wall clock.
+- A test for a stated behavior must go red when that behavior breaks: mutate the code, watch the
+  test fail, restore. A test that can't fail proves nothing.
 - Wrap errors with `%w`; a deleted item is `domain.ErrNotFound`. Log with `log/slog`.
 - A new module dependency gets one line in the PR saying why the stdlib isn't enough.
 - Test data is fictional: invented titles, `example.org` URLs, placeholder IDs.

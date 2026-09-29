@@ -112,7 +112,7 @@ func (a *App) Flush(ctx context.Context, force bool) {
 			return
 		}
 		if err != nil {
-			a.Log.Warn("delivery failed, will retry", "batch", batchName(b), "err", err, "tries", b.Tries+1)
+			a.Log.Warn("delivery failed", "batch", batchName(b), "err", err, "try", b.Tries+1)
 		}
 		a.done(ctx, b, sent, outcome)
 	}
