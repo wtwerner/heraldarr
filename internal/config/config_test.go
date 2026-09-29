@@ -100,8 +100,13 @@ func TestPublicURL(t *testing.T) {
 		{"http://user:pw@example.org", "must not contain a username or password"},
 		{"http://example.org/?a=1", "query or fragment"},
 		{"http://exa mple.org", "invalid character"},
+		{"http://user:pw-in-url@exa mple.org", "not a valid URL"},
+		{"user:pw-in-url@example.org", "must start with http:// or https://"},
 	} {
 		cfg, err := Parse([]byte("server: {public_url: \"" + tc.url + "\"}\n" + minimal))
+		if err != nil && strings.Contains(err.Error(), "pw-in-url") {
+			t.Errorf("%s: the error reveals the password: %v", tc.url, err)
+		}
 		switch {
 		case tc.want == "" && err != nil:
 			t.Errorf("%s: %v", tc.url, err)

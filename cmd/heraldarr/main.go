@@ -110,7 +110,9 @@ func run(args []string) error {
 		if len(pos) != 0 {
 			return errors.New("setup [-name NAME] [-dry-run]")
 		}
-		return setup.Run(context.Background(), cfg, setup.Options{
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		return setup.Run(ctx, cfg, setup.Options{
 			Name: *name, DryRun: *dryRun, UserAgent: "heraldarr/" + version,
 		}, os.Stdout)
 	case "import-legacy":

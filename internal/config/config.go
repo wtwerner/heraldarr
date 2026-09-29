@@ -253,21 +253,25 @@ func (c *Config) RouteFor(source string) (Route, bool) {
 }
 
 // checkPublicURL accepts an http(s) base URL, with a path if heraldarr sits behind a proxy.
-// Credentials belong in server.auth, not in the URL: the *arr would show them.
+// Credentials belong in server.auth, not in the URL: the *arr would show them. Errors don't quote
+// the URL, which may hold such credentials.
 func checkPublicURL(raw string) error {
 	if !strings.HasPrefix(raw, "http://") && !strings.HasPrefix(raw, "https://") {
-		return fmt.Errorf("%q must start with http:// or https://", raw)
+		return errors.New("must start with http:// or https://")
 	}
 	u, err := url.Parse(raw)
+	var uerr *url.Error
 	switch {
+	case errors.As(err, &uerr):
+		return fmt.Errorf("not a valid URL: %w", uerr.Err) // uerr itself quotes the URL
 	case err != nil:
-		return err
+		return errors.New("not a valid URL")
 	case u.Host == "":
-		return fmt.Errorf("%q has no host", raw)
+		return errors.New("has no host")
 	case u.User != nil:
 		return errors.New("must not contain a username or password (use server.auth)")
 	case u.RawQuery != "" || u.Fragment != "":
-		return fmt.Errorf("%q must not have a query or fragment", raw)
+		return errors.New("must not have a query or fragment")
 	}
 	return nil
 }

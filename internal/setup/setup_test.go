@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/wtwerner/heraldarr/internal/config"
@@ -23,17 +24,25 @@ const (
 	public   = "http://heraldarr:8790"
 )
 
-// fakeArr is a Sonarr/Radarr notification API: GET /notification, GET /notification/schema,
-// POST /notification and PUT /notification/{id}. A save runs the "test event": it fails when
-// reject is set, the way the *arr reports a webhook it couldn't reach.
+// fakeArr is a Sonarr/Radarr notification API, with the real one's habits:
+//   - GET /notification shows a stored password as "********" (unless plainPasswords, like older
+//     versions), and a PUT that sends "********" back keeps the stored one.
+//   - POST /notification/test sends the Test event; so does a save without forceSave, except a
+//     PUT that changes nothing, which neither tests nor saves.
+//   - The Test event fails when reject is set, the way the *arr reports a webhook it couldn't
+//     reach.
 type fakeArr struct {
 	*httptest.Server
-	mu     sync.Mutex
-	conns  []map[string]any
-	nextID int
-	reject bool
-	writes []string // "POST /api/v3/notification?", "PUT /api/v3/notification/7?"
+	mu             sync.Mutex
+	conns          []map[string]any
+	nextID         int
+	reject         bool
+	plainPasswords bool
+	writes         []string // "POST /api/v3/notification?", "PUT /api/v3/notification/7?"
+	tests          int      // Test events sent
 }
+
+const mask = "********"
 
 func newFakeArr(t *testing.T, conns ...map[string]any) *fakeArr {
 	t.Helper()
@@ -55,42 +64,74 @@ func (f *fakeArr) serve(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(code)
 		_ = json.NewEncoder(w).Encode(v)
 	}
-	switch {
-	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification":
-		reply(http.StatusOK, f.conns)
-	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification/schema":
-		reply(http.StatusOK, []any{discordSchema(), webhookSchema()})
-	case r.Method == http.MethodPost && r.URL.Path == "/api/v3/notification",
-		r.Method == http.MethodPut && strings.HasPrefix(r.URL.Path, "/api/v3/notification/"):
-		f.writes = append(f.writes, r.Method+" "+r.URL.Path+"?"+r.URL.RawQuery)
-		var conn map[string]any
-		if err := json.NewDecoder(r.Body).Decode(&conn); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		if f.reject && r.URL.Query().Get("forceSave") != "true" {
-			// Servarr's shape; attemptedValue can hold what was sent.
+	// testEvent sends the Test event and reports a failure the way Servarr does; attemptedValue
+	// can hold what was sent.
+	testEvent := func() bool {
+		f.tests++
+		if f.reject {
 			reply(http.StatusBadRequest, []any{map[string]any{
 				"propertyName": "Url", "errorMessage": "Unable to send test message",
 				"attemptedValue": password, "severity": "error",
 			}})
+		}
+		return !f.reject
+	}
+	decode := func() map[string]any {
+		var conn map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&conn); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return nil
+		}
+		return conn
+	}
+	force := r.URL.Query().Get("forceSave") == "true"
+	switch {
+	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification":
+		out := make([]map[string]any, len(f.conns))
+		for i, c := range f.conns {
+			out[i] = clone(c)
+			if pw := fieldOf(out[i], "password"); !f.plainPasswords && pw != nil && pw["value"] != "" && pw["value"] != nil {
+				pw["value"] = mask
+			}
+		}
+		reply(http.StatusOK, out)
+	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification/schema":
+		reply(http.StatusOK, []any{discordSchema(), webhookSchema()})
+	case r.Method == http.MethodPost && r.URL.Path == "/api/v3/notification/test":
+		if decode() != nil && testEvent() {
+			reply(http.StatusOK, map[string]any{})
+		}
+	case r.Method == http.MethodPost && r.URL.Path == "/api/v3/notification":
+		f.writes = append(f.writes, r.Method+" "+r.URL.Path+"?"+r.URL.RawQuery)
+		conn := decode()
+		if conn == nil || (!force && !testEvent()) {
 			return
 		}
-		if r.Method == http.MethodPost {
-			f.nextID++
-			conn["id"] = f.nextID
-			f.conns = append(f.conns, conn)
-			reply(http.StatusCreated, conn)
+		f.nextID++
+		conn["id"] = f.nextID
+		f.conns = append(f.conns, conn)
+		reply(http.StatusCreated, conn)
+	case r.Method == http.MethodPut && strings.HasPrefix(r.URL.Path, "/api/v3/notification/"):
+		f.writes = append(f.writes, r.Method+" "+r.URL.Path+"?"+r.URL.RawQuery)
+		conn := decode()
+		if conn == nil {
 			return
 		}
 		id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/v3/notification/"))
 		for i, c := range f.conns {
-			if num(c["id"]) == id {
-				conn["id"] = id
-				f.conns[i] = conn
-				reply(http.StatusAccepted, conn)
+			if num(c["id"]) != id {
+				continue
+			}
+			conn["id"] = id
+			if pw := fieldOf(conn, "password"); pw != nil && pw["value"] == mask {
+				pw["value"] = fieldOf(c, "password")["value"]
+			}
+			if changed := show(conn) != show(c); changed && !force && !testEvent() {
 				return
 			}
+			f.conns[i] = conn
+			reply(http.StatusAccepted, conn)
+			return
 		}
 		http.NotFound(w, r)
 	default:
@@ -102,6 +143,28 @@ func (f *fakeArr) snapshot() (conns []map[string]any, writes []string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	return f.conns, f.writes
+}
+
+func (f *fakeArr) testEvents() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.tests
+}
+
+func clone(c map[string]any) map[string]any {
+	var out map[string]any
+	_ = json.Unmarshal([]byte(show(c)), &out)
+	return out
+}
+
+func fieldOf(conn map[string]any, name string) map[string]any {
+	fs, _ := conn["fields"].([]any)
+	for _, f := range fs {
+		if f, ok := f.(map[string]any); ok && f["name"] == name {
+			return f
+		}
+	}
+	return nil
 }
 
 func num(v any) int {
@@ -267,6 +330,9 @@ func TestCreatesFromSchema(t *testing.T) {
 		t.Fatalf("%d connections named heraldarr", len(hooks))
 	}
 	assertHook(t, hooks[0], "sonarr")
+	if n := f.testEvents(); n != 1 {
+		t.Errorf("%d Test events, want 1", n)
+	}
 	if want := `sonarr: created "heraldarr"`; !strings.Contains(out, want) || !strings.Contains(out, "test event accepted") {
 		t.Errorf("output %q, want %q and test event accepted", out, want)
 	}
@@ -303,12 +369,15 @@ func TestUpdatesInPlace(t *testing.T) {
 	}
 }
 
-func TestUpToDateStillSavesForTheTestEvent(t *testing.T) {
+// The *arr sends no Test event for a save that changes nothing, so a re-run asks for one: it is
+// still the end-to-end check.
+func TestRerunSendsTheTestEvent(t *testing.T) {
 	f := newFakeArr(t)
 	cfg := testConfig(source("sonarr", f))
 	if _, err := run(t, cfg, Options{}); err != nil {
 		t.Fatal(err)
 	}
+	before := f.testEvents()
 	out, err := run(t, cfg, Options{})
 	if err != nil {
 		t.Fatal(err)
@@ -317,8 +386,89 @@ func TestUpToDateStillSavesForTheTestEvent(t *testing.T) {
 	if len(conns) != 1 || len(writes) != 2 || !strings.HasPrefix(writes[1], "PUT ") {
 		t.Errorf("conns %d, writes %q: want the second run to PUT the same connection", len(conns), writes)
 	}
+	if f.testEvents() != before+1 {
+		t.Errorf("the re-run sent %d Test events, want 1", f.testEvents()-before)
+	}
 	if !strings.Contains(out, "no changes") || !strings.Contains(out, "test event accepted") {
 		t.Errorf("output = %q", out)
+	}
+
+	f.mu.Lock()
+	f.reject = true // e.g. heraldarr is down now
+	f.mu.Unlock()
+	out, err = run(t, cfg, Options{})
+	if err == nil || strings.Contains(out, "accepted") || !strings.Contains(out, "Unable to send test message") {
+		t.Errorf("err = %v, output %q: want the failed Test event reported", err, out)
+	}
+}
+
+func TestDryRunUpToDate(t *testing.T) {
+	f := newFakeArr(t)
+	cfg := testConfig(source("sonarr", f))
+	if _, err := run(t, cfg, Options{}); err != nil {
+		t.Fatal(err)
+	}
+	out, err := run(t, cfg, Options{DryRun: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The *arr masks the stored password, so it can't be compared; say so rather than claim a change.
+	if want := `sonarr: "heraldarr" is up to date (the *arr hides the password`; !strings.HasPrefix(out, want) {
+		t.Errorf("output = %q, want it to start with %q", out, want)
+	}
+
+	f.mu.Lock()
+	f.plainPasswords = true // older *arrs return it
+	f.mu.Unlock()
+	if out, _ := run(t, cfg, Options{DryRun: true}); out != "sonarr: \"heraldarr\" is up to date\n" {
+		t.Errorf("output = %q", out)
+	}
+}
+
+func TestPasswordChangeOnOlderArrs(t *testing.T) {
+	f := newFakeArr(t, staleHook(7, "heraldarr"))
+	f.plainPasswords = true
+	out, err := run(t, testConfig(source("sonarr", f)), Options{DryRun: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out, "  password: changed\n") {
+		t.Errorf("output lacks the password change:\n%s", out)
+	}
+}
+
+// The API key is a header, which Go would forward to wherever a redirect points.
+func TestRedirectNotFollowed(t *testing.T) {
+	var leaked atomic.Bool
+	elsewhere := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Api-Key") != "" {
+			leaked.Store(true)
+		}
+		_, _ = w.Write([]byte("[]"))
+	}))
+	defer elsewhere.Close()
+	proxy := httptest.NewServer(http.RedirectHandler(elsewhere.URL+"/login", http.StatusFound))
+	defer proxy.Close()
+	src := config.Source{Name: "sonarr", Kind: "sonarr", URL: proxy.URL, APIKey: config.Literal(apiKey)}
+	out, err := run(t, testConfig(src), Options{DryRun: true})
+	if err == nil || !strings.Contains(out, "302") {
+		t.Errorf("err = %v, output %q: want the redirect reported", err, out)
+	}
+	if leaked.Load() {
+		t.Error("the API key reached the redirect target")
+	}
+}
+
+func TestNoOnImportTrigger(t *testing.T) {
+	c := staleHook(7, "heraldarr")
+	delete(c, "onDownload")
+	f := newFakeArr(t, c)
+	out, err := run(t, testConfig(source("sonarr", f)), Options{})
+	if err == nil || !strings.Contains(out, "no On Import") {
+		t.Errorf("err = %v, output %q", err, out)
+	}
+	if _, writes := f.snapshot(); len(writes) != 0 {
+		t.Errorf("wrote %q", writes)
 	}
 }
 
@@ -354,7 +504,6 @@ func TestDryRunChangesNothing(t *testing.T) {
 		"url: http://old-host:8790/hook/sonarr → " + public + "/hook/sonarr",
 		"method: PUT → POST",
 		"username: someone → heraldarr",
-		"password: changed",
 		"onGrab: true → false",
 		"onUpgrade: true → false",
 		"onImportComplete: true → false",
@@ -369,6 +518,9 @@ func TestDryRunChangesNothing(t *testing.T) {
 	}
 	if strings.Contains(out, "onDownload") {
 		t.Errorf("reports an unchanged trigger:\n%s", out)
+	}
+	if strings.Contains(out, "password: changed") {
+		t.Errorf("claims a change to a password the *arr masks:\n%s", out)
 	}
 }
 
@@ -451,6 +603,15 @@ func TestNoAuth(t *testing.T) {
 	conns, _ := f.snapshot()
 	if u, p := field(t, conns[0], "username"), field(t, conns[0], "password"); u != "" || p != "" {
 		t.Errorf("username %q, password %q: want both cleared", u, p)
+	}
+	cfg = testConfig(source("radarr", newFakeArr(t)))
+	cfg.Server.Auth = nil
+	out, err := run(t, cfg, Options{DryRun: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out, "  username: (none)\n  password: (none)\n") {
+		t.Errorf("create summary without auth:\n%s", out)
 	}
 }
 

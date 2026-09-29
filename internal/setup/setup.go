@@ -3,9 +3,10 @@
 //
 // It speaks the *arr v3 notification API: find the connection by name, or start from the
 // Webhook template in GET /notification/schema; set the URL, POST, the server.auth credentials
-// and On Import as the only trigger; save it. Saving without forceSave makes the *arr send its
-// Test event to heraldarr first and refuse the save if that fails, so a successful save proves
-// the URL and the credentials work.
+// and On Import as the only trigger; save it. Creating without forceSave makes the *arr send its
+// Test event to heraldarr first and refuse the save if that fails; an update skips that when
+// nothing changed, so it asks for the Test event (POST /notification/test) before saving. Either
+// way a success proves the URL and the credentials work.
 package setup
 
 import (
@@ -27,17 +28,19 @@ import (
 // DefaultName is the connection's name in the *arrs.
 const DefaultName = "heraldarr"
 
-// DefaultTimeout bounds one request. A save waits for the *arr's Test event to reach heraldarr.
-const DefaultTimeout = 2 * time.Minute
+// timeout bounds one request. A save waits for the *arr's Test event to reach heraldarr.
+const timeout = 2 * time.Minute
 
 // maxBody caps a response; a notification list is a few KB.
 const maxBody = 4 << 20
 
+// masked is how the *arrs show a stored password in their API responses.
+const masked = "********"
+
 // Options adjust Run.
 type Options struct {
-	Name      string       // the connection to create or update; "" means DefaultName
-	DryRun    bool         // report what would change and change nothing
-	HTTP      *http.Client // nil: DefaultTimeout, redirects not followed
+	Name      string // the connection to create or update; "" means DefaultName
+	DryRun    bool   // report what would change and change nothing
 	UserAgent string
 }
 
@@ -56,13 +59,10 @@ func Run(ctx context.Context, cfg *config.Config, opt Options, w io.Writer) erro
 	if opt.Name == "" {
 		opt.Name = DefaultName
 	}
-	client := opt.HTTP
-	if client == nil {
-		client = &http.Client{
-			Timeout: DefaultTimeout,
-			// The API key is a header: never forward it to wherever a redirect points.
-			CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
-		}
+	client := &http.Client{
+		Timeout: timeout,
+		// Go forwards custom headers such as X-Api-Key to wherever a redirect points: don't follow.
+		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 	}
 	var user, pass string
 	if a := cfg.Server.Auth; a != nil {
@@ -131,18 +131,20 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 	}
 	creating := len(found) == 0
 
-	changes, err := apply(conn, wt)
+	changes, hidden, err := apply(conn, wt)
 	if err != nil {
 		return "", err
 	}
 	if opt.DryRun {
-		if creating {
+		switch {
+		case creating:
 			return fmt.Sprintf("would create %q\n%s", wt.name, indent(summary(wt))), nil
+		case len(changes) > 0:
+			return fmt.Sprintf("would update %q\n%s", wt.name, indent(changes)), nil
+		case hidden:
+			return fmt.Sprintf("%q is up to date (the *arr hides the password, so it wasn't compared)", wt.name), nil
 		}
-		if len(changes) == 0 {
-			return fmt.Sprintf("%q is up to date", wt.name), nil
-		}
-		return fmt.Sprintf("would update %q\n%s", wt.name, indent(changes)), nil
+		return fmt.Sprintf("%q is up to date", wt.name), nil
 	}
 
 	if creating {
@@ -154,6 +156,11 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 	id, ok := conn["id"].(json.Number)
 	if !ok {
 		return "", fmt.Errorf("connection %q has no id", wt.name)
+	}
+	// A save that changes nothing sends no Test event, so ask for one: a re-run is still the
+	// end-to-end check.
+	if err := api.do(ctx, http.MethodPost, "notification/test", conn, nil); err != nil {
+		return "", fmt.Errorf("testing %q: %w", wt.name, err)
 	}
 	if err := api.do(ctx, http.MethodPut, "notification/"+id.String(), conn, nil); err != nil {
 		return "", fmt.Errorf("updating %q: %w", wt.name, err)
@@ -170,17 +177,17 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 }
 
 // apply makes conn the connection wt describes, keeping everything else (the id, headers), and
-// returns what changed, one "what: old → new" line each, without secrets.
-func apply(conn map[string]any, wt want) ([]string, error) {
-	var changes []string
+// returns what changed, one "what: old → new" line each, without secrets. hidden reports that
+// the *arr masked the stored password, so whether it changes is unknown.
+func apply(conn map[string]any, wt want) (changes []string, hidden bool, err error) {
 	if conn["name"] != wt.name {
 		changes = append(changes, fmt.Sprintf("name: %v → %s", conn["name"], wt.name))
 		conn["name"] = wt.name
 	}
 
 	// On Import only: every other trigger off, upgrades included.
-	if _, ok := conn["onDownload"]; !ok {
-		conn["onDownload"] = false
+	if _, ok := conn["onDownload"].(bool); !ok {
+		return nil, false, errors.New("the Webhook connection has no On Import (onDownload) trigger")
 	}
 	triggers := []string{}
 	for k, v := range conn {
@@ -213,6 +220,8 @@ func apply(conn map[string]any, wt want) ([]string, error) {
 			}
 			if show(old) != show(v) {
 				switch {
+				case secret && old == masked:
+					hidden = true
 				case secret:
 					changes = append(changes, name+": changed")
 				case name == "method":
@@ -233,10 +242,10 @@ func apply(conn map[string]any, wt want) ([]string, error) {
 		set("password", wt.password, true),
 	} {
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 	}
-	return changes, nil
+	return changes, hidden, nil
 }
 
 // summary describes a connection about to be created, without the password.
