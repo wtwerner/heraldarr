@@ -97,6 +97,7 @@ func TestPublicURL(t *testing.T) {
 		{"ftp://example.org", "must start with http:// or https://"},
 		{"heraldarr:8790", "must start with http:// or https://"},
 		{"http://", "has no host"},
+		{"http://:8790", "has no host"},
 		{"http://user:pw@example.org", "must not contain a username or password"},
 		{"http://example.org/?a=1", "query or fragment"},
 		{"http://example.org/#x", "query or fragment"},

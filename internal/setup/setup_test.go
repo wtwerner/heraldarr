@@ -410,7 +410,7 @@ func TestRerunSendsTheTestEvent(t *testing.T) {
 	if f.testEvents() != before+1 {
 		t.Errorf("the re-run sent %d Test events, want 1", f.testEvents()-before)
 	}
-	if !strings.Contains(out, "no changes") || !strings.Contains(out, "test event accepted") {
+	if !strings.Contains(out, "no changes; the *arr hides the password") || !strings.Contains(out, "test event accepted") {
 		t.Errorf("output = %q", out)
 	}
 
@@ -547,12 +547,12 @@ func TestDryRunChangesNothing(t *testing.T) {
 }
 
 func TestRejectedTestEvent(t *testing.T) {
-	bad := newFakeArr(t)
-	bad.reject = true
+	bad, bad4k := newFakeArr(t), newFakeArr(t)
+	bad.reject, bad4k.reject = true, true
 	good := newFakeArr(t)
-	out, err := run(t, testConfig(source("sonarr", bad), source("radarr", good)), Options{})
-	if err == nil || !strings.Contains(err.Error(), "sonarr") {
-		t.Errorf("err = %v, want one naming sonarr", err)
+	out, err := run(t, testConfig(source("sonarr", bad), source("radarr", good), source("sonarr4k", bad4k)), Options{})
+	if err == nil || !strings.Contains(err.Error(), "failed for sonarr, sonarr4k") {
+		t.Errorf("err = %v, want one naming sonarr and sonarr4k", err)
 	}
 	if !strings.Contains(out, "sonarr: ") || !strings.Contains(out, "Url: Unable to send test message") {
 		t.Errorf("output lacks the *arr's error:\n%s", out)
@@ -619,6 +619,10 @@ func TestNoAuth(t *testing.T) {
 	f := newFakeArr(t, staleHook(7, "heraldarr"))
 	cfg := testConfig(source("sonarr", f))
 	cfg.Server.Auth = nil
+	// The *arr masks the stored password, but clearing it is still a known change.
+	if out, _ := run(t, cfg, Options{DryRun: true}); !strings.Contains(out, "  password: cleared\n") {
+		t.Errorf("dry run doesn't report the password cleared:\n%s", out)
+	}
 	if _, err := run(t, cfg, Options{}); err != nil {
 		t.Fatal(err)
 	}
@@ -650,5 +654,32 @@ func TestConfigXMLKey(t *testing.T) {
 	}
 	if conns, _ := f.snapshot(); len(conns) != 1 {
 		t.Errorf("%d connections", len(conns))
+	}
+}
+
+// A URL typed into the *arr by hand can hold a password; the dry run shows it redacted.
+func TestDryRunRedactsTheOldURL(t *testing.T) {
+	c := staleHook(7, "heraldarr")
+	fieldOf(c, "url")["value"] = "http://someone:typed-by-hand@old-host:8790/hook/sonarr"
+	out, err := run(t, testConfig(source("sonarr", newFakeArr(t, c))), Options{DryRun: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(out, "typed-by-hand") || !strings.Contains(out, "url: http://someone:xxxxx@old-host:8790/hook/sonarr → ") {
+		t.Errorf("output:\n%s", out)
+	}
+}
+
+func TestValidation(t *testing.T) {
+	for _, tc := range []struct{ body, want string }{
+		{`[{"propertyName":"Url","errorMessage":"Unable to send test message","attemptedValue":"x"}]`, ": Url: Unable to send test message"},
+		{`[{"propertyName":"","errorMessage":"Bad"},{"propertyName":"Name","errorMessage":"Should be unique"}]`, ": Bad; Name: Should be unique"},
+		{`{"message":"Object reference not set","description":"at …"}`, ": Object reference not set"},
+		{`<html>proxy error</html>`, ""},
+		{`[]`, ""},
+	} {
+		if got := validation([]byte(tc.body)); got != tc.want {
+			t.Errorf("validation(%s) = %q, want %q", tc.body, got, tc.want)
+		}
 	}
 }

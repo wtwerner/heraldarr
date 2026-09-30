@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"time"
@@ -171,6 +172,9 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 		return "", fmt.Errorf("updating %q: %w", wt.name, err)
 	}
 	what := "no changes"
+	if hidden {
+		what = "no changes; the *arr hides the password, so it wasn't compared"
+	}
 	if len(changes) > 0 {
 		names := make([]string, len(changes))
 		for i, c := range changes {
@@ -225,12 +229,16 @@ func apply(conn map[string]any, wt want) (changes []string, hidden bool, err err
 			}
 			if show(old) != show(v) {
 				switch {
+				case secret && v == "":
+					changes = append(changes, name+": cleared")
 				case secret && old == masked:
 					hidden = true
 				case secret:
 					changes = append(changes, name+": changed")
 				case name == "method":
 					changes = append(changes, fmt.Sprintf("method: %s → %s", method(old), method(v)))
+				case name == "url":
+					changes = append(changes, fmt.Sprintf("url: %s → %s", redacted(old), v))
 				default:
 					changes = append(changes, fmt.Sprintf("%s: %s → %s", name, text(old), text(v)))
 				}
@@ -284,6 +292,15 @@ func text(v any) string {
 		return s
 	}
 	return show(v)
+}
+
+// redacted shows a URL typed into the *arr by hand without any password in it.
+func redacted(v any) string {
+	s := text(v)
+	if u, err := url.Parse(s); err == nil && u.User != nil {
+		return u.Redacted()
+	}
+	return s
 }
 
 // method names the Webhook method setting: 1 is POST, 2 is PUT.
@@ -350,14 +367,21 @@ func (a *api) do(ctx context.Context, method, path string, body, out any) error 
 	return nil
 }
 
-// validation formats the *arr's validation failures as ": Url: Unable to send test message".
+// validation formats the *arr's validation failures as ": Url: Unable to send test message", or
+// an exception's message.
 func validation(raw []byte) string {
 	var failures []struct {
 		PropertyName string `json:"propertyName"`
 		ErrorMessage string `json:"errorMessage"`
 	}
 	if json.Unmarshal(raw, &failures) != nil {
-		return ""
+		var e struct { // an exception: {"message": …, "description": …}
+			Message string `json:"message"`
+		}
+		if json.Unmarshal(raw, &e) != nil || e.Message == "" {
+			return ""
+		}
+		return ": " + e.Message
 	}
 	var msgs []string
 	for _, f := range failures {

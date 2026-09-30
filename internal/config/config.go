@@ -266,7 +266,7 @@ func checkPublicURL(raw string) error {
 		return fmt.Errorf("not a valid URL: %w", uerr.Err) // uerr itself quotes the URL
 	case err != nil:
 		return errors.New("not a valid URL")
-	case u.Host == "":
+	case u.Hostname() == "":
 		return errors.New("has no host")
 	case u.User != nil:
 		return errors.New("must not contain a username or password (use server.auth)")
