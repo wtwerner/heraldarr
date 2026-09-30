@@ -20,6 +20,7 @@ import (
 	"github.com/wtwerner/heraldarr/internal/app"
 	"github.com/wtwerner/heraldarr/internal/config"
 	"github.com/wtwerner/heraldarr/internal/domain"
+	"github.com/wtwerner/heraldarr/internal/setup"
 )
 
 var version = "dev" // set by -ldflags at build time
@@ -31,6 +32,10 @@ Usage:
   heraldarr validate                   check the configuration and exit
   heraldarr flush                      post everything pending now (asks the running server)
   heraldarr health                     exit 0 if the running server is healthy
+  heraldarr setup [-name heraldarr] [-dry-run]
+                                       create or update the Webhook connection in every
+                                       Sonarr/Radarr (needs server.public_url); each *arr
+                                       sends a Test event, so heraldarr must be running
   heraldarr preview SOURCE ID[,ID…] [S02|S02E05,S02E06] [-to DESTINATION]
                                        render items already on disk as if they just arrived
                                        (one series, or several movies);
@@ -63,7 +68,9 @@ func run(args []string) error {
 	fs := flag.NewFlagSet("heraldarr", flag.ContinueOnError)
 	configPath := fs.String("config", envOr("HERALDARR_CONFIG", "/config/config.yaml"), "configuration file")
 	to := fs.String("to", "", "preview: destination to post to")
-	if err := fs.Parse(interspersed(args)); err != nil {
+	name := fs.String("name", setup.DefaultName, "setup: the connection's name in each *arr")
+	dryRun := fs.Bool("dry-run", false, "setup: print what would change and change nothing")
+	if err := fs.Parse(interspersed(fs, args)); err != nil {
 		return err
 	}
 	if fs.NArg() == 0 {
@@ -99,6 +106,15 @@ func run(args []string) error {
 		return serve(cfg, log)
 	case "preview":
 		return preview(cfg, log, pos, *to)
+	case "setup":
+		if len(pos) != 0 {
+			return errors.New("setup [-name NAME] [-dry-run]")
+		}
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		return setup.Run(ctx, cfg, setup.Options{
+			Name: *name, DryRun: *dryRun, UserAgent: "heraldarr/" + version,
+		}, os.Stdout)
 	case "import-legacy":
 		if len(pos) != 1 {
 			return errors.New("import-legacy DIR")
@@ -263,13 +279,14 @@ func callServer(cfg *config.Config, method, path string) error {
 
 // interspersed moves flags to the front wherever they appear, so both
 // "heraldarr -config c.yaml serve" and "heraldarr preview radarr 5 -to private" parse.
-func interspersed(args []string) []string {
+// A boolean flag of fs ("-dry-run") takes no value.
+func interspersed(fs *flag.FlagSet, args []string) []string {
 	var flags, rest []string
 	for i := 0; i < len(args); i++ {
 		a := args[i]
 		if strings.HasPrefix(a, "-") && len(a) > 1 {
 			flags = append(flags, a)
-			if !strings.Contains(a, "=") && i+1 < len(args) {
+			if !strings.Contains(a, "=") && !isBoolFlag(fs, a) && i+1 < len(args) {
 				flags = append(flags, args[i+1])
 				i++
 			}
@@ -278,6 +295,15 @@ func interspersed(args []string) []string {
 		rest = append(rest, a)
 	}
 	return append(flags, rest...)
+}
+
+func isBoolFlag(fs *flag.FlagSet, arg string) bool {
+	f := fs.Lookup(strings.TrimLeft(arg, "-"))
+	if f == nil {
+		return false
+	}
+	b, ok := f.Value.(interface{ IsBoolFlag() bool })
+	return ok && b.IsBoolFlag()
 }
 
 func logLevel() slog.Level {

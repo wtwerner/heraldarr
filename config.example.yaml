@@ -4,6 +4,9 @@
 server:
   listen: ":8790"
   data_dir: /config/data
+  # How Sonarr/Radarr reach heraldarr; `heraldarr setup` points their Webhook at <public_url>/hook/<source>.
+  # On a shared Docker network that's the container name; otherwise an address the *arrs can reach.
+  public_url: http://heraldarr:8790
   # The *arr Webhook connection sends these as Username / Password.
   auth:
     username: heraldarr
@@ -29,8 +32,7 @@ media_server:               # optional; without it cards have no "Open in Plex" 
     - {from: /data/media/, to: /media/}
 
 sources:
-  # In each *arr: Settings → Connect → Webhook, On Import only, URL http://<heraldarr>:8790/hook/<name>,
-  # method POST, and the server.auth username/password.
+  # `heraldarr setup` adds the Webhook connection to each of these (On Import only).
   - name: sonarr
     kind: sonarr
     url: http://sonarr:8989

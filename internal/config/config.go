@@ -4,6 +4,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"regexp"
 	"slices"
@@ -24,9 +25,10 @@ type Config struct {
 }
 
 type Server struct {
-	Listen  string     `yaml:"listen"`
-	DataDir string     `yaml:"data_dir"`
-	Auth    *BasicAuth `yaml:"auth"` // the *arr webhook connection's Username/Password
+	Listen    string     `yaml:"listen"`
+	DataDir   string     `yaml:"data_dir"`
+	PublicURL string     `yaml:"public_url"` // how the *arrs reach heraldarr; `setup` requires it
+	Auth      *BasicAuth `yaml:"auth"`       // the *arr webhook connection's Username/Password
 }
 
 type BasicAuth struct {
@@ -217,6 +219,11 @@ func (c *Config) Validate() error {
 			bad("media_server: token: %w", err)
 		}
 	}
+	if u := c.Server.PublicURL; u != "" {
+		if err := checkPublicURL(u); err != nil {
+			bad("server.public_url: %w", err)
+		}
+	}
 	if a := c.Server.Auth; a != nil {
 		if a.Username == "" || a.Password.IsZero() {
 			bad("server.auth: username and password are both required")
@@ -243,6 +250,30 @@ func (c *Config) RouteFor(source string) (Route, bool) {
 		}
 	}
 	return Route{}, false
+}
+
+// checkPublicURL accepts an http(s) base URL, with a path if heraldarr sits behind a proxy.
+// Credentials belong in server.auth, not in the URL: the *arr would show them. Errors don't quote
+// the URL, which may hold such credentials.
+func checkPublicURL(raw string) error {
+	if lower := strings.ToLower(raw); !strings.HasPrefix(lower, "http://") && !strings.HasPrefix(lower, "https://") {
+		return errors.New("must start with http:// or https://")
+	}
+	u, err := url.Parse(raw)
+	var uerr *url.Error
+	switch {
+	case errors.As(err, &uerr):
+		return fmt.Errorf("not a valid URL: %w", uerr.Err) // uerr itself quotes the URL
+	case err != nil:
+		return errors.New("not a valid URL")
+	case u.Hostname() == "":
+		return errors.New("has no host")
+	case u.User != nil:
+		return errors.New("must not contain a username or password (use server.auth)")
+	case u.RawQuery != "" || u.Fragment != "":
+		return errors.New("must not have a query or fragment")
+	}
+	return nil
 }
 
 var nameRE = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
