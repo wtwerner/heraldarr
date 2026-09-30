@@ -30,11 +30,31 @@ type Config struct {
 	QuietMovies     time.Duration
 	MaxHold         time.Duration // after the batch's first item, due regardless of quiet
 	FollowingWindow time.Duration // every episode aired within this -> following
+	FollowingEarly  time.Duration // an episode imported up to this long before its air date is recent too
 	Reannounce      time.Duration // an item posted within this is never queued again
 	RetryInterval   time.Duration
 	RetryMax        int           // failed sends before the batch is dropped
 	MediaWait       time.Duration // between media server checks
+	Backlog         Backlog
 }
+
+// Backlog modes. The zero value is the reference behavior: no runs.
+const (
+	Lead     = "lead"     // post once the first episodes settle, fold later ones into that card
+	Complete = "complete" // post once the *arr has nothing left queued for the run
+)
+
+// Backlog is how back-catalog TV (episodes that aired before FollowingWindow) is grouped into runs.
+type Backlog struct {
+	Mode      string // Lead, Complete; anything else: the reference's quiet windows
+	PerSeason bool   // one run per season instead of one per series
+	Edit      bool   // the app edits the run's card as episodes land (else they're folded in silently)
+	Settle    time.Duration
+	Idle      time.Duration // a run with nothing pending ends after this long without an import
+	MaxHold   time.Duration // Complete: due this long after the run's first item, queue or not
+}
+
+func (c Config) runs() bool { return c.Backlog.Mode == Lead || c.Backlog.Mode == Complete }
 
 // Outcome of one delivery attempt.
 type Outcome int
@@ -49,6 +69,8 @@ const (
 	// Aborted: the attempt was interrupted (shutdown). Sent keys are recorded; the batch is
 	// otherwise left as it was, and not counted as a try.
 	Aborted
+	// Queued: the *arr still has episodes of the run downloading (Complete); check again after Settle.
+	Queued
 )
 
 // pruneEvery is how often Done trims the posted ledger to the reannounce window.
@@ -90,6 +112,9 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("add: unknown source %q", imp.Source)
 	}
+	if kind == domain.KindTV && imp.Series != nil && b.cfg.runs() {
+		return b.addRuns(ctx, imp)
+	}
 	var key, name string
 	var keys []domain.ItemKey
 	switch {
@@ -105,7 +130,7 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 		return "", fmt.Errorf("add: %s import has no %s subject", imp.Source, kind)
 	}
 
-	added, lookup, err := b.merge(ctx, imp, kind, key, keys)
+	added, lookup, err := b.merge(ctx, imp, kind, key, keys, imp.Episodes, nil)
 	if err != nil {
 		return "", fmt.Errorf("add: %w", err)
 	}
@@ -122,10 +147,55 @@ func (b *Batcher) Add(ctx context.Context, imp domain.Import) (string, error) {
 	return fmt.Sprintf("%s %s: +%d", imp.Source, name, added), nil
 }
 
-// merge puts the import's unposted items into their batch. lookup reports that "following" needs
-// the *arr: until settleFollowing runs, the batch keeps its previous value.
+// addRuns queues a TV import when back-catalog runs are on. Each episode goes by its air date:
+// recent ones to the series' batch (following), older ones to the run's batch.
+func (b *Batcher) addRuns(ctx context.Context, imp domain.Import) (string, error) {
+	type group struct {
+		keys    []domain.ItemKey
+		eps     []domain.Episode
+		backlog bool
+		season  *int
+	}
+	now := b.clock.Now()
+	groups := map[string]*group{}
+	for _, e := range imp.Episodes {
+		key, g := fmt.Sprintf("%s:%d", imp.Source, imp.Series.ID), group{}
+		if !b.recentEpisode(e, now) {
+			g.backlog = true
+			if b.cfg.Backlog.PerSeason {
+				key, g.season = fmt.Sprintf("%s:%d:s%d", imp.Source, imp.Series.ID, e.Season), &e.Season
+			} else {
+				key += ":backlog"
+			}
+		}
+		if groups[key] == nil {
+			groups[key] = &g
+		}
+		groups[key].keys = append(groups[key].keys, domain.EpisodeKey(imp.Source, e.ID))
+		groups[key].eps = append(groups[key].eps, e)
+	}
+	added := 0
+	for _, key := range slices.Sorted(maps.Keys(groups)) {
+		g := groups[key]
+		n, _, err := b.merge(ctx, imp, domain.KindTV, key, g.keys, g.eps, func(bt *domain.Batch) {
+			bt.Backlog, bt.Season = g.backlog, g.season
+		})
+		if err != nil {
+			return "", fmt.Errorf("add: %w", err)
+		}
+		added += n
+	}
+	if added == 0 {
+		return fmt.Sprintf("%s %s: already announced", imp.Source, imp.Series.Title), nil
+	}
+	return fmt.Sprintf("%s %s: +%d", imp.Source, imp.Series.Title, added), nil
+}
+
+// merge puts the import's unposted items (eps for TV, aligned with keys) into their batch. init
+// sets up a batch merge creates. lookup reports that "following" needs the *arr: until
+// settleFollowing runs, the batch keeps its previous value.
 func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind, key string,
-	keys []domain.ItemKey,
+	keys []domain.ItemKey, eps []domain.Episode, init func(*domain.Batch),
 ) (added int, lookup bool, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -147,10 +217,13 @@ func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind
 			s := *imp.Series
 			bt.Series = &s
 		}
+		if init != nil {
+			init(bt)
+		}
 	}
 
 	for i, k := range keys {
-		if posted[k] {
+		if _, announced := runEpisodes(bt)[k]; posted[k] || announced {
 			continue
 		}
 		added++
@@ -158,7 +231,7 @@ func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind
 			if bt.Episodes == nil {
 				bt.Episodes = map[domain.ItemKey]domain.Episode{}
 			}
-			bt.Episodes[k] = imp.Episodes[i]
+			bt.Episodes[k] = eps[i]
 		} else {
 			if bt.Movies == nil {
 				bt.Movies = map[domain.ItemKey]domain.Movie{}
@@ -168,7 +241,11 @@ func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind
 	}
 	// Like the reference, even an import that adds nothing counts as activity on the batch.
 	bt.Last = now
-	if kind == domain.KindTV && bt.Len() > 0 {
+	switch {
+	case kind != domain.KindTV || bt.Len() == 0:
+	case b.cfg.runs():
+		bt.Following = !bt.Backlog // by air date, decided in addRuns
+	default:
 		if recent, _ := b.recent(bt, now); recent {
 			bt.Following = true
 		} else {
@@ -176,6 +253,15 @@ func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind
 		}
 	}
 	return added, lookup, b.put(ctx, bt)
+}
+
+// runEpisodes are the episodes bt's run announced (nil without a run): the ledger normally
+// filters them too, but the run holds them even when a ledger write failed.
+func runEpisodes(bt *domain.Batch) map[domain.ItemKey]domain.Episode {
+	if bt.Run == nil {
+		return nil
+	}
+	return bt.Run.Episodes
 }
 
 // settleFollowing decides "following" for the batch as it is now, given the *arr's series.
@@ -217,12 +303,19 @@ func (b *Batcher) recent(bt *domain.Batch, now time.Time) (bool, map[int]int) {
 	recent := true
 	perSeason := map[int]int{}
 	for _, e := range bt.Episodes {
-		if age := now.Sub(e.Aired); e.Aired.IsZero() || age < 0 || age >= b.cfg.FollowingWindow {
+		if !b.recentEpisode(e, now) {
 			recent = false
 		}
 		perSeason[e.Season]++
 	}
 	return recent, perSeason
+}
+
+// recentEpisode: aired within FollowingWindow, or due to air within FollowingEarly (streaming
+// premieres often land hours before the air date the *arr has).
+func (b *Batcher) recentEpisode(e domain.Episode, now time.Time) bool {
+	age := now.Sub(e.Aired)
+	return !e.Aired.IsZero() && age >= -b.cfg.FollowingEarly && age < b.cfg.FollowingWindow
 }
 
 // Due returns snapshots of the batches ready to send now (all non-empty ones when force, ignoring
@@ -240,7 +333,11 @@ func (b *Batcher) Due(ctx context.Context, force bool) ([]*domain.Batch, error) 
 	var out []*domain.Batch
 	for _, key := range slices.Sorted(maps.Keys(batches)) {
 		bt := batches[key]
-		if _, sending := b.inflight[key]; sending || bt.Len() == 0 {
+		if _, sending := b.inflight[key]; sending {
+			continue
+		}
+		if bt.Len() == 0 {
+			b.endRun(ctx, bt, now)
 			continue
 		}
 		if !force && !b.due(bt, now) {
@@ -266,6 +363,14 @@ func (b *Batcher) due(bt *domain.Batch, now time.Time) bool {
 	if now.Before(bt.NotBefore) {
 		return false
 	}
+	if bt.Backlog {
+		settled := now.Sub(bt.Last) >= b.cfg.Backlog.Settle
+		if bt.Run == nil && b.cfg.Backlog.Mode == Complete {
+			// The app holds it while the *arr has more queued (AwaitsQueue), up to Backlog.MaxHold.
+			return settled || now.Sub(bt.First) >= b.cfg.Backlog.MaxHold
+		}
+		return settled || now.Sub(bt.First) >= b.cfg.MaxHold
+	}
 	quiet := b.cfg.QuietBacklog
 	switch {
 	case bt.Kind == domain.KindMovie:
@@ -274,6 +379,26 @@ func (b *Batcher) due(bt *domain.Batch, now time.Time) bool {
 		quiet = b.cfg.QuietEpisodes
 	}
 	return now.Sub(bt.Last) >= quiet || now.Sub(bt.First) >= b.cfg.MaxHold
+}
+
+// AwaitsQueue reports that bt's first card waits for the *arr's queue to empty: a Complete run
+// not yet announced and within Backlog.MaxHold. The caller checks the queue and reports Queued.
+func (b *Batcher) AwaitsQueue(bt *domain.Batch) bool {
+	return bt.Backlog && bt.Run == nil && b.cfg.Backlog.Mode == Complete &&
+		b.clock.Now().Sub(bt.First) < b.cfg.Backlog.MaxHold
+}
+
+// endRun deletes a run with nothing pending once it has been idle for Backlog.Idle: the next
+// back-catalog episode of the series starts a new run and a new card. Callers hold b.mu.
+func (b *Batcher) endRun(ctx context.Context, bt *domain.Batch, now time.Time) {
+	if bt.Run == nil || now.Sub(bt.Last) < b.cfg.Backlog.Idle {
+		return
+	}
+	if err := b.store.DeleteBatch(ctx, bt.Key); err != nil {
+		slog.Warn("ending a run failed; trying again later", "batch", bt.Key, "err", err)
+		return
+	}
+	delete(b.batches, bt.Key)
 }
 
 // dropPosted removes items the ledger says went out: left behind when a Done marked them posted
@@ -295,6 +420,14 @@ func (b *Batcher) dropPosted(ctx context.Context, bt *domain.Batch, now time.Tim
 // Done records a delivery attempt of a batch Due handed out. sent are the keys that went out
 // (they are marked posted even when the outcome is Failed part-way through).
 func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, outcome Outcome) error {
+	return b.DoneMessage(ctx, key, sent, outcome, nil)
+}
+
+// DoneMessage is Done for a back-catalog batch: sent episodes join its run, and msg (when not
+// nil) becomes the card the run edits; a zero msg means the card can't be edited any more.
+func (b *Batcher) DoneMessage(ctx context.Context, key string, sent []domain.ItemKey, outcome Outcome,
+	msg *domain.Message,
+) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	now := b.clock.Now()
@@ -314,7 +447,7 @@ func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, o
 		b.prune(ctx, now)
 	}
 	if cur := b.batches[key]; cur != nil {
-		if err := b.put(ctx, b.outcome(cur, handed, sent, outcome, now)); err != nil {
+		if err := b.put(ctx, b.outcome(cur, handed, sent, outcome, msg, now)); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -326,10 +459,30 @@ func (b *Batcher) Done(ctx context.Context, key string, sent []domain.ItemKey, o
 
 // outcome returns the batch after a delivery attempt of the handed-out items. Items that arrived
 // during the attempt are in cur but not in handed.
-func (b *Batcher) outcome(cur *domain.Batch, handed, sent []domain.ItemKey, outcome Outcome, now time.Time) *domain.Batch {
+func (b *Batcher) outcome(cur *domain.Batch, handed, sent []domain.ItemKey, outcome Outcome,
+	msg *domain.Message, now time.Time,
+) *domain.Batch {
 	bt := clone(cur)
 	gone := slices.Clone(sent)
+	if bt.Backlog && (len(sent) > 0 || msg != nil) {
+		if bt.Run == nil {
+			bt.Run = &domain.Run{}
+		}
+		if bt.Run.Episodes == nil {
+			bt.Run.Episodes = map[domain.ItemKey]domain.Episode{}
+		}
+		for _, k := range sent {
+			if e, ok := bt.Episodes[k]; ok {
+				bt.Run.Episodes[k] = e
+			}
+		}
+		if msg != nil {
+			bt.Run.Message = *msg
+		}
+	}
 	switch outcome {
+	case Queued:
+		bt.NotBefore = now.Add(b.cfg.Backlog.Settle)
 	case Waiting:
 		bt.MediaChecks++
 		bt.NotBefore = now.Add(b.cfg.MediaWait)
@@ -381,10 +534,10 @@ func (b *Batcher) loaded(ctx context.Context) (map[string]*domain.Batch, error) 
 	return b.batches, nil
 }
 
-// put writes bt through to the store (deleting it when empty), then to memory, so memory never
-// holds what the store doesn't. Callers hold b.mu and have loaded the batches.
+// put writes bt through to the store (deleting it when empty and not in a run), then to memory,
+// so memory never holds what the store doesn't. Callers hold b.mu and have loaded the batches.
 func (b *Batcher) put(ctx context.Context, bt *domain.Batch) error {
-	if bt.Len() == 0 {
+	if bt.Len() == 0 && bt.Run == nil {
 		if _, ok := b.batches[bt.Key]; !ok {
 			return nil
 		}
@@ -409,5 +562,10 @@ func clone(bt *domain.Batch) *domain.Batch {
 	}
 	c.Episodes = maps.Clone(bt.Episodes)
 	c.Movies = maps.Clone(bt.Movies)
+	if bt.Run != nil {
+		r := *bt.Run
+		r.Episodes = maps.Clone(bt.Run.Episodes)
+		c.Run = &r
+	}
 	return &c
 }

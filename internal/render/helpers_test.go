@@ -333,3 +333,19 @@ func TestLayoutsCapButtonsAndDescription(t *testing.T) {
 		t.Errorf("inline layout has components: %v", got)
 	}
 }
+
+// A back-catalog run still downloading says so on its last line, within the line cap.
+func TestTVDownloading(t *testing.T) {
+	var eps []domain.Episode
+	for s := 1; s <= 13; s++ {
+		eps = append(eps, domain.Episode{Season: s, Number: 1, Title: "A"}, domain.Episode{Season: s, Number: 2, Title: "B"})
+	}
+	card := TV(TVInput{Common: Common{Now: now}, Batch: tvBatch(eps...), Downloading: 9})
+	if len(card.Lines) != 12 || card.Lines[11] != "_9 more on the way_" || card.Lines[10] != "…and 16 more" {
+		t.Errorf("lines %q", card.Lines)
+	}
+	card = TV(TVInput{Common: Common{Now: now}, Batch: tvBatch(eps[:1]...)})
+	if strings.Contains(strings.Join(card.Lines, "\n"), "on the way") {
+		t.Errorf("nothing queued: %q", card.Lines)
+	}
+}

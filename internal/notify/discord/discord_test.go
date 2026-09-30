@@ -30,6 +30,7 @@ type reply struct {
 }
 
 type request struct {
+	method         string
 	path, rawQuery string
 	header         http.Header
 	body           map[string]any
@@ -54,7 +55,7 @@ func newStub(t *testing.T, replies ...reply) *discordStub {
 			t.Errorf("request body is not JSON: %v", err)
 		}
 		s.mu.Lock()
-		s.got = append(s.got, request{r.URL.Path, r.URL.RawQuery, r.Header.Clone(), body})
+		s.got = append(s.got, request{r.Method, r.URL.Path, r.URL.RawQuery, r.Header.Clone(), body})
 		rep := s.replies[min(len(s.got), len(s.replies))-1]
 		s.mu.Unlock()
 		for k, v := range rep.headers {
@@ -670,5 +671,63 @@ func assertJSON(t *testing.T, got, want map[string]any) {
 	w, _ := json.Marshal(want)
 	if !bytes.Equal(g, w) {
 		t.Errorf("body = %s\nwant   %s", g, w)
+	}
+}
+
+// An edit PATCHes the message through the same webhook, keeps its layout's flags, and sends no
+// username or avatar (Discord's edit takes neither).
+func TestEdit(t *testing.T) {
+	stub := newStub(t, ok("77"))
+	h := newHarness(t)
+	if err := h.Edit(context.Background(), dest(stub.webhook("1")+"?thread_id=5"), "77", layouts[0]); err != nil {
+		t.Fatal(err)
+	}
+	r := stub.requests()[0]
+	if r.method != http.MethodPatch || r.path != "/api/webhooks/1/"+token+"/messages/77" {
+		t.Errorf("request = %s %s", r.method, r.path)
+	}
+	if q, _ := url.ParseQuery(r.rawQuery); q.Get("with_components") != "true" || q.Get("thread_id") != "5" || q.Has("wait") {
+		t.Errorf("query = %q", r.rawQuery)
+	}
+	if _, has := r.body["username"]; has {
+		t.Error("edit sent a username")
+	}
+	if _, has := r.body["avatar_url"]; has {
+		t.Error("edit sent an avatar")
+	}
+	if r.body["flags"] != float64(32768) {
+		t.Errorf("flags = %v", r.body["flags"])
+	}
+}
+
+// A deleted message is ErrNotFound, another refusal is ErrRefused, a 5xx is neither (retry).
+func TestEditErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		rep       reply
+		notFound  bool
+		refused   bool
+		transient bool
+	}{
+		{"deleted", reply{status: 404, body: `{"message":"Unknown Message","code":10008}`}, true, false, false},
+		{"refused", reply{status: 400, body: `{"message":"Invalid Form Body"}`}, false, true, false},
+		{"server", reply{status: 502, body: `bad gateway`}, false, false, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			stub := newStub(t, tc.rep)
+			err := newHarness(t).Edit(context.Background(), dest(stub.webhook("1")), "77", layouts[0])
+			if err == nil {
+				t.Fatal("no error")
+			}
+			if errors.Is(err, domain.ErrNotFound) != tc.notFound || errors.Is(err, domain.ErrRefused) != tc.refused {
+				t.Errorf("err = %v", err)
+			}
+			if strings.Contains(err.Error(), token) {
+				t.Errorf("error leaks the token: %v", err)
+			}
+		})
+	}
+	if err := newHarness(t).Edit(context.Background(), dest("https://discord.invalid/api/webhooks/1/x"), "../1", layouts[0]); !errors.Is(err, domain.ErrNotFound) {
+		t.Errorf("bad message ID: %v", err)
 	}
 }

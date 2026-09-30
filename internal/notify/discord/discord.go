@@ -57,6 +57,9 @@ func (e *RefusedError) Error() string {
 	return fmt.Sprintf("discord %q refused every layout (%s)", e.Destination, strings.Join(parts, "; "))
 }
 
+// Is makes a RefusedError match domain.ErrRefused.
+func (e *RefusedError) Is(target error) bool { return target == domain.ErrRefused }
+
 // Notifier posts to Discord webhooks. It is safe for concurrent use; posts to one webhook are
 // serialized so its rate-limit bucket stays accurate.
 type Notifier struct {
@@ -102,24 +105,12 @@ func (n *Notifier) Post(ctx context.Context, dest domain.Destination, layouts []
 	if len(layouts) == 0 {
 		return domain.PostResult{}, fmt.Errorf("discord %q: no layouts to post", dest.Name)
 	}
-	u, err := url.Parse(dest.WebhookURL)
-	if err != nil || u.Host == "" {
-		// url.Parse errors quote the whole URL.
-		return domain.PostResult{}, fmt.Errorf("discord %q: invalid webhook URL", dest.Name)
+	u, b, release, err := n.acquire(ctx, dest)
+	if err != nil {
+		return domain.PostResult{}, err
 	}
-	b := n.bucket(u)
-	select {
-	case b.turn <- struct{}{}:
-		defer func() { <-b.turn }()
-	case <-ctx.Done():
-		return domain.PostResult{}, ctx.Err()
-	}
-
-	if u.RawQuery != "" {
-		u.RawQuery += "&"
-	}
-	u.RawQuery += "wait=true&with_components=true"
-	target := u.String()
+	defer release()
+	target := withQuery(u, "wait=true&with_components=true")
 
 	refused := &RefusedError{Destination: dest.Name}
 	for _, l := range layouts {
@@ -127,7 +118,7 @@ func (n *Notifier) Post(ctx context.Context, dest domain.Destination, layouts []
 		if err != nil {
 			return domain.PostResult{}, fmt.Errorf("discord %q: encode %s layout: %w", dest.Name, l.Name, err)
 		}
-		id, r, err := n.send(ctx, b, dest.Name, l.Name, target, body)
+		id, r, err := n.send(ctx, b, dest.Name, l.Name, http.MethodPost, target, body)
 		if err != nil {
 			return domain.PostResult{}, err
 		}
@@ -142,23 +133,80 @@ func (n *Notifier) Post(ctx context.Context, dest domain.Destination, layouts []
 	return domain.PostResult{}, refused
 }
 
-// send posts one layout, waiting out 429s. It returns the message ID, or the refusal, or a
-// transient error.
-func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, target string, body []byte) (string, *Refusal, error) {
+// Edit replaces a message the webhook posted. 404 (message or webhook deleted) is
+// domain.ErrNotFound; another refusal is a *RefusedError; anything else is transient.
+func (n *Notifier) Edit(ctx context.Context, dest domain.Destination, messageID string, layout domain.Layout) error {
+	if _, err := strconv.ParseUint(messageID, 10, 64); err != nil { // snowflakes are decimal
+		return fmt.Errorf("discord %q: edit: message ID %q: %w", dest.Name, messageID, domain.ErrNotFound)
+	}
+	u, b, release, err := n.acquire(ctx, dest)
+	if err != nil {
+		return err
+	}
+	defer release()
+	u.Path = strings.TrimRight(u.Path, "/") + "/messages/" + messageID
+	target := withQuery(u, "with_components=true")
+
+	// An edit takes no username or avatar: the message keeps the ones it was posted with.
+	body, err := json.Marshal(withCommon(domain.Destination{}, layout.Body))
+	if err != nil {
+		return fmt.Errorf("discord %q: encode %s layout: %w", dest.Name, layout.Name, err)
+	}
+	_, r, err := n.send(ctx, b, dest.Name, layout.Name, http.MethodPatch, target, body)
+	switch {
+	case err != nil:
+		return err
+	case r != nil && r.Status == http.StatusNotFound:
+		return fmt.Errorf("discord %q: edit: message %w (%s)", dest.Name, domain.ErrNotFound, r.Detail)
+	case r != nil:
+		return &RefusedError{Destination: dest.Name, Refusals: []Refusal{*r}}
+	}
+	return nil
+}
+
+// acquire parses the webhook URL and takes its bucket's turn; release gives it back.
+func (n *Notifier) acquire(ctx context.Context, dest domain.Destination) (*url.URL, *bucket, func(), error) {
+	u, err := url.Parse(dest.WebhookURL)
+	if err != nil || u.Host == "" {
+		// url.Parse errors quote the whole URL.
+		return nil, nil, nil, fmt.Errorf("discord %q: invalid webhook URL", dest.Name)
+	}
+	b := n.bucket(u)
+	select {
+	case b.turn <- struct{}{}:
+		return u, b, func() { <-b.turn }, nil
+	case <-ctx.Done():
+		return nil, nil, nil, ctx.Err()
+	}
+}
+
+func withQuery(u *url.URL, q string) string {
+	c := *u
+	if c.RawQuery != "" {
+		c.RawQuery += "&"
+	}
+	c.RawQuery += q
+	return c.String()
+}
+
+// send sends one layout (POST a new message, PATCH an edit), waiting out 429s. It returns the
+// message ID, or the refusal, or a transient error.
+func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, method, target string, body []byte) (string, *Refusal, error) {
+	verb := strings.ToLower(method)
 	for attempt := 1; ; attempt++ {
 		if d := b.until.Sub(n.clock.Now()); d > 0 {
 			if d > maxRetryAfter {
-				return "", nil, fmt.Errorf("discord %q: post %s layout: rate limited for %s", destName, layout, d)
+				return "", nil, fmt.Errorf("discord %q: %s %s layout: rate limited for %s", destName, verb, layout, d)
 			}
 			n.logger().Debug("discord rate limit, waiting", "destination", destName, "wait", d)
 			if err := n.sleep(ctx, d); err != nil {
 				return "", nil, err
 			}
 		}
-		status, header, resp, err := n.do(ctx, target, body)
+		status, header, resp, err := n.do(ctx, method, target, body)
 		if err != nil {
 			// Also after a timeout Discord may have posted it; the batcher's retry can repeat the card.
-			return "", nil, fmt.Errorf("discord %q: post %s layout: %w", destName, layout, err)
+			return "", nil, fmt.Errorf("discord %q: %s %s layout: %w", destName, verb, layout, err)
 		}
 		n.limit(b, header)
 		switch {
@@ -171,8 +219,8 @@ func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, target
 		case status == http.StatusTooManyRequests:
 			wait := retryAfter(resp, header)
 			if attempt >= maxAttempts || wait > maxRetryAfter {
-				return "", nil, fmt.Errorf("discord %q: post %s layout: rate limited (retry after %s, attempt %d)",
-					destName, layout, wait, attempt)
+				return "", nil, fmt.Errorf("discord %q: %s %s layout: rate limited (retry after %s, attempt %d)",
+					destName, verb, layout, wait, attempt)
 			}
 			n.logger().Info("discord rate limited, retrying", "destination", destName, "layout", layout,
 				"wait", wait+retryMargin, "attempt", attempt)
@@ -182,14 +230,14 @@ func (n *Notifier) send(ctx context.Context, b *bucket, destName, layout, target
 		case status >= 400 && status < 500:
 			return "", &Refusal{Layout: layout, Status: status, Detail: detail(resp)}, nil
 		default:
-			return "", nil, fmt.Errorf("discord %q: post %s layout: status %d: %s", destName, layout, status, detail(resp))
+			return "", nil, fmt.Errorf("discord %q: %s %s layout: status %d: %s", destName, verb, layout, status, detail(resp))
 		}
 	}
 }
 
 // do sends one request. Errors never contain the webhook URL.
-func (n *Notifier) do(ctx context.Context, target string, body []byte) (int, http.Header, []byte, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, target, bytes.NewReader(body))
+func (n *Notifier) do(ctx context.Context, method, target string, body []byte) (int, http.Header, []byte, error) {
+	req, err := http.NewRequestWithContext(ctx, method, target, bytes.NewReader(body))
 	if err != nil {
 		return 0, nil, nil, redactErr(err)
 	}

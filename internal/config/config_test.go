@@ -30,6 +30,29 @@ func TestParseMinimalAppliesDefaults(t *testing.T) {
 	}
 }
 
+// Back-catalog runs are on by default, one per show, edited as episodes land; quiet mode needs
+// none of the run timings.
+func TestBacklogDefaults(t *testing.T) {
+	cfg, err := Parse([]byte(minimal))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := Backlog{Mode: "lead", Scope: "series", Edit: true, Settle: 5 * time.Minute, Idle: 24 * time.Hour, MaxHold: 24 * time.Hour}
+	if cfg.Backlog != want || cfg.Timing.FollowingEarly != 24*time.Hour {
+		t.Errorf("backlog = %+v, following_early = %s", cfg.Backlog, cfg.Timing.FollowingEarly)
+	}
+	cfg, err = Parse([]byte(minimal + "backlog: {mode: complete, scope: season, edit: false, max_hold: 48h}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b := cfg.Backlog; b.Mode != "complete" || b.Scope != "season" || b.Edit || b.MaxHold != 48*time.Hour || b.Settle != 5*time.Minute {
+		t.Errorf("overrides: %+v", b)
+	}
+	if _, err := Parse([]byte(minimal + "backlog: {mode: quiet, settle: 0s}\n")); err != nil {
+		t.Errorf("quiet mode with no settle: %v", err)
+	}
+}
+
 func TestExampleConfigParses(t *testing.T) {
 	raw, err := os.ReadFile(filepath.Join("..", "..", "config.example.yaml"))
 	if err != nil {
@@ -83,6 +106,9 @@ func TestValidationErrors(t *testing.T) {
 		{"heartbeat not http", "sources:", "server: {heartbeat_url: ftp://example.org/ping/tok123}\nsources:", "server.heartbeat_url must be an http"},
 		{"heartbeat no host", "sources:", "server: {heartbeat_url: \"https:///ping/tok123\"}\nsources:", "server.heartbeat_url must be an http"},
 		{"heartbeat file missing", "sources:", "server: {heartbeat_url: {file: /nonexistent/hb}}\nsources:", "server.heartbeat_url: open"},
+		{"bad backlog mode", "routes:", "backlog: {mode: often}\nroutes:", "mode must be lead, complete or quiet"},
+		{"bad backlog scope", "routes:", "backlog: {scope: episode}\nroutes:", "scope must be series or season"},
+		{"zero settle", "routes:", "backlog: {settle: 0s}\nroutes:", "settle, idle and max_hold must be positive"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := Parse([]byte(strings.Replace(minimal, tc.from, tc.to, 1)))

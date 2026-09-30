@@ -52,10 +52,15 @@ func (a *App) Preview(ctx context.Context, source string, imps []domain.Import, 
 		p.Notifier = col
 		dest = &domain.Destination{Name: "preview"}
 	}
-	if _, _, err := p.deliver(ctx, b, true, dest, false); err != nil {
+	if _, _, _, err := p.deliver(ctx, b, true, dest, false); err != nil {
 		return nil, err
 	}
 	return col.layouts, nil
+}
+
+// Edit is never called: a preview batch has no run.
+func (c *collector) Edit(context.Context, domain.Destination, string, domain.Layout) error {
+	return errors.New("preview: nothing to edit")
 }
 
 type collector struct {

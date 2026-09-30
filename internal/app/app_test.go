@@ -36,11 +36,30 @@ type capture struct {
 	posts []post
 	fail  error
 	after func(n int) // called after the n-th successful post
+
+	edits   []edit
+	editErr error
+}
+
+func (c *capture) Edit(ctx context.Context, d domain.Destination, id string, l domain.Layout) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	c.edits = append(c.edits, edit{d, id, l})
+	return c.editErr
 }
 
 type post struct {
 	dest    domain.Destination
 	layouts []domain.Layout
+}
+
+type edit struct {
+	dest   domain.Destination
+	id     string
+	layout domain.Layout
 }
 
 func (c *capture) count() int {

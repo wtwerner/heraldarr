@@ -189,6 +189,24 @@ func DecodeSeries(body []byte) (*domain.SeriesDetail, error) {
 	return d, nil
 }
 
+// DecodeQueue decodes GET /api/v3/queue/details (Sonarr): records without an episode are left out.
+func DecodeQueue(body []byte) ([]domain.QueueItem, error) {
+	var recs []struct {
+		EpisodeID    int `json:"episodeId"`
+		SeasonNumber int `json:"seasonNumber"`
+	}
+	if err := json.Unmarshal(body, &recs); err != nil {
+		return nil, err
+	}
+	out := make([]domain.QueueItem, 0, len(recs))
+	for _, r := range recs {
+		if r.EpisodeID != 0 {
+			out = append(out, domain.QueueItem{EpisodeID: r.EpisodeID, Season: r.SeasonNumber})
+		}
+	}
+	return out, nil
+}
+
 type movieResource struct {
 	Overview         string `json:"overview"`
 	Certification    string `json:"certification"`

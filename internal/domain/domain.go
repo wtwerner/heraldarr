@@ -92,6 +92,12 @@ type Batch struct {
 	First     time.Time           `json:"first"`
 	Last      time.Time           `json:"last"`
 	Following bool                `json:"following"` // new episodes people follow: short quiet window
+	// Backlog: episodes that aired long ago, grouped into a run (backlog modes lead and complete).
+	// Season is the one season the batch holds when runs are per season; nil: the whole series.
+	Backlog bool `json:"backlog,omitempty"`
+	Season  *int `json:"season,omitempty"`
+	// Run is what the batch already announced; set after its first card, kept while the run lasts.
+	Run *Run `json:"run,omitempty"`
 	// Delivery state, owned by the batcher.
 	MediaChecks int       `json:"mediaChecks"` // times the media server was asked and didn't have it yet
 	Tries       int       `json:"tries"`       // failed sends
@@ -113,6 +119,27 @@ func (b *Batch) Keys() []ItemKey {
 
 // Len is the number of items waiting.
 func (b *Batch) Len() int { return len(b.Episodes) + len(b.Movies) }
+
+// Run is a back-catalog run: episodes of one series (or season) that arrive over hours or days.
+// Its first card is posted once; later episodes are folded into that card, not posted again.
+type Run struct {
+	Episodes map[ItemKey]Episode `json:"episodes"` // announced so far
+	// Message is the card to edit as more episodes land; zero when it can't be edited.
+	Message Message `json:"message,omitzero"`
+}
+
+// Message is a posted card: where it went, its ID and the layout Discord accepted.
+type Message struct {
+	Destination string `json:"destination"`
+	ID          string `json:"id"`
+	Layout      string `json:"layout"`
+}
+
+// QueueItem is one episode the *arr has grabbed and not imported yet.
+type QueueItem struct {
+	EpisodeID int
+	Season    int
+}
 
 // SeasonStats counts files after the import, so "had nothing before" means every file arrived in
 // this batch.

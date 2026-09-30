@@ -62,7 +62,13 @@ func (a *App) metricsHandler(w http.ResponseWriter, r *http.Request) {
 		reply(w, http.StatusServiceUnavailable, map[string]any{"error": "store unavailable"})
 		return
 	}
-	a.metrics.pending.set(float64(len(batches)))
+	pending := 0
+	for _, b := range batches {
+		if b.Len() > 0 { // a back-catalog run with nothing waiting isn't pending
+			pending++
+		}
+	}
+	a.metrics.pending.set(float64(pending))
 	w.Header().Set("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
 	a.metrics.write(w)
 }

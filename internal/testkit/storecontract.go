@@ -27,7 +27,16 @@ func StoreContract(t *testing.T, open func(t *testing.T) domain.Store, reopen fu
 			Movies: map[domain.ItemKey]domain.Movie{"radarr:movie:7": {ID: 7, Title: "M", Size: 1 << 40, AudioChannels: 5.1}},
 			First:  t0, Last: t0,
 		}
-		for _, x := range []*domain.Batch{b, m} {
+		season := 3
+		r := &domain.Batch{ // a back-catalog run with nothing pending
+			Key: "sonarr:1:s3", Source: "sonarr", Kind: domain.KindTV, Backlog: true, Season: &season,
+			Series: &domain.Series{ID: 1, Title: "Example"}, First: t0, Last: t0,
+			Run: &domain.Run{
+				Episodes: map[domain.ItemKey]domain.Episode{"sonarr:ep:8": {ID: 8, Season: 3, Number: 1}},
+				Message:  domain.Message{Destination: "tv", ID: "123", Layout: "v2"},
+			},
+		}
+		for _, x := range []*domain.Batch{b, m, r} {
 			if err := s.SaveBatch(ctx, x); err != nil {
 				t.Fatal(err)
 			}
@@ -39,8 +48,12 @@ func StoreContract(t *testing.T, open func(t *testing.T) domain.Store, reopen fu
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(got) != 2 {
+		if len(got) != 3 {
 			t.Fatalf("got %d batches", len(got))
+		}
+		if g := got["sonarr:1:s3"]; g == nil || !g.Backlog || g.Season == nil || *g.Season != 3 || g.Run == nil ||
+			g.Run.Episodes["sonarr:ep:8"].Number != 1 || g.Run.Message.ID != "123" || g.Run.Message.Layout != "v2" {
+			t.Errorf("run did not round-trip: %+v", g)
 		}
 		g := got["sonarr:1"]
 		if g == nil || g.Series.Title != "Example" || !g.Episodes["sonarr:ep:5"].Aired.Equal(t0) || !g.Following ||
@@ -59,7 +72,7 @@ func StoreContract(t *testing.T, open func(t *testing.T) domain.Store, reopen fu
 		if err := s.DeleteBatch(ctx, "sonarr:1"); err != nil {
 			t.Fatal(err)
 		}
-		if after, _ := s.LoadBatches(ctx); len(after) != 1 {
+		if after, _ := s.LoadBatches(ctx); len(after) != 2 {
 			t.Errorf("after delete: %d batches", len(after))
 		}
 		if err := s.DeleteBatch(ctx, "missing"); err != nil {

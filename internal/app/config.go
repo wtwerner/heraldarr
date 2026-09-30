@@ -79,6 +79,11 @@ func FromConfig(cfg *config.Config, version string, log *slog.Logger) (*Service,
 			QuietMovies: cfg.Timing.QuietMovies, MaxHold: cfg.Timing.MaxHold,
 			FollowingWindow: cfg.Timing.FollowingWindow, Reannounce: cfg.Timing.Reannounce,
 			RetryInterval: cfg.Timing.RetryInterval, RetryMax: cfg.Timing.RetryMax,
+			FollowingEarly: cfg.Timing.FollowingEarly,
+			Backlog: batcher.Backlog{
+				Mode: cfg.Backlog.Mode, PerSeason: cfg.Backlog.Scope == config.ScopeSeason, Edit: cfg.Backlog.Edit,
+				Settle: cfg.Backlog.Settle, Idle: cfg.Backlog.Idle, MaxHold: cfg.Backlog.MaxHold,
+			},
 		},
 	}
 	wiki := enrich.New(st, clock)

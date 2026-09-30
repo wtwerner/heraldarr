@@ -16,12 +16,30 @@ digest.
 
 **Quiet window**: how long a batch must receive nothing new before it is **due**.
 - `quiet_episodes` (5 min) when the batch is **following**.
-- `quiet_backlog` (30 min) otherwise: back-catalog seasons trickle in over hours.
+- `quiet_backlog` (30 min) otherwise: back-catalog seasons trickle in over hours (`backlog.mode:
+  quiet` only; otherwise back catalog goes into runs).
 - `quiet_movies` (5 min) for movie batches.
 - **Max hold** (4 h): due this long after the batch's first item, however busy.
 
 **Following**: the batch is new episodes people watch as they air. True when every episode aired
 within `following_window` (14 days), or every season in the batch already had files before it.
+With back-catalog runs on (`backlog.mode` lead or complete), each episode is decided by its air date
+alone: aired within `following_window`, or due within `following_early` (1 day; streaming releases
+often land before the air date the *arr has).
+
+**Back catalog**: episodes that aired before `following_window`. Requesting old seasons makes them
+arrive one download at a time over hours or days.
+
+**Run**: the back-catalog episodes of one series (or one season, `backlog.scope: season`) arriving
+together, in a batch of their own (`sonarr:101:backlog`, `sonarr:101:s3`). Its first card is posted
+once; later episodes are **folded into** it: the card is **edited** (`backlog.edit`, silent in
+Discord) or, when it can't be, they are marked announced without a post. A run with nothing
+pending ends after `backlog.idle` (24 h) without an import.
+- **Lead** (`backlog.mode: lead`, default): the first card goes out once the first episodes have
+  been quiet for `backlog.settle` (5 min; a season pack lands in a minute or two).
+- **Complete**: the first card waits until the *arr's download **queue** has nothing more for the
+  run, up to `backlog.max_hold` (24 h).
+- **Quiet**: no runs; back catalog uses `quiet_backlog` as in the reference implementation.
 
 **Digest**: one card for `digest_from` (4) or more movies arriving together: a line per movie and an
 image grid.
