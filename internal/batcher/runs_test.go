@@ -193,8 +193,16 @@ func TestCompleteAwaitsQueue(t *testing.T) {
 	}
 	_ = b.Done(ctx, bt.Key, nil, batcher.Queued)
 	clock.Advance(c.Backlog.MaxHold)
-	if bt := due(t, b, false)["sonarr:7:backlog"]; bt == nil || b.AwaitsQueue(bt) {
+	bt = due(t, b, false)["sonarr:7:backlog"]
+	if bt == nil || b.AwaitsQueue(bt) {
 		t.Fatal("still awaiting the queue after max_hold")
+	}
+	// Once the card is out, later episodes are edits: they never wait for the queue.
+	_ = b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, &domain.Message{ID: "1"})
+	add(t, b, ep(102, 1, 2, old))
+	clock.Advance(5 * time.Minute)
+	if bt := due(t, b, false)["sonarr:7:backlog"]; bt == nil || b.AwaitsQueue(bt) {
+		t.Fatal("an update of a complete run awaits the queue")
 	}
 	// Lead never waits for the queue.
 	lb, lclock, _ := newRuns(t, runCfg(batcher.Lead, false))
@@ -298,5 +306,80 @@ func TestRunRemembersWithoutLedger(t *testing.T) {
 	add(t, b, ep(101, 1, 1, old))
 	if got := due(t, b, true); len(got) != 0 {
 		t.Fatalf("re-import queued again: %v", keysOf(got))
+	}
+}
+
+// A run that never goes quiet is still due: lead's first card and its updates at timing.MaxHold
+// after their first episode, complete's first card at Backlog.MaxHold.
+func TestBusyRunHoldCaps(t *testing.T) {
+	ctx := context.Background()
+	// trickle adds an episode every 4 minutes until the run is due; it returns the due batch.
+	trickle := func(t *testing.T, b *batcher.Batcher, clock *testkit.Clock, from int, until time.Duration) (time.Duration, *domain.Batch) {
+		t.Helper()
+		start := clock.Now()
+		for id := from; ; id++ {
+			add(t, b, ep(id, 1, id%100, old))
+			if bt := due(t, b, false)["sonarr:7:backlog"]; bt != nil {
+				return clock.Now().Sub(start), bt
+			}
+			if clock.Now().Sub(start) > until {
+				t.Fatalf("not due within %s of a steady trickle", until)
+			}
+			clock.Advance(4 * time.Minute) // never quiet for Settle
+		}
+	}
+	b, clock, _ := newRuns(t, runCfg(batcher.Lead, false))
+	got, bt := trickle(t, b, clock, 101, 5*time.Hour)
+	if got != 4*time.Hour {
+		t.Errorf("lead first card due after %s, want 4h", got)
+	}
+	_ = b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, &domain.Message{ID: "1"})
+	clock.Advance(4 * time.Minute)
+	if got, _ := trickle(t, b, clock, 201, 5*time.Hour); got != 4*time.Hour {
+		t.Errorf("lead update due after %s, want 4h", got)
+	}
+
+	c := runCfg(batcher.Complete, false)
+	b, clock, _ = newRuns(t, c)
+	if got, _ := trickle(t, b, clock, 101, 25*time.Hour); got != c.Backlog.MaxHold {
+		t.Errorf("complete first card due after %s, want %s", got, c.Backlog.MaxHold)
+	}
+}
+
+// failingSave is a store whose batch writes can be made to fail.
+type failingSave struct {
+	*testkit.MemStore
+	fail bool
+}
+
+func (s *failingSave) SaveBatch(ctx context.Context, bt *domain.Batch) error {
+	if s.fail {
+		return errors.New("disk full")
+	}
+	return s.MemStore.SaveBatch(ctx, bt)
+}
+
+// A delivery outcome that can't be saved leaves the run as the store has it: memory is never
+// changed in place.
+func TestRunUnchangedWhenSaveFails(t *testing.T) {
+	clock, store := testkit.NewClock(t0), &failingSave{MemStore: testkit.NewMemStore()}
+	b := batcher.New(runCfg(batcher.Lead, false), clock, store, map[string]domain.Kind{"sonarr": domain.KindTV},
+		func(string) domain.ArrClient { return testkit.Arr{Sc: &testkit.Scenario{}} })
+	ctx := context.Background()
+	add(t, b, ep(101, 1, 1, old))
+	clock.Advance(5 * time.Minute)
+	bt := due(t, b, false)["sonarr:7:backlog"]
+	_ = b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, &domain.Message{ID: "1"})
+	add(t, b, ep(102, 1, 2, old))
+	clock.Advance(5 * time.Minute)
+	bt = due(t, b, false)["sonarr:7:backlog"]
+	store.fail = true
+	if err := b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, nil); err == nil {
+		t.Fatal("save failure not reported")
+	}
+	store.fail = false
+	due(t, b, true) // the next write of the batch saves what memory holds
+	if all, _ := store.LoadBatches(ctx); all["sonarr:7:backlog"] == nil || len(all["sonarr:7:backlog"].Run.Episodes) != 1 {
+		t.Fatalf("run changed in memory without the store: %+v", all["sonarr:7:backlog"])
 	}
 }

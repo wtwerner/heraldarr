@@ -109,6 +109,7 @@ func TestValidationErrors(t *testing.T) {
 		{"bad backlog mode", "routes:", "backlog: {mode: often}\nroutes:", "mode must be lead, complete or quiet"},
 		{"bad backlog scope", "routes:", "backlog: {scope: episode}\nroutes:", "scope must be series or season"},
 		{"zero settle", "routes:", "backlog: {settle: 0s}\nroutes:", "settle, idle and max_hold must be positive"},
+		{"negative following_early", "routes:", "timing: {following_early: -1h}\nroutes:", "following_early must not be negative"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := Parse([]byte(strings.Replace(minimal, tc.from, tc.to, 1)))

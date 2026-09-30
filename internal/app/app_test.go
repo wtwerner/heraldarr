@@ -601,7 +601,7 @@ func TestFromConfig(t *testing.T) {
 	hook := write("hook", "https://discord.invalid/api/webhooks/1/x")
 	xml := write("config.xml", "<Config><ApiKey>k</ApiKey></Config>")
 	prefs := write("Preferences.xml", `<Preferences PlexOnlineToken="t"/>`)
-	cfg, err := config.Parse([]byte(`
+	yaml := `
 server: {data_dir: ` + filepath.Join(dir, "data") + `, heartbeat_url: {file: ` + write("hb", "https://hc.example.org/ping/x") + `}}
 media_server: {url: "http://plex:32400", preferences_xml: ` + prefs + `}
 sources:
@@ -613,7 +613,8 @@ destinations:
 routes:
   - {sources: [sonarr], destination: tv}
   - {sources: [radarr4k], destination: private, style: {label: 4K, color: "#9B59B6", tech_details: true}}
-`))
+`
+	cfg, err := config.Parse([]byte(yaml))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -637,5 +638,24 @@ routes:
 	}
 	if svc.Heartbeat != "https://hc.example.org/ping/x" {
 		t.Errorf("heartbeat URL not wired: %q", svc.Heartbeat)
+	}
+	// Back-catalog runs: the defaults, then the other scope and no edits.
+	want := batcher.Backlog{Mode: batcher.Lead, Edit: true, Settle: 5 * time.Minute, Idle: 24 * time.Hour, MaxHold: 24 * time.Hour}
+	if svc.Timing.Backlog != want || svc.Timing.FollowingEarly != 24*time.Hour {
+		t.Errorf("backlog not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
+	}
+	_ = svc.Close()
+	cfg, err = config.Parse([]byte(strings.Replace(yaml, "/data,", "/data2,", 1) +
+		"backlog: {mode: complete, scope: season, edit: false, idle: 12h}\ntiming: {following_early: 2h}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc, err = app.FromConfig(cfg, "test", slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = batcher.Backlog{Mode: batcher.Complete, PerSeason: true, Settle: 5 * time.Minute, Idle: 12 * time.Hour, MaxHold: 24 * time.Hour}
+	if svc.Timing.Backlog != want || svc.Timing.FollowingEarly != 2*time.Hour {
+		t.Errorf("backlog overrides not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
 	}
 }

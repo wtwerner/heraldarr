@@ -151,8 +151,9 @@ func TestLeadRunEditsOneCard(t *testing.T) {
 	}
 
 	for i, id := range []int{302, 303, 304, 305} {
-		e.arr.set(append([]int{id}, queueAfter(id)...)...) // still listed while it imports
-		e.clock.Advance(40 * time.Minute)                  // longer apart than any quiet window
+		// Still listed while they import, and the run's first episode not yet cleared.
+		e.arr.set(append([]int{301, id}, queueAfter(id)...)...)
+		e.clock.Advance(40 * time.Minute) // longer apart than any quiet window
 		e.imported(t, id, i+2, aired2004)
 		e.settle()
 	}
@@ -355,10 +356,8 @@ func TestCompleteRunForced(t *testing.T) {
 
 // /health, /pending and /metrics count a run with nothing waiting as a run, not as pending.
 func TestRunEndpoints(t *testing.T) {
-	e := newRunEnv(t, batcher.Lead, true)
-	e.imported(t, 301, 1, aired2004)
-	e.settle()                                           // the run's card: nothing pending
-	e.imported(t, 900, 9, e.clock.Now().Add(-time.Hour)) // a new episode, waiting
+	e := newRunEnv(t, batcher.Lead, true, func(b *batcher.Backlog) { b.PerSeason = true })
+	var health struct{ Pending, Runs int }
 	get := func(path string) string {
 		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, path, nil)
 		req.SetBasicAuth("u", "p")
@@ -369,7 +368,12 @@ func TestRunEndpoints(t *testing.T) {
 		}
 		return rec.Body.String()
 	}
-	var health struct{ Pending, Runs int }
+	e.imported(t, 301, 1, aired2004)
+	if err := json.Unmarshal([]byte(get("/health")), &health); err != nil || health.Pending != 1 || health.Runs != 0 {
+		t.Errorf("/health before the run's card: %+v %v", health, err)
+	}
+	e.settle()                                           // the run's card: nothing pending
+	e.imported(t, 900, 9, e.clock.Now().Add(-time.Hour)) // a new episode, waiting
 	if err := json.Unmarshal([]byte(get("/health")), &health); err != nil || health.Pending != 1 || health.Runs != 1 {
 		t.Errorf("/health: %+v %v", health, err)
 	}
@@ -381,7 +385,8 @@ func TestRunEndpoints(t *testing.T) {
 	if live["key"] != "sonarr:7" || live["backlog"] != nil || live["items"] != float64(1) {
 		t.Errorf("live entry: %v", live)
 	}
-	if run["key"] != "sonarr:7:backlog" || run["backlog"] != true || run["announced"] != float64(1) || run["items"] != float64(0) {
+	if run["key"] != "sonarr:7:s3" || run["backlog"] != true || run["season"] != float64(3) ||
+		run["announced"] != float64(1) || run["items"] != float64(0) {
 		t.Errorf("run entry: %v", run)
 	}
 	if m := get("/metrics"); !strings.Contains(m, "\nheraldarr_pending_batches 1\n") {

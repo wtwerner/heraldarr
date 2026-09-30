@@ -95,7 +95,7 @@ func (n *Notifier) logger() *slog.Logger {
 
 // bucket is one webhook's rate limit, from the X-RateLimit headers of its last response.
 type bucket struct {
-	turn  chan struct{} // held for the whole of a Post
+	turn  chan struct{} // held for the whole of a Post or Edit
 	until time.Time     // no requests left before this; zero: not limited
 }
 
