@@ -30,17 +30,20 @@ clear hand-off to the maintainer. Run the steps in order.
 
 ## 3. Gate
 
-The maintainer merges it (a **hand-off**) when the PR touches any of:
-`internal/domain/`, `testdata/`, `internal/testkit/`, `.github/`, `.claude/`, `CLAUDE.md`,
-`CONTEXT.md`, `docs/adr/`, `Dockerfile`. Check with `gh pr diff <n> --name-only`.
+The maintainer merges it (a **hand-off**) when the PR touches a path in `.github/CODEOWNERS`
+(the seams, the oracle, CI, agent config, ADRs, the Dockerfile). GitHub enforces this: those PRs
+need the code owner's review, which only the maintainer can give. Check with
+`gh pr diff <n> --name-only`.
 Everything else continues.
 
 ## 4. CI and merge
 
 1. `gh pr checks <n> --watch`. Red → read the log (`gh run view --log-failed`), fix, push, and
    go back to step 2 (a fix is a change the reviewer hasn't seen).
-2. `gh pr merge <n> --squash --delete-branch`. If `main` moved and the PR conflicts, rebase
-   (step 1.1) and repeat step 4. Done when `gh pr view <n> --json state` says `MERGED`.
+2. `gh pr merge <n> --squash --delete-branch`. The `main` ruleset requires the branch to be up to
+   date with `main` and CI green on it: when `main` moved, rebase (step 1.1), push, and repeat
+   step 4. Done when `gh pr view <n> --json state` says `MERGED`. Merging never uses `--admin`
+   (a hook blocks it); a PR the ruleset refuses for code-owner review is a **hand-off**.
 3. Comment on the issue: merged in #<n>, plus anything a later agent should know.
 
 ## Hand-off

@@ -1,0 +1,11 @@
+# Changes here need the maintainer (the main ruleset requires code-owner review). These are the
+# seams, the parity oracle, CI and the agents' own configuration: what every agent builds on.
+/internal/domain/   @wtwerner
+/internal/testkit/  @wtwerner
+/testdata/          @wtwerner
+/.github/           @wtwerner
+/.claude/           @wtwerner
+/CLAUDE.md          @wtwerner
+/CONTEXT.md         @wtwerner
+/docs/adr/          @wtwerner
+/Dockerfile         @wtwerner
