@@ -36,11 +36,31 @@ type capture struct {
 	posts []post
 	fail  error
 	after func(n int) // called after the n-th successful post
+
+	edits   []edit
+	editErr error
+	layout  string // the layout Discord "accepts"; "": the first
+}
+
+func (c *capture) Edit(ctx context.Context, d domain.Destination, id string, l domain.Layout) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	c.edits = append(c.edits, edit{d, id, l})
+	return c.editErr
 }
 
 type post struct {
 	dest    domain.Destination
 	layouts []domain.Layout
+}
+
+type edit struct {
+	dest   domain.Destination
+	id     string
+	layout domain.Layout
 }
 
 func (c *capture) count() int {
@@ -61,6 +81,9 @@ func (c *capture) Post(ctx context.Context, d domain.Destination, l []domain.Lay
 	c.posts = append(c.posts, post{d, l})
 	if c.after != nil {
 		c.after(len(c.posts))
+	}
+	if c.layout != "" {
+		return domain.PostResult{Layout: c.layout, MessageID: "1"}, nil
 	}
 	return domain.PostResult{Layout: l[0].Name, MessageID: "1"}, nil
 }
@@ -578,7 +601,7 @@ func TestFromConfig(t *testing.T) {
 	hook := write("hook", "https://discord.invalid/api/webhooks/1/x")
 	xml := write("config.xml", "<Config><ApiKey>k</ApiKey></Config>")
 	prefs := write("Preferences.xml", `<Preferences PlexOnlineToken="t"/>`)
-	cfg, err := config.Parse([]byte(`
+	yaml := `
 server: {data_dir: ` + filepath.Join(dir, "data") + `, heartbeat_url: {file: ` + write("hb", "https://hc.example.org/ping/x") + `}}
 media_server: {url: "http://plex:32400", preferences_xml: ` + prefs + `}
 sources:
@@ -590,7 +613,8 @@ destinations:
 routes:
   - {sources: [sonarr], destination: tv}
   - {sources: [radarr4k], destination: private, style: {label: 4K, color: "#9B59B6", tech_details: true}}
-`))
+`
+	cfg, err := config.Parse([]byte(yaml))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -614,5 +638,24 @@ routes:
 	}
 	if svc.Heartbeat != "https://hc.example.org/ping/x" {
 		t.Errorf("heartbeat URL not wired: %q", svc.Heartbeat)
+	}
+	// Back-catalog runs: the defaults, then the other scope and no edits.
+	want := batcher.Backlog{Mode: batcher.Lead, Edit: true, Settle: 5 * time.Minute, Idle: 24 * time.Hour, MaxHold: 24 * time.Hour}
+	if svc.Timing.Backlog != want || svc.Timing.FollowingEarly != 24*time.Hour {
+		t.Errorf("backlog not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
+	}
+	_ = svc.Close()
+	cfg, err = config.Parse([]byte(strings.Replace(yaml, "/data,", "/data2,", 1) +
+		"backlog: {mode: complete, scope: season, edit: false, idle: 12h}\ntiming: {following_early: 2h}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc, err = app.FromConfig(cfg, "test", slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = batcher.Backlog{Mode: batcher.Complete, PerSeason: true, Settle: 5 * time.Minute, Idle: 12 * time.Hour, MaxHold: 24 * time.Hour}
+	if svc.Timing.Backlog != want || svc.Timing.FollowingEarly != 2*time.Hour {
+		t.Errorf("backlog overrides not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
 	}
 }

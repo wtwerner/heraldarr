@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"net/url"
 	"strconv"
 	"strings"
@@ -66,6 +67,18 @@ func (a Arr) Movie(_ context.Context, id int) (*domain.MovieDetail, error) {
 	}
 	credits, _ := a.body("credit?movieId=" + strconv.Itoa(id))
 	return arr.DecodeMovie(b, credits)
+}
+
+// Queue answers from "queue/details?seriesId=<id>"; a scenario without one has an empty queue.
+func (a Arr) Queue(_ context.Context, seriesID int) ([]domain.QueueItem, error) {
+	b, err := a.body("queue/details?seriesId=" + strconv.Itoa(seriesID) + "&includeEpisode=true")
+	if errors.Is(err, ErrUnreachable) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return arr.DecodeQueue(b)
 }
 
 // Media answers from a scenario's "plex" and "plex_seasons" maps.
@@ -135,6 +148,11 @@ func clone(b *domain.Batch) *domain.Batch {
 	c.Movies = make(map[domain.ItemKey]domain.Movie, len(b.Movies))
 	for k, v := range b.Movies {
 		c.Movies[k] = v
+	}
+	if b.Run != nil {
+		r := *b.Run
+		r.Episodes = maps.Clone(b.Run.Episodes)
+		c.Run = &r
 	}
 	return &c
 }

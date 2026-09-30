@@ -9,6 +9,9 @@ import (
 // ErrNotFound: the *arr or media server doesn't have the item (deleted since the import).
 var ErrNotFound = errors.New("not found")
 
+// ErrRefused: the destination refused the message; sending the same again won't help.
+var ErrRefused = errors.New("refused")
+
 // Clock is injected everywhere time matters, so batching is testable.
 type Clock interface {
 	Now() time.Time
@@ -20,6 +23,9 @@ type ArrClient interface {
 	Series(ctx context.Context, id int) (*SeriesDetail, error)
 	// Movie includes credits; a credits failure leaves Directors/Cast empty rather than failing.
 	Movie(ctx context.Context, id int) (*MovieDetail, error)
+	// Queue lists a series' episodes that are grabbed and still expected to import (Sonarr only):
+	// failed or blocked downloads are left out.
+	Queue(ctx context.Context, seriesID int) ([]QueueItem, error)
 }
 
 // MediaServer finds imported items in the library and links to them.
@@ -41,6 +47,9 @@ type MediaServer interface {
 // Notifier delivers one card, trying each layout until one is accepted.
 type Notifier interface {
 	Post(ctx context.Context, dest Destination, layouts []Layout) (PostResult, error)
+	// Edit replaces a posted message with layout (the one Discord accepted for it). An error
+	// matching ErrRefused or ErrNotFound (the message was deleted) won't go away on a retry.
+	Edit(ctx context.Context, dest Destination, messageID string, layout Layout) error
 }
 
 // Store persists batching and delivery state. Implementations must be safe for concurrent use.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 
 	"github.com/wtwerner/heraldarr/internal/batcher"
@@ -21,21 +22,35 @@ type wanted struct {
 
 // deliver renders and posts one batch to dest (nil: the source's destination). It returns the
 // item keys that went out and the outcome for the batcher; err explains a Failed outcome. record
-// writes the post history.
+// writes the post history. For a back-catalog batch, msg is what its run should edit from now on
+// (nil: unchanged): the card it just posted, or zero when the run's card can't be edited.
 func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *domain.Destination, record bool,
-) ([]domain.ItemKey, batcher.Outcome, error) {
+) (sent []domain.ItemKey, outcome batcher.Outcome, msg *domain.Message, err error) {
 	src, ok := a.Sources[b.Source]
 	if !ok {
 		// Configuration changed since the batch was queued: a failed try, so it is retried (the
 		// source may come back) and eventually dropped without being recorded as posted.
-		return nil, batcher.Failed, fmt.Errorf("source %q is no longer configured", b.Source)
+		return nil, batcher.Failed, nil, fmt.Errorf("source %q is no longer configured", b.Source)
 	}
 	if dest == nil {
 		dest = &src.Destination
 	}
+	downloading := 0
+	if b.Backlog {
+		n, err := a.queued(ctx, b, src)
+		switch {
+		case err != nil:
+			a.Log.Warn("download queue unavailable", "batch", batchName(b), "err", err)
+		case n > 0 && !force && a.batcher.AwaitsQueue(b):
+			a.Log.Info("run still downloading", "batch", batchName(b), "queued", n)
+			return nil, batcher.Queued, nil, nil
+		}
+		downloading = n
+		b = withRun(b) // the card shows the whole run
+	}
 	found, wait := a.lookup(ctx, b, force)
 	if wait {
-		return nil, batcher.Waiting, nil
+		return nil, batcher.Waiting, nil, nil
 	}
 	common := render.Common{Style: src.Style, Now: a.Clock.Now()}
 	if a.Media != nil {
@@ -48,9 +63,12 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 	}
 	var cards []card
 	if b.Kind == domain.KindTV {
-		c, err := a.renderTV(ctx, b, src, found[showKey], common)
+		c, err := a.renderTV(ctx, b, src, found[showKey], common, downloading)
 		if err != nil {
-			return nil, batcher.Failed, err
+			return nil, batcher.Failed, nil, err
+		}
+		if b.Run != nil {
+			return a.update(ctx, b, c, dest, record)
 		}
 		cards = append(cards, card{b.Keys(), c})
 	} else {
@@ -76,15 +94,17 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 		}
 	}
 
-	var sent []domain.ItemKey
 	for _, c := range cards {
 		res, err := a.Notifier.Post(ctx, *dest, render.Layouts(c.card, a.Clock.Now()))
 		if err != nil {
 			// As in the reference, a card Discord refuses in every layout is a failed try too
 			// (a deleted or rotated webhook refuses with 401/404): retried, then dropped.
-			return sent, batcher.Failed, err
+			return sent, batcher.Failed, nil, err
 		}
 		sent = append(sent, c.keys...)
+		if b.Backlog {
+			msg = &domain.Message{Destination: dest.Name, ID: res.MessageID, Layout: res.Layout}
+		}
 		a.Log.Info("posted", "source", b.Source, "title", c.card.Title, "headline", c.card.Headline,
 			"layout", res.Layout, "items", len(c.keys))
 		if !record {
@@ -103,14 +123,111 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 			a.Log.Warn("writing history", "err", err)
 		}
 	}
-	return sent, batcher.Posted, nil
+	return sent, batcher.Posted, msg, nil
+}
+
+// update folds a run's new episodes (b holds the whole run, see withRun) into the card its first
+// episodes posted: an edit, silent in Discord. Without an editable card they are folded in
+// without one. Either way they count as announced.
+func (a *App) update(ctx context.Context, b *domain.Batch, c domain.Card, dest *domain.Destination, record bool,
+) ([]domain.ItemKey, batcher.Outcome, *domain.Message, error) {
+	keys := newKeys(b)
+	m := b.Run.Message
+	var msg *domain.Message
+	switch {
+	case !a.Timing.Backlog.Edit:
+		a.Log.Info("folded into the run", "batch", batchName(b), "items", len(keys))
+	case m.ID == "" || m.Destination != dest.Name:
+		a.Log.Info("folded into the run; its card can't be edited", "batch", batchName(b), "items", len(keys))
+	default:
+		var layout *domain.Layout
+		for _, l := range render.Layouts(c, a.Clock.Now()) {
+			if l.Name == m.Layout {
+				layout = &l
+			}
+		}
+		var err error
+		if layout == nil {
+			err = fmt.Errorf("layout %q: %w", m.Layout, domain.ErrNotFound)
+		} else {
+			err = a.Notifier.Edit(ctx, *dest, m.ID, *layout)
+		}
+		switch {
+		case errors.Is(err, domain.ErrNotFound) || errors.Is(err, domain.ErrRefused):
+			// Deleted, or Discord won't take this card as an edit: stop trying, keep quiet.
+			a.Log.Warn("can't edit the run's card; folding in without it", "batch", batchName(b), "err", err)
+			msg = &domain.Message{}
+		case err != nil:
+			return nil, batcher.Failed, nil, err
+		default:
+			a.Log.Info("edited", "source", b.Source, "title", c.Title, "headline", c.Headline,
+				"items", len(keys), "run", len(b.Episodes))
+		}
+	}
+	if record {
+		if err := a.Store.MarkPosted(context.WithoutCancel(ctx), keys, a.Clock.Now()); err != nil {
+			a.Log.Warn("recording posted items", "err", err)
+		}
+	}
+	return keys, batcher.Posted, msg, nil
+}
+
+// withRun returns b with its run's announced episodes added, so the card covers the whole run.
+func withRun(b *domain.Batch) *domain.Batch {
+	if b.Run == nil || len(b.Run.Episodes) == 0 {
+		return b
+	}
+	v := *b
+	v.Episodes = maps.Clone(b.Run.Episodes)
+	maps.Copy(v.Episodes, b.Episodes)
+	return &v
+}
+
+// newKeys are the keys of a run batch that aren't announced yet.
+func newKeys(b *domain.Batch) []domain.ItemKey {
+	var out []domain.ItemKey
+	for _, k := range b.Keys() {
+		if _, done := b.Run.Episodes[k]; !done {
+			out = append(out, k)
+		}
+	}
+	return out
+}
+
+// queued counts the episodes the *arr still has queued for b's run: back catalog (new episodes
+// go to their own card), of its season when runs are per season, and not already in the batch.
+func (a *App) queued(ctx context.Context, b *domain.Batch, src Source) (int, error) {
+	q, err := src.Arr.Queue(ctx, b.Series.ID)
+	if err != nil {
+		return 0, err
+	}
+	have := map[domain.ItemKey]bool{}
+	for k := range b.Episodes {
+		have[k] = true
+	}
+	if b.Run != nil {
+		for k := range b.Run.Episodes {
+			have[k] = true
+		}
+	}
+	n := 0
+	for _, it := range q {
+		inRun := b.Season == nil || *b.Season == it.Season
+		if inRun && !have[domain.EpisodeKey(b.Source, it.EpisodeID)] && !a.batcher.Recent(domain.Episode{Aired: it.Aired}) {
+			n++
+		}
+	}
+	return n, nil
 }
 
 func (a *App) renderTV(ctx context.Context, b *domain.Batch, src Source, show *domain.MediaItem,
-	common render.Common,
+	common render.Common, downloading int,
 ) (domain.Card, error) {
 	s := b.Series
-	in := render.TVInput{Common: common, Batch: b, Show: show, RottenTomatoes: a.RT.RottenTomatoes(ctx, s.IMDbID, s.Title)}
+	in := render.TVInput{
+		Common: common, Batch: b, Show: show, RottenTomatoes: a.RT.RottenTomatoes(ctx, s.IMDbID, s.Title),
+		Downloading: downloading,
+	}
 	detail, err := src.Arr.Series(ctx, s.ID)
 	switch {
 	case errors.Is(err, domain.ErrNotFound):

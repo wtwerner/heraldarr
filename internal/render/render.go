@@ -59,6 +59,9 @@ type TVInput struct {
 	ShowURL        string
 	SeasonURL      string
 	RottenTomatoes string // exact page or search link
+	// Downloading is how many more episodes of a back-catalog run the *arr has queued: the card
+	// says they're on the way (it is edited as they land).
+	Downloading int
 }
 
 // MovieInput is one movie plus everything looked up for it at send time.
@@ -171,7 +174,12 @@ func TV(in TVInput) domain.Card {
 		whole[len(whole)-1]-whole[0] == len(whole)-1 && !specials {
 		lines = []string{fmt.Sprintf("**Seasons %d–%d** · all %s", whole[0], whole[len(whole)-1], plural(len(eps), "episode"))}
 	}
-	lines = capLines(lines, maxTVLines)
+	if in.Downloading > 0 {
+		lines = capLines(lines, maxTVLines-1)
+		lines = append(lines, fmt.Sprintf("_%d more on the way_", in.Downloading))
+	} else {
+		lines = capLines(lines, maxTVLines)
+	}
 
 	mediaURL := ""
 	if in.Show != nil {

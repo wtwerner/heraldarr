@@ -122,10 +122,10 @@ func (a *App) flush(ctx context.Context, force bool) bool {
 			a.release(ctx, due[i:])
 			return false
 		}
-		sent, outcome, err := a.deliver(ctx, b, force, nil, true)
+		sent, outcome, msg, err := a.deliver(ctx, b, force, nil, true)
 		if ctx.Err() != nil {
 			// Interrupted mid-delivery isn't a failure: keep what went out, retry the rest later.
-			a.done(ctx, b, sent, batcher.Aborted)
+			a.done(ctx, b, sent, batcher.Aborted, msg)
 			a.release(ctx, due[i+1:])
 			return false
 		}
@@ -136,21 +136,23 @@ func (a *App) flush(ctx context.Context, force bool) bool {
 		case batcher.Waiting:
 			a.metrics.waits.add(1)
 		}
-		ok = a.done(ctx, b, sent, outcome) && ok
+		ok = a.done(ctx, b, sent, outcome, msg) && ok
 	}
 	return ok
 }
 
 func (a *App) release(ctx context.Context, batches []*domain.Batch) {
 	for _, b := range batches {
-		a.done(ctx, b, nil, batcher.Aborted)
+		a.done(ctx, b, nil, batcher.Aborted, nil)
 	}
 }
 
 // done reports an attempt to the batcher; it must happen even while shutting down. It returns
 // false when the store couldn't record it.
-func (a *App) done(ctx context.Context, b *domain.Batch, sent []domain.ItemKey, outcome batcher.Outcome) bool {
-	if err := a.batcher.Done(context.WithoutCancel(ctx), b.Key, sent, outcome); err != nil {
+func (a *App) done(ctx context.Context, b *domain.Batch, sent []domain.ItemKey, outcome batcher.Outcome,
+	msg *domain.Message,
+) bool {
+	if err := a.batcher.DoneMessage(context.WithoutCancel(ctx), b.Key, sent, outcome, msg); err != nil {
 		a.Log.Error("recording delivery outcome", "batch", batchName(b), "err", err)
 		return false
 	}

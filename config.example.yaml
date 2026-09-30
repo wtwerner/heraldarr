@@ -20,10 +20,24 @@ server:
 #   quiet_movies: 5m
 #   max_hold: 4h
 #   following_window: 336h  # 14 days
+#   following_early: 24h    # imported up to this long before its air date still counts as new
 #   digest_from: 4          # this many movies at once -> one digest card
 #   reannounce_after: 720h  # 30 days
 #   retry_interval: 2m
 #   retry_max: 30
+
+# Back-catalog TV: episodes that aired more than following_window ago. Requesting old seasons makes
+# them arrive one download at a time over hours or days, so they're grouped into a run per show:
+# announced once, then folded into that card instead of posting again.
+# backlog:                  # defaults shown
+#   mode: lead              # lead: post when the first episodes land, fold later ones into that card
+#                           # complete: post one card once the *arr has nothing left queued for the run
+#                           # quiet: no runs, a card per quiet_backlog window (the old behavior)
+#   scope: series           # series: one run per show; season: one per season
+#   edit: true              # edit the card as episodes land (silent in Discord); false: just skip them
+#   settle: 5m              # quiet before a card or an edit (a season pack lands in a minute or two)
+#   idle: 24h               # a run ends after this long with no new episode
+#   max_hold: 24h           # complete: post anyway this long after the run's first episode
 
 media_server:               # optional; without it cards have no "Open in Plex" button
   type: plex

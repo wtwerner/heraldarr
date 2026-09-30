@@ -116,7 +116,16 @@ func (a *App) health(w http.ResponseWriter, r *http.Request) {
 		reply(w, http.StatusServiceUnavailable, map[string]any{"ok": false, "error": "store unavailable"})
 		return
 	}
-	reply(w, http.StatusOK, map[string]any{"ok": true, "pending": len(batches)})
+	pending, runs := 0, 0
+	for _, b := range batches {
+		if b.Len() > 0 {
+			pending++
+		}
+		if b.Run != nil {
+			runs++
+		}
+	}
+	reply(w, http.StatusOK, map[string]any{"ok": true, "pending": pending, "runs": runs})
 }
 
 func (a *App) pending(w http.ResponseWriter, r *http.Request) {
@@ -128,13 +137,29 @@ func (a *App) pending(w http.ResponseWriter, r *http.Request) {
 	now := a.Clock.Now()
 	out := make([]map[string]any, 0, len(batches))
 	for _, b := range batches {
-		out = append(out, map[string]any{
-			"batch": batchName(b), "source": b.Source, "items": b.Len(),
+		entry := map[string]any{
+			"batch": batchName(b), "key": b.Key, "source": b.Source, "items": b.Len(),
 			"following": b.Following, "quiet_for_min": now.Sub(b.Last).Round(6 * time.Second).Minutes(),
 			"media_checks": b.MediaChecks, "tries": b.Tries,
-		})
+		}
+		if b.Backlog {
+			entry["backlog"] = true
+			if b.Season != nil {
+				entry["season"] = *b.Season
+			}
+			if b.Run != nil {
+				entry["announced"] = len(b.Run.Episodes)
+			}
+		}
+		out = append(out, entry)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i]["batch"].(string) < out[j]["batch"].(string) })
+	sort.Slice(out, func(i, j int) bool {
+		bi, bj := out[i]["batch"].(string), out[j]["batch"].(string)
+		if bi != bj {
+			return bi < bj
+		}
+		return out[i]["key"].(string) < out[j]["key"].(string) // a show's live batch and its run
+	})
 	reply(w, http.StatusOK, out)
 }
 

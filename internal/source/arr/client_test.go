@@ -359,3 +359,35 @@ func TestClientMovieCancelledDuringCredits(t *testing.T) {
 }
 
 var _ domain.ArrClient = (*arr.Client)(nil)
+
+// The queue is one record per grabbed episode (a season pack is one per episode, same download);
+// downloads that won't import on their own are left out.
+func TestClientQueue(t *testing.T) {
+	f := &fakeArr{bodies: map[string]string{"/api/v3/queue/details?seriesId=102&includeEpisode=true": `[
+		{"id":1,"seriesId":102,"episodeId":501,"seasonNumber":2,"status":"queued","trackedDownloadState":"downloading","downloadId":"A",
+		 "episode":{"id":501,"airDateUtc":"2011-04-18T01:00:00Z"}},
+		{"id":2,"seriesId":102,"episodeId":502,"seasonNumber":2,"status":"queued","trackedDownloadState":"importPending","downloadId":"A"},
+		{"id":3,"seriesId":102,"seasonNumber":3,"status":"queued","downloadId":"B"},
+		{"id":4,"seriesId":102,"episodeId":601,"seasonNumber":3,"status":"warning","trackedDownloadState":"downloading","downloadId":"C"},
+		{"id":5,"seriesId":102,"episodeId":602,"seasonNumber":3,"status":"completed","trackedDownloadState":"importBlocked","downloadId":"D"},
+		{"id":6,"seriesId":102,"episodeId":603,"seasonNumber":3,"status":"failed","trackedDownloadState":"downloading","downloadId":"E"},
+		{"id":7,"seriesId":102,"episodeId":604,"seasonNumber":3,"status":"completed","trackedDownloadState":"failedPending","downloadId":"F"},
+		{"id":8,"seriesId":102,"episodeId":605,"seasonNumber":3,"status":"completed","trackedDownloadState":"ignored","downloadId":"G"}
+	]`}}
+	srv := serve(t, f)
+	got, err := newClient(srv.URL).Queue(context.Background(), 102)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []domain.QueueItem{
+		{EpisodeID: 501, Season: 2, Aired: time.Date(2011, 4, 18, 1, 0, 0, 0, time.UTC)},
+		{EpisodeID: 502, Season: 2},
+		{EpisodeID: 601, Season: 3},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+	if _, err := newClient(srv.URL).Queue(context.Background(), 7); !errors.Is(err, domain.ErrNotFound) {
+		t.Errorf("unknown series: %v, want ErrNotFound", err)
+	}
+}

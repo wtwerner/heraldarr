@@ -18,6 +18,7 @@ import (
 type Config struct {
 	Server       Server        `yaml:"server"`
 	Timing       Timing        `yaml:"timing"`
+	Backlog      Backlog       `yaml:"backlog"`
 	MediaServer  *MediaServer  `yaml:"media_server"` // optional: no deep links, no "wait for the library"
 	Sources      []Source      `yaml:"sources"`
 	Destinations []Destination `yaml:"destinations"`
@@ -45,11 +46,35 @@ type Timing struct {
 	QuietMovies     time.Duration `yaml:"quiet_movies"`     // per source
 	MaxHold         time.Duration `yaml:"max_hold"`         // after the first item, whatever happens
 	FollowingWindow time.Duration `yaml:"following_window"` // "aired within" for following
+	FollowingEarly  time.Duration `yaml:"following_early"`  // imported this long before its air date: still new
 	DigestFrom      int           `yaml:"digest_from"`      // movies in one batch -> one digest card
 	Reannounce      time.Duration `yaml:"reannounce_after"` // never announce an item twice within
 	RetryInterval   time.Duration `yaml:"retry_interval"`   // Discord or *arr unreachable
 	RetryMax        int           `yaml:"retry_max"`        // then drop with a log line
 }
+
+// Backlog is how back-catalog TV is announced: episodes that aired more than following_window ago,
+// which arrive as many downloads over hours or days.
+type Backlog struct {
+	// Mode: lead posts a card once the first episodes settle and folds later ones into it;
+	// complete waits until the *arr has nothing left queued for the run, then posts one card;
+	// quiet is the reference behavior (quiet_backlog windows, no runs).
+	Mode    string        `yaml:"mode"`
+	Scope   string        `yaml:"scope"`    // series | season: one run (and card) per show, or per season
+	Edit    bool          `yaml:"edit"`     // edit the run's card as episodes land; false: fold them in silently
+	Settle  time.Duration `yaml:"settle"`   // quiet before a card or an edit (a season pack imports in a minute or two)
+	Idle    time.Duration `yaml:"idle"`     // a run ends after this long with no new episode
+	MaxHold time.Duration `yaml:"max_hold"` // complete: post anyway this long after the run's first episode
+}
+
+// Backlog modes and scopes.
+const (
+	BacklogLead     = "lead"
+	BacklogComplete = "complete"
+	BacklogQuiet    = "quiet"
+	ScopeSeries     = "series"
+	ScopeSeason     = "season"
+)
 
 type MediaServer struct {
 	Type           string        `yaml:"type"` // plex
@@ -94,7 +119,8 @@ type Style struct {
 	TechDetails bool   `yaml:"tech_details"`
 }
 
-// Defaults match the reference implementation.
+// Defaults match the reference implementation, except backlog runs (mode quiet is the reference)
+// and following_early.
 func Defaults() Config {
 	return Config{
 		Server: Server{Listen: ":8790", DataDir: "/config/data"},
@@ -102,6 +128,11 @@ func Defaults() Config {
 			QuietEpisodes: 5 * time.Minute, QuietBacklog: 30 * time.Minute, QuietMovies: 5 * time.Minute,
 			MaxHold: 4 * time.Hour, FollowingWindow: 14 * 24 * time.Hour, DigestFrom: 4,
 			Reannounce: 30 * 24 * time.Hour, RetryInterval: 2 * time.Minute, RetryMax: 30,
+			FollowingEarly: 24 * time.Hour,
+		},
+		Backlog: Backlog{
+			Mode: BacklogLead, Scope: ScopeSeries, Edit: true,
+			Settle: 5 * time.Minute, Idle: 24 * time.Hour, MaxHold: 24 * time.Hour,
 		},
 	}
 }
@@ -248,6 +279,21 @@ func (c *Config) Validate() error {
 	}
 	if t.DigestFrom < 2 {
 		bad("timing: digest_from must be at least 2")
+	}
+	if t.FollowingEarly < 0 {
+		bad("timing: following_early must not be negative")
+	}
+	bl := c.Backlog
+	switch bl.Mode {
+	case BacklogLead, BacklogComplete, BacklogQuiet:
+	default:
+		bad("backlog: mode must be lead, complete or quiet, not %q", bl.Mode)
+	}
+	if bl.Scope != ScopeSeries && bl.Scope != ScopeSeason {
+		bad("backlog: scope must be series or season, not %q", bl.Scope)
+	}
+	if bl.Mode != BacklogQuiet && (bl.Settle <= 0 || bl.Idle <= 0 || bl.MaxHold <= 0) {
+		bad("backlog: settle, idle and max_hold must be positive")
 	}
 	return errors.Join(errs...)
 }
