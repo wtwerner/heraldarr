@@ -121,11 +121,13 @@ URL `<public_url>/hook/<source name>`, method POST, Username `heraldarr`, Passwo
 `config/secrets/webhook_password`, then press Test.
 
 **7. The first card.** New episodes are posted once their series has been quiet for 5 minutes,
-and movies once nothing new has arrived for 5 minutes. Back catalog (episodes that aired more than two weeks ago) is grouped into one
-run per show: its card posts when the first episodes land, and the rest of the run is added to
-that card by editing it, which doesn't notify anyone. See `backlog` in the example config for
-other modes, such as one card once everything queued has arrived, or one run per season. With Plex, heraldarr first makes sure Plex has the item, so
-the button works: if it doesn't, heraldarr asks Plex to scan that folder and checks again up to 4
+and movies once nothing new has arrived for 5 minutes. Back catalog (episodes that aired more than
+two weeks ago) is grouped into one run per show: its card posts when the first episodes land, and
+the rest of the run is added to that card by editing it, which doesn't notify anyone. See
+`backlog` in the example config for other modes, such as one card once everything queued has
+arrived, or one run per season.
+
+With Plex, heraldarr first makes sure Plex has the item, so the button works: if it doesn't, heraldarr asks Plex to scan that folder and checks again up to 4
 times, 3 minutes apart. Then it does one final fresh lookup and posts, without the button for
 anything Plex still hasn't found. To post what is waiting now, skipping that wait:
 

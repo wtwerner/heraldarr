@@ -41,8 +41,12 @@ grabbed episode until it imports.
 ## Consequences
 
 - A run ends `backlog.idle` (24 h) after its last import. A straggler after that, or another season
-  requested later, gets a new card. Within the window a new request is folded into the old card
-  silently.
+  requested later, gets a new card. Within the window a new request is added to the old card by an
+  edit, which notifies no one.
+- A run that goes idle with downloads still stuck keeps "N more on the way" on its card: nothing
+  edits the line away when the run ends.
+- A complete run's first card waits up to `backlog.max_hold`; its later edits, like lead's, are
+  capped by `timing.max_hold`.
 - A deleted card, or one Discord won't take as an edit, stops the edits for that run. Its remaining
   episodes are announced silently rather than posted one by one.
 - The post history records the first card only; edits are logged, not written to history.

@@ -383,3 +383,26 @@ func TestRunUnchangedWhenSaveFails(t *testing.T) {
 		t.Fatalf("run changed in memory without the store: %+v", all["sonarr:7:backlog"])
 	}
 }
+
+// seriesArr answers Series with fixed season stats.
+type seriesArr struct{ testkit.Arr }
+
+func (seriesArr) Series(context.Context, int) (*domain.SeriesDetail, error) {
+	one := 1
+	return &domain.SeriesDetail{EpisodeFileCount: &one, Seasons: map[int]domain.SeasonStats{1: {EpisodeFileCount: 1}}}, nil
+}
+
+// following_early applies without runs too (#15): a premiere imported hours before its air date,
+// its season's first file, is following and goes out after QuietEpisodes.
+func TestQuietModeEarlyRelease(t *testing.T) {
+	c := cfg // backlog mode: the reference
+	c.FollowingEarly = 24 * time.Hour
+	clock, store := testkit.NewClock(t0), testkit.NewMemStore()
+	b := batcher.New(c, clock, store, map[string]domain.Kind{"sonarr": domain.KindTV},
+		func(string) domain.ArrClient { return seriesArr{} })
+	add(t, b, ep(101, 1, 1, t0.Add(3*time.Hour)))
+	clock.Advance(c.QuietEpisodes)
+	if bt := due(t, b, false)["sonarr:7"]; bt == nil || !bt.Following {
+		t.Fatalf("early premiere not following: %+v", bt)
+	}
+}
