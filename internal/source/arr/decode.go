@@ -189,20 +189,35 @@ func DecodeSeries(body []byte) (*domain.SeriesDetail, error) {
 	return d, nil
 }
 
-// DecodeQueue decodes GET /api/v3/queue/details (Sonarr): records without an episode are left out.
+// DecodeQueue decodes GET /api/v3/queue/details (Sonarr). Left out: records without an episode,
+// and downloads that won't import on their own (failed, ignored, or blocked until someone acts).
 func DecodeQueue(body []byte) ([]domain.QueueItem, error) {
 	var recs []struct {
-		EpisodeID    int `json:"episodeId"`
-		SeasonNumber int `json:"seasonNumber"`
+		EpisodeID            int    `json:"episodeId"`
+		SeasonNumber         int    `json:"seasonNumber"`
+		Status               string `json:"status"`
+		TrackedDownloadState string `json:"trackedDownloadState"`
+		Episode              *struct {
+			AirDateUTC string `json:"airDateUtc"`
+		} `json:"episode"`
 	}
 	if err := json.Unmarshal(body, &recs); err != nil {
 		return nil, err
 	}
 	out := make([]domain.QueueItem, 0, len(recs))
 	for _, r := range recs {
-		if r.EpisodeID != 0 {
-			out = append(out, domain.QueueItem{EpisodeID: r.EpisodeID, Season: r.SeasonNumber})
+		switch {
+		case r.EpisodeID == 0, r.Status == "failed":
+			continue
+		case r.TrackedDownloadState == "failed", r.TrackedDownloadState == "failedPending",
+			r.TrackedDownloadState == "ignored", r.TrackedDownloadState == "importBlocked":
+			continue
 		}
+		it := domain.QueueItem{EpisodeID: r.EpisodeID, Season: r.SeasonNumber}
+		if r.Episode != nil {
+			it.Aired = parseTime(r.Episode.AirDateUTC)
+		}
+		out = append(out, it)
 	}
 	return out, nil
 }

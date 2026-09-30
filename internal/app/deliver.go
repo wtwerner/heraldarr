@@ -194,8 +194,8 @@ func newKeys(b *domain.Batch) []domain.ItemKey {
 	return out
 }
 
-// queued counts the episodes the *arr still has queued for b's run (its season, when runs are
-// per season), leaving out any already in the batch.
+// queued counts the episodes the *arr still has queued for b's run: back catalog (new episodes
+// go to their own card), of its season when runs are per season, and not already in the batch.
 func (a *App) queued(ctx context.Context, b *domain.Batch, src Source) (int, error) {
 	q, err := src.Arr.Queue(ctx, b.Series.ID)
 	if err != nil {
@@ -212,7 +212,8 @@ func (a *App) queued(ctx context.Context, b *domain.Batch, src Source) (int, err
 	}
 	n := 0
 	for _, it := range q {
-		if (b.Season == nil || *b.Season == it.Season) && !have[domain.EpisodeKey(b.Source, it.EpisodeID)] {
+		inRun := b.Season == nil || *b.Season == it.Season
+		if inRun && !have[domain.EpisodeKey(b.Source, it.EpisodeID)] && !a.batcher.Recent(domain.Episode{Aired: it.Aired}) {
 			n++
 		}
 	}

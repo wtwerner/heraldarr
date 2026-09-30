@@ -30,7 +30,9 @@ grabbed episode until it imports.
   one per season.
 - **The queue decides "more coming".** `GET /api/v3/queue/details?seriesId=` feeds the card's
   "N more on the way" line and, in `complete` mode, holds the first card until the run's queue is
-  empty (capped by `backlog.max_hold`). An unreadable queue never holds a card.
+  empty (capped by `backlog.max_hold`). Only the run's own back catalog counts: not new episodes
+  of the same show, not other seasons when runs are per season, and not downloads that won't import
+  on their own (failed, ignored, import blocked). An unreadable queue never holds a card.
 - **Parity stays testable.** `backlog.mode: quiet` is the reference behavior and the batcher's zero
   value, so the oracle tests run unchanged. The default for new configs is `lead`.
 - **Seams:** `ArrClient.Queue`, `Notifier.Edit`, `Batch.Backlog/Season/Run`, and `domain.ErrRefused`.

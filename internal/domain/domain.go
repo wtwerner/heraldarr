@@ -135,10 +135,11 @@ type Message struct {
 	Layout      string `json:"layout"`
 }
 
-// QueueItem is one episode the *arr has grabbed and not imported yet.
+// QueueItem is one episode the *arr has grabbed and is still expected to import.
 type QueueItem struct {
 	EpisodeID int
 	Season    int
+	Aired     time.Time // zero: unknown
 }
 
 // SeasonStats counts files after the import, so "had nothing before" means every file arrived in

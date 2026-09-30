@@ -120,8 +120,8 @@ To set a connection up by hand instead: Settings → Connect → + → **Webhook
 URL `<public_url>/hook/<source name>`, method POST, Username `heraldarr`, Password the contents of
 `config/secrets/webhook_password`, then press Test.
 
-**7. The first card.** The next import is posted once its series has been quiet for 5 minutes
-(5 for movies too). Back catalog (episodes that aired more than two weeks ago) is grouped into one
+**7. The first card.** New episodes are posted once their series has been quiet for 5 minutes,
+and movies once nothing new has arrived for 5 minutes. Back catalog (episodes that aired more than two weeks ago) is grouped into one
 run per show: its card posts when the first episodes land, and the rest of the run is added to
 that card by editing it, which doesn't notify anyone. See `backlog` in the example config for
 other modes, such as one card once everything queued has arrived, or one run per season. With Plex, heraldarr first makes sure Plex has the item, so

@@ -130,7 +130,7 @@ func (c *Client) Movie(ctx context.Context, id int) (*domain.MovieDetail, error)
 
 // Queue reads GET /api/v3/queue/details?seriesId={id}: one record per grabbed episode.
 func (c *Client) Queue(ctx context.Context, seriesID int) ([]domain.QueueItem, error) {
-	path := "queue/details?seriesId=" + strconv.Itoa(seriesID)
+	path := "queue/details?seriesId=" + strconv.Itoa(seriesID) + "&includeEpisode=true"
 	body, err := c.get(ctx, path)
 	if err != nil {
 		return nil, err

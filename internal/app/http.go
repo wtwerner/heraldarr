@@ -138,7 +138,7 @@ func (a *App) pending(w http.ResponseWriter, r *http.Request) {
 	out := make([]map[string]any, 0, len(batches))
 	for _, b := range batches {
 		entry := map[string]any{
-			"batch": batchName(b), "source": b.Source, "items": b.Len(),
+			"batch": batchName(b), "key": b.Key, "source": b.Source, "items": b.Len(),
 			"following": b.Following, "quiet_for_min": now.Sub(b.Last).Round(6 * time.Second).Minutes(),
 			"media_checks": b.MediaChecks, "tries": b.Tries,
 		}
@@ -153,7 +153,13 @@ func (a *App) pending(w http.ResponseWriter, r *http.Request) {
 		}
 		out = append(out, entry)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i]["batch"].(string) < out[j]["batch"].(string) })
+	sort.Slice(out, func(i, j int) bool {
+		bi, bj := out[i]["batch"].(string), out[j]["batch"].(string)
+		if bi != bj {
+			return bi < bj
+		}
+		return out[i]["key"].(string) < out[j]["key"].(string) // a show's live batch and its run
+	})
 	reply(w, http.StatusOK, out)
 }
 

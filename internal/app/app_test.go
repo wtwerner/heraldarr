@@ -39,6 +39,7 @@ type capture struct {
 
 	edits   []edit
 	editErr error
+	layout  string // the layout Discord "accepts"; "": the first
 }
 
 func (c *capture) Edit(ctx context.Context, d domain.Destination, id string, l domain.Layout) error {
@@ -80,6 +81,9 @@ func (c *capture) Post(ctx context.Context, d domain.Destination, l []domain.Lay
 	c.posts = append(c.posts, post{d, l})
 	if c.after != nil {
 		c.after(len(c.posts))
+	}
+	if c.layout != "" {
+		return domain.PostResult{Layout: c.layout, MessageID: "1"}, nil
 	}
 	return domain.PostResult{Layout: l[0].Name, MessageID: "1"}, nil
 }

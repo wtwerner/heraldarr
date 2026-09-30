@@ -2,6 +2,7 @@ package batcher_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -66,7 +67,8 @@ var old = t0.AddDate(-20, 0, 0)
 // to the series' batch, back catalog to the run's batch, per series or per season.
 func TestRunsRouteByAirDate(t *testing.T) {
 	b, _, _ := newRuns(t, runCfg(batcher.Lead, false))
-	add(t, b, ep(1, 1, 1, old), ep(2, 1, 2, old), ep(50, 5, 3, t0.Add(-24*time.Hour)), ep(51, 5, 4, t0.Add(12*time.Hour)))
+	add(t, b, ep(1, 1, 1, old), ep(2, 1, 2, old), ep(50, 5, 3, t0.Add(-24*time.Hour)), ep(51, 5, 4, t0.Add(12*time.Hour)),
+		ep(52, 5, 5, t0.Add(48*time.Hour))) // too far ahead of its air date to trust: back catalog
 	add(t, b, ep(20, 2, 1, old))
 	got := due(t, b, true)
 	live, run := got["sonarr:7"], got["sonarr:7:backlog"]
@@ -76,7 +78,7 @@ func TestRunsRouteByAirDate(t *testing.T) {
 	if !live.Following || live.Backlog || live.Len() != 2 {
 		t.Errorf("live batch: following=%v backlog=%v items=%d", live.Following, live.Backlog, live.Len())
 	}
-	if run.Following || !run.Backlog || run.Season != nil || run.Len() != 3 {
+	if run.Following || !run.Backlog || run.Season != nil || run.Len() != 4 {
 		t.Errorf("run batch: following=%v backlog=%v season=%v items=%d", run.Following, run.Backlog, run.Season, run.Len())
 	}
 
@@ -250,4 +252,51 @@ func keysOf(m map[string]*domain.Batch) []string {
 		out = append(out, k)
 	}
 	return out
+}
+
+// A run's next episode after a long gap still settles first: the hold counts from that
+// episode, not from the run's last card.
+func TestRunHoldRestarts(t *testing.T) {
+	b, clock, _ := newRuns(t, runCfg(batcher.Lead, false))
+	ctx := context.Background()
+	add(t, b, ep(101, 1, 1, old))
+	clock.Advance(5 * time.Minute)
+	bt := due(t, b, false)["sonarr:7:backlog"]
+	_ = b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, &domain.Message{ID: "1"})
+	clock.Advance(5 * time.Hour) // past max_hold, within idle
+	add(t, b, ep(102, 1, 2, old))
+	clock.Advance(5*time.Minute - time.Second)
+	if len(due(t, b, false)) != 0 {
+		t.Fatal("due before Settle")
+	}
+	clock.Advance(time.Second)
+	if len(due(t, b, false)) != 1 {
+		t.Fatal("not due after Settle")
+	}
+}
+
+// failingLedger is a store whose posted ledger can't be written.
+type failingLedger struct{ *testkit.MemStore }
+
+func (failingLedger) MarkPosted(context.Context, []domain.ItemKey, time.Time) error {
+	return errors.New("disk full")
+}
+
+// The run remembers what it announced even when the ledger write failed: a re-import doesn't
+// queue it again.
+func TestRunRemembersWithoutLedger(t *testing.T) {
+	clock, store := testkit.NewClock(t0), failingLedger{testkit.NewMemStore()}
+	b := batcher.New(runCfg(batcher.Lead, false), clock, store, map[string]domain.Kind{"sonarr": domain.KindTV},
+		func(string) domain.ArrClient { return testkit.Arr{Sc: &testkit.Scenario{}} })
+	ctx := context.Background()
+	add(t, b, ep(101, 1, 1, old))
+	clock.Advance(5 * time.Minute)
+	bt := due(t, b, false)["sonarr:7:backlog"]
+	if err := b.DoneMessage(ctx, bt.Key, bt.Keys(), batcher.Posted, &domain.Message{ID: "1"}); err == nil {
+		t.Fatal("ledger failure not reported")
+	}
+	add(t, b, ep(101, 1, 1, old))
+	if got := due(t, b, true); len(got) != 0 {
+		t.Fatalf("re-import queued again: %v", keysOf(got))
+	}
 }

@@ -23,7 +23,8 @@ type ArrClient interface {
 	Series(ctx context.Context, id int) (*SeriesDetail, error)
 	// Movie includes credits; a credits failure leaves Directors/Cast empty rather than failing.
 	Movie(ctx context.Context, id int) (*MovieDetail, error)
-	// Queue lists a series' episodes that are grabbed and not imported yet (Sonarr only).
+	// Queue lists a series' episodes that are grabbed and still expected to import (Sonarr only):
+	// failed or blocked downloads are left out.
 	Queue(ctx context.Context, seriesID int) ([]QueueItem, error)
 }
 

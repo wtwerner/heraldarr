@@ -71,7 +71,7 @@ func (a Arr) Movie(_ context.Context, id int) (*domain.MovieDetail, error) {
 
 // Queue answers from "queue/details?seriesId=<id>"; a scenario without one has an empty queue.
 func (a Arr) Queue(_ context.Context, seriesID int) ([]domain.QueueItem, error) {
-	b, err := a.body("queue/details?seriesId=" + strconv.Itoa(seriesID))
+	b, err := a.body("queue/details?seriesId=" + strconv.Itoa(seriesID) + "&includeEpisode=true")
 	if errors.Is(err, ErrUnreachable) {
 		return nil, nil
 	}

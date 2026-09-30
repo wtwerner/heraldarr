@@ -239,6 +239,10 @@ func (b *Batcher) merge(ctx context.Context, imp domain.Import, kind domain.Kind
 			bt.Movies[k] = *imp.Movie
 		}
 	}
+	if bt.Run != nil && added > 0 && bt.Len() == added {
+		// A run's first pending items since its last card: the hold starts now, not at that card.
+		bt.First = now
+	}
 	// Like the reference, even an import that adds nothing counts as activity on the batch.
 	bt.Last = now
 	switch {
@@ -310,6 +314,9 @@ func (b *Batcher) recent(bt *domain.Batch, now time.Time) (bool, map[int]int) {
 	}
 	return recent, perSeason
 }
+
+// Recent reports whether e counts as new (following) rather than back catalog.
+func (b *Batcher) Recent(e domain.Episode) bool { return b.recentEpisode(e, b.clock.Now()) }
 
 // recentEpisode: aired within FollowingWindow, or due to air within FollowingEarly (streaming
 // premieres often land hours before the air date the *arr has).
