@@ -83,10 +83,34 @@ type env struct {
 }
 
 // recordingStore is the real SQLite store, keeping a copy of the history it's asked to write.
+// Its *Err fields make the matching calls fail (DeleteBatch only for delKey, when set).
 type recordingStore struct {
 	domain.Store
-	mu      sync.Mutex
-	history []domain.HistoryEntry
+	mu                       sync.Mutex
+	history                  []domain.HistoryEntry
+	loadErr, saveErr, delErr error
+	delKey                   string
+}
+
+func (r *recordingStore) LoadBatches(ctx context.Context) (map[string]*domain.Batch, error) {
+	if r.loadErr != nil {
+		return nil, r.loadErr
+	}
+	return r.Store.LoadBatches(ctx)
+}
+
+func (r *recordingStore) SaveBatch(ctx context.Context, b *domain.Batch) error {
+	if r.saveErr != nil {
+		return r.saveErr
+	}
+	return r.Store.SaveBatch(ctx, b)
+}
+
+func (r *recordingStore) DeleteBatch(ctx context.Context, key string) error {
+	if r.delErr != nil && (r.delKey == "" || r.delKey == key) {
+		return r.delErr
+	}
+	return r.Store.DeleteBatch(ctx, key)
 }
 
 func (r *recordingStore) AppendHistory(ctx context.Context, e domain.HistoryEntry) error {
@@ -118,7 +142,8 @@ func (m *media) Find(ctx context.Context, guids []string, path string, kind doma
 	return m.Media.Find(ctx, guids, path, kind, fresh)
 }
 
-func newEnv(t *testing.T, name string, withMedia bool) *env {
+// newEnv runs a scenario through the App; opts adjust its Deps.
+func newEnv(t *testing.T, name string, withMedia bool, opts ...func(*app.Deps)) *env {
 	t.Helper()
 	sc, exp := testkit.Load(t, name)
 	st, err := store.Open(filepath.Join(t.TempDir(), "heraldarr.db"))
@@ -147,6 +172,9 @@ func newEnv(t *testing.T, name string, withMedia bool) *env {
 	if withMedia {
 		m = &media{Media: testkit.Media{Sc: sc}}
 		d.Media = m
+	}
+	for _, o := range opts {
+		o(&d)
 	}
 	a := app.New(d)
 	return &env{app: a, srv: a.Handler(), clock: clock, out: out, media: m, store: rec, sc: sc, exp: exp}
@@ -290,6 +318,8 @@ func TestAuthAndEndpoints(t *testing.T) {
 		{http.MethodPost, "/hook/sonarr", false, http.StatusUnauthorized},
 		{http.MethodGet, "/pending", false, http.StatusUnauthorized},
 		{http.MethodPost, "/flush", false, http.StatusUnauthorized},
+		{http.MethodGet, "/metrics", false, http.StatusUnauthorized},
+		{http.MethodGet, "/metrics", true, http.StatusOK},
 		{http.MethodGet, "/health", false, http.StatusOK},
 		{http.MethodGet, "/pending", true, http.StatusOK},
 		{http.MethodPost, "/hook/nope", true, http.StatusNotFound},
@@ -549,7 +579,7 @@ func TestFromConfig(t *testing.T) {
 	xml := write("config.xml", "<Config><ApiKey>k</ApiKey></Config>")
 	prefs := write("Preferences.xml", `<Preferences PlexOnlineToken="t"/>`)
 	cfg, err := config.Parse([]byte(`
-server: {data_dir: ` + filepath.Join(dir, "data") + `}
+server: {data_dir: ` + filepath.Join(dir, "data") + `, heartbeat_url: {file: ` + write("hb", "https://hc.example.org/ping/x") + `}}
 media_server: {url: "http://plex:32400", preferences_xml: ` + prefs + `}
 sources:
   - {name: sonarr, kind: sonarr, url: "http://sonarr:8989", config_xml: ` + xml + `}
@@ -581,5 +611,8 @@ routes:
 	}
 	if _, err := os.Stat(filepath.Join(dir, "data", "heraldarr.db")); err != nil {
 		t.Errorf("store not created in data_dir: %v", err)
+	}
+	if svc.Heartbeat != "https://hc.example.org/ping/x" {
+		t.Errorf("heartbeat URL not wired: %q", svc.Heartbeat)
 	}
 }

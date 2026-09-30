@@ -11,6 +11,8 @@ server:
   auth:
     username: heraldarr
     password: {file: /config/secrets/webhook_password}
+  # Optional dead man's switch (healthchecks.io style): GET at most once a minute while healthy.
+  # heartbeat_url: {file: /config/secrets/heartbeat_url}
 
 # timing:                   # defaults shown
 #   quiet_episodes: 5m      # new episodes people follow (aired within following_window)

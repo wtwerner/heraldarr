@@ -99,6 +99,7 @@ func FromConfig(cfg *config.Config, version string, log *slog.Logger) (*Service,
 		d.Media = plex.New(ms.URL, token, pm, plex.WithClock(clock))
 		d.Timing.MediaWait, d.WaitChecks = ms.WaitInterval, ms.WaitChecks
 	}
+	d.Heartbeat = cfg.Server.HeartbeatURL.Value()
 	if a := cfg.Server.Auth; a != nil {
 		d.Auth = &BasicAuth{Username: a.Username, Password: a.Password.Value()}
 	}
