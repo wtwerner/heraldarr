@@ -90,6 +90,7 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 		if !record {
 			continue
 		}
+		a.metrics.posted(b.Source, dest.Name, res.Layout, a.Clock.Now())
 		// Recorded per card, so a crash mid-batch doesn't post the earlier cards again.
 		if err := a.Store.MarkPosted(context.WithoutCancel(ctx), c.keys, a.Clock.Now()); err != nil {
 			a.Log.Warn("recording posted items", "err", err)

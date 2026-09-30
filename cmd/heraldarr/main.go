@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
@@ -45,6 +46,7 @@ Usage:
   heraldarr version
 
 Every command takes -config PATH (default $HERALDARR_CONFIG or /config/config.yaml).
+Logs are text; HERALDARR_LOG_FORMAT=json writes JSON lines, HERALDARR_DEBUG=1 adds debug lines.
 `
 
 func main() {
@@ -91,7 +93,10 @@ func run(args []string) error {
 	if err != nil {
 		return err
 	}
-	log := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel()}))
+	log, err := newLogger(os.Stdout)
+	if err != nil {
+		return err
+	}
 	slog.SetDefault(log) // packages that log through slog's default use the same handler
 	switch cmd {
 	case "validate":
@@ -304,6 +309,25 @@ func isBoolFlag(fs *flag.FlagSet, arg string) bool {
 	}
 	b, ok := f.Value.(interface{ IsBoolFlag() bool })
 	return ok && b.IsBoolFlag()
+}
+
+// newLogger logs as text (the default) or, with HERALDARR_LOG_FORMAT=json, one JSON object per line.
+func newLogger(w io.Writer) (*slog.Logger, error) {
+	opts := &slog.HandlerOptions{Level: logLevel()}
+	switch format := os.Getenv("HERALDARR_LOG_FORMAT"); format {
+	case "", "text":
+		return slog.New(slog.NewTextHandler(w, opts)), nil
+	case "json":
+		opts.ReplaceAttr = func(_ []string, a slog.Attr) slog.Attr {
+			if a.Value.Kind() == slog.KindDuration { // "5m0s" as in text logs, not nanoseconds
+				return slog.String(a.Key, a.Value.Duration().String())
+			}
+			return a
+		}
+		return slog.New(slog.NewJSONHandler(w, opts)), nil
+	default:
+		return nil, fmt.Errorf("HERALDARR_LOG_FORMAT=%q: want text or json", format)
+	}
 }
 
 func logLevel() slog.Level {

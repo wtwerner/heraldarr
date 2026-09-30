@@ -156,7 +156,33 @@ Secrets can be inline, read from a file (`{file: …}`, recommended) or read fro
 | `heraldarr import-legacy DIR` | import state from the Python predecessor's `data/` folder (`posted.json`, `rt_cache.json`, `history.jsonl`); stop the server first |
 | `heraldarr version` | print the version |
 
-Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST /flush`.
+Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST /flush`, `GET /metrics`.
+
+## Monitoring
+
+`GET /metrics` serves Prometheus metrics, behind the same `server.auth` as `/pending` (set
+`basic_auth` in the scrape config):
+
+| Metric | |
+|---|---|
+| `heraldarr_imports_total{source,result}` | webhooks received; `result` is `queued`, `upgrade`, `already_announced`, `ignored` (Test, Grab…), `invalid` or `error` |
+| `heraldarr_posts_total{source,destination,layout}` | cards posted, by the layout Discord accepted (`v2`, then the embed fallbacks) |
+| `heraldarr_delivery_failures_total{source}` | deliveries that failed; they are retried `retry_max` times |
+| `heraldarr_pending_batches` | batches waiting to be posted |
+| `heraldarr_media_server_waits_total` | deliveries postponed until the media server has the items |
+| `heraldarr_last_post_timestamp_seconds` | the last post since start (0 until the first) |
+
+A useful alert: `increase(heraldarr_delivery_failures_total[1h]) > 0` (a Discord webhook was
+deleted, or Discord is down).
+
+To be told when heraldarr itself dies, set `server.heartbeat_url` to a dead man's switch such as a
+[healthchecks.io](https://healthchecks.io) check. heraldarr GETs it at most once a minute (in
+practice every 60 to 90 seconds) after each flush that ran without a database error; the monitor
+alerts when the pings stop. Give the check a period or grace of a few minutes. The URL can be a
+secret (`{file: …}`). Failed pings are only logged at debug level.
+
+Logs are text on stdout. `HERALDARR_LOG_FORMAT=json` writes one JSON object per line for log
+collectors; `HERALDARR_DEBUG=1` adds debug lines.
 
 Set `HERALDARR_DEBUG=1` to log every webhook, including ignored ones such as Test.
 

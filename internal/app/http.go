@@ -7,8 +7,10 @@ import (
 	"io"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
+	"github.com/wtwerner/heraldarr/internal/domain"
 	"github.com/wtwerner/heraldarr/internal/source/arr"
 )
 
@@ -21,11 +23,13 @@ const maxBody = 4 << 20
 //	GET  /health         liveness and pending count (no auth: for Docker health checks)
 //	GET  /pending        what is waiting (auth)
 //	POST /flush          post everything pending now (auth)
+//	GET  /metrics        Prometheus metrics (auth)
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /hook/{source}", a.auth(a.hook))
 	mux.HandleFunc("GET /health", a.health)
 	mux.HandleFunc("GET /pending", a.auth(a.pending))
+	mux.HandleFunc("GET /metrics", a.auth(a.metricsHandler))
 	mux.HandleFunc("POST /flush", a.auth(func(w http.ResponseWriter, _ *http.Request) {
 		a.Kick(true)
 		reply(w, http.StatusAccepted, map[string]any{"ok": true})
@@ -60,31 +64,50 @@ func (a *App) hook(w http.ResponseWriter, r *http.Request) {
 	var tooBig *http.MaxBytesError
 	switch {
 	case errors.As(err, &tooBig):
+		a.metrics.imports.add(1, name, importInvalid)
 		reply(w, http.StatusRequestEntityTooLarge, map[string]any{"error": "body too large"})
 		return
 	case err != nil:
+		a.metrics.imports.add(1, name, importInvalid)
 		reply(w, http.StatusBadRequest, map[string]any{"error": "could not read body"})
 		return
 	}
 	imp, ok, err := arr.ParseWebhook(name, src.Kind, body)
 	switch {
 	case err != nil:
+		a.metrics.imports.add(1, name, importInvalid)
 		a.Log.Warn("unexpected webhook payload", "source", name, "err", err)
 		reply(w, http.StatusBadRequest, map[string]any{"error": "unexpected payload"})
 		return
 	case !ok:
+		a.metrics.imports.add(1, name, importIgnored)
 		a.Log.Debug("webhook event ignored", "source", name) // Test, Grab, Rename…
 		reply(w, http.StatusOK, map[string]any{"ok": true})
 		return
 	}
 	line, err := a.batcher.Add(r.Context(), imp)
 	if err != nil {
+		a.metrics.imports.add(1, name, importError)
 		a.Log.Error("queueing import", "source", name, "err", err)
 		reply(w, http.StatusInternalServerError, map[string]any{"error": "could not queue"})
 		return
 	}
+	a.metrics.imports.add(1, name, importResult(imp, line))
 	a.Log.Info("import: " + line)
 	reply(w, http.StatusOK, map[string]any{"ok": true})
+}
+
+// importResult classifies an import Batcher.Add accepted, from its log line: "+N" when it
+// queued items, "…: already announced" when every item was posted within the reannounce window.
+func importResult(imp domain.Import, line string) string {
+	switch {
+	case imp.Upgrade:
+		return importUpgrade
+	case strings.HasSuffix(line, ": already announced"):
+		return importAlreadyAnnounced
+	default:
+		return importQueued
+	}
 }
 
 func (a *App) health(w http.ResponseWriter, r *http.Request) {

@@ -80,11 +80,17 @@ func TestValidationErrors(t *testing.T) {
 		{"http webhook", "https://discord.com", "http://discord.com", "must be an https://"},
 		{"unknown field", "public: true}", "public: true, colour: red}", "not found"},
 		{"bad name", "name: sonarr,", "name: Sonarr TV,", "lowercase"},
+		{"heartbeat not http", "sources:", "server: {heartbeat_url: ftp://example.org/ping/tok123}\nsources:", "server.heartbeat_url must be an http"},
+		{"heartbeat no host", "sources:", "server: {heartbeat_url: \"https:///ping/tok123\"}\nsources:", "server.heartbeat_url must be an http"},
+		{"heartbeat file missing", "sources:", "server: {heartbeat_url: {file: /nonexistent/hb}}\nsources:", "server.heartbeat_url: open"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := Parse([]byte(strings.Replace(minimal, tc.from, tc.to, 1)))
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Errorf("got %v, want error containing %q", err, tc.want)
+			}
+			if err != nil && strings.Contains(err.Error(), "tok123") {
+				t.Errorf("error reveals the secret: %v", err)
 			}
 		})
 	}
@@ -118,6 +124,21 @@ func TestPublicURL(t *testing.T) {
 		case tc.want != "" && (err == nil || !strings.Contains(err.Error(), "server.public_url") || !strings.Contains(err.Error(), tc.want)):
 			t.Errorf("%s: got %v, want an error containing %q", tc.url, err, tc.want)
 		}
+	}
+}
+
+func TestHeartbeatURL(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "hb")
+	writeFile(t, path, "https://hc-ping.example.org/0000-tok\n")
+	cfg, err := Parse([]byte("server: {heartbeat_url: {file: " + path + "}}\n" + minimal))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.Server.HeartbeatURL.Value(); got != "https://hc-ping.example.org/0000-tok" {
+		t.Errorf("heartbeat_url = %q", got)
+	}
+	if cfg, _ := Parse([]byte(minimal)); !cfg.Server.HeartbeatURL.IsZero() {
+		t.Error("heartbeat_url is optional")
 	}
 }
 

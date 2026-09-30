@@ -29,6 +29,9 @@ type Server struct {
 	DataDir   string     `yaml:"data_dir"`
 	PublicURL string     `yaml:"public_url"` // how the *arrs reach heraldarr; `setup` requires it
 	Auth      *BasicAuth `yaml:"auth"`       // the *arr webhook connection's Username/Password
+	// Called (GET) at most once a minute while the flush loop runs without a store error, for a
+	// dead man's switch like healthchecks.io. Often holds a token, so it is a Secret.
+	HeartbeatURL Secret `yaml:"heartbeat_url"`
 }
 
 type BasicAuth struct {
@@ -230,6 +233,13 @@ func (c *Config) Validate() error {
 		}
 		if err := a.Password.Err(); err != nil {
 			bad("server.auth: password: %w", err)
+		}
+	}
+	if hb := c.Server.HeartbeatURL; !hb.IsZero() {
+		if err := hb.Err(); err != nil {
+			bad("server.heartbeat_url: %w", err)
+		} else if u, err := url.Parse(hb.Value()); err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+			bad("server.heartbeat_url must be an http:// or https:// URL") // no value: it may be secret
 		}
 	}
 	t := c.Timing
