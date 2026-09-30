@@ -1,0 +1,28 @@
+# Copy to docker-compose.yml, next to a config/ folder:
+#
+#   config/config.yaml           from config.example.yaml
+#   config/secrets/<name>        one secret per file: webhook_password, sonarr_api_key,
+#                                radarr_api_key, discord_tv, discord_movies, plex_token
+#   config/data/                 created by heraldarr: its database
+#
+# Secrets stay in files that config.yaml points at ({file: /config/secrets/<name>}), so they never
+# appear in this file, in `docker inspect` or in the environment.
+#
+# heraldarr runs as `user:`, which must be able to read config/ and write config/data/. Set it to
+# the owner of config/: `echo "$(id -u):$(id -g)"` (99:100 on Unraid). Without it the image runs as
+# 65532:65532 (distroless "nonroot"), and config/ would have to belong to that user.
+
+services:
+  heraldarr:
+    image: ghcr.io/wtwerner/heraldarr:latest
+    container_name: heraldarr
+    restart: unless-stopped
+    user: "1000:1000"
+    volumes:
+      - ./config:/config
+    ports:
+      # Sonarr and Radarr post to http://<this host>:8790/hook/<source name>. If they run in this
+      # compose project, drop the port and use http://heraldarr:8790 instead.
+      - "8790:8790"
+    # environment:
+    #   HERALDARR_DEBUG: "1"     # log every webhook, Test events included
