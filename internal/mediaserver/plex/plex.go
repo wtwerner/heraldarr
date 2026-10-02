@@ -219,7 +219,10 @@ func (p *Plex) SeasonKey(ctx context.Context, show *domain.MediaItem, season int
 func (p *Plex) Scores(ctx context.Context, ratingKey string) (domain.Scores, error) {
 	var c struct {
 		Metadata []struct {
-			Rating []struct {
+			// Movies also carry "rating" (the critic score, a number). encoding/json matches keys
+			// case-insensitively, so without a field of its own it lands in Rating and fails.
+			CriticRating *float64 `json:"rating"`
+			Rating       []struct {
 				Image string  `json:"image"` // "imdb://image.rating", "rottentomatoes://image.rating.ripe", …
 				Type  string  `json:"type"`  // critic | audience
 				Value float64 `json:"value"` // out of 10
