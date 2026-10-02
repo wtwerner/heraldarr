@@ -99,6 +99,15 @@ func (m Media) SeasonKey(_ context.Context, show *domain.MediaItem, season int) 
 	return m.Sc.PlexSeasons[show.RatingKey+":"+strconv.Itoa(season)], nil
 }
 
+func (m Media) Scores(_ context.Context, ratingKey string) (domain.Scores, error) {
+	for _, it := range m.Sc.Plex {
+		if it.RatingKey == ratingKey {
+			return it.Scores(), nil
+		}
+	}
+	return domain.Scores{}, domain.ErrNotFound
+}
+
 // URL matches the Plex adapter's deep link format.
 func (m Media) URL(ratingKey string) string {
 	return "https://app.plex.tv/desktop/#!/server/" + m.Sc.PlexServer.ID + "/details?key=" +

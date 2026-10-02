@@ -4,6 +4,7 @@ package testkit
 
 import (
 	"encoding/json"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -35,18 +36,37 @@ type Event struct {
 }
 
 type PlexItem struct {
-	RatingKey           string  `json:"ratingKey"`
-	AudienceRating      float64 `json:"audienceRating"`
-	AudienceRatingImage string  `json:"audienceRatingImage"`
-	ContentRating       string  `json:"contentRating"`
+	RatingKey     string       `json:"ratingKey"`
+	ContentRating string       `json:"contentRating"`
+	Rating        []PlexRating `json:"Rating"` // as Plex's item metadata has it
+}
+
+// PlexRating is one entry of an item's Rating list: image "imdb://image.rating" or
+// "rottentomatoes://image.rating.ripe", type critic | audience, value out of 10.
+type PlexRating struct {
+	Image string  `json:"image"`
+	Type  string  `json:"type"`
+	Value float64 `json:"value"`
 }
 
 func (p PlexItem) MediaItem() *domain.MediaItem {
-	src, _, _ := strings.Cut(p.AudienceRatingImage, ":")
-	return &domain.MediaItem{
-		RatingKey: p.RatingKey, AudienceRating: p.AudienceRating, RatingSource: src,
-		ContentRating: p.ContentRating,
+	return &domain.MediaItem{RatingKey: p.RatingKey, ContentRating: p.ContentRating}
+}
+
+// Scores reads the Rating list the way the Plex adapter does.
+func (p PlexItem) Scores() domain.Scores {
+	var s domain.Scores
+	for _, r := range p.Rating {
+		switch src, _, _ := strings.Cut(r.Image, ":"); {
+		case src == "imdb":
+			s.IMDb = r.Value
+		case src == "rottentomatoes" && r.Type == "critic":
+			s.RTCritic = math.Round(r.Value * 10)
+		case src == "rottentomatoes" && r.Type == "audience":
+			s.RTAudience = math.Round(r.Value * 10)
+		}
 	}
+	return s
 }
 
 type Scenario struct {

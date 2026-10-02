@@ -58,7 +58,8 @@ type TVInput struct {
 	// single season. Both "" without a media server.
 	ShowURL        string
 	SeasonURL      string
-	RottenTomatoes string // exact page or search link
+	Scores         domain.Scores // the show's, from the media server
+	RottenTomatoes string        // exact page or search link
 	// Downloading is how many more episodes of a back-catalog run the *arr has queued: the card
 	// says they're on the way (it is edited as they land).
 	Downloading int
@@ -70,6 +71,7 @@ type MovieInput struct {
 	Movie          domain.Movie
 	Detail         *domain.MovieDetail // nil: deleted or unreachable
 	URL            string              // media server deep link; "" if not found
+	Scores         domain.Scores       // from the media server
 	RottenTomatoes string
 }
 
@@ -194,14 +196,11 @@ func TV(in TVInput) domain.Card {
 		if d != nil && d.Network != "" {
 			facts = append(facts, domain.Fact{Name: "Network", Value: d.Network})
 		}
-		rating := ""
-		switch {
-		case in.Show != nil && in.Show.AudienceRating != 0:
-			src := map[string]string{"themoviedb": "TMDB", "imdb": "IMDb", "rottentomatoes": "RT audience"}[in.Show.RatingSource]
-			rating = strings.TrimSpace(fmt.Sprintf("★ %.1f %s", in.Show.AudienceRating, src))
-		case d != nil && d.Rating != 0:
-			rating = fmt.Sprintf("★ %.1f", d.Rating)
+		var arrScores domain.Scores
+		if d != nil {
+			arrScores.IMDb = d.Rating
 		}
+		rating := strings.Join(scores(arrScores, in.Scores), " · ")
 		cert := ""
 		if d != nil {
 			cert = d.Certification
@@ -259,7 +258,7 @@ func Movie(in MovieInput, c Common) domain.Card {
 	if d == nil {
 		d = &domain.MovieDetail{}
 	}
-	facts := movieScores(d)
+	facts := movieScores(in)
 	for _, x := range []string{d.Certification, runtime(d.RuntimeMin), strings.Join(first(m.Genres, 3), ", ")} {
 		if x != "" {
 			facts = append(facts, x)
@@ -331,7 +330,7 @@ func Digest(movies []MovieInput, c Common) domain.Card {
 		if d == nil {
 			d = &domain.MovieDetail{}
 		}
-		bits := movieScores(d)
+		bits := movieScores(in)
 		if r := runtime(d.RuntimeMin); r != "" {
 			bits = append(bits, r)
 		}

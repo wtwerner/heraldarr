@@ -38,6 +38,9 @@ type MediaServer interface {
 	Find(ctx context.Context, guids []string, path string, kind Kind, fresh bool) (*MediaItem, error)
 	// SeasonKey returns the rating key of a show's season, "" if unknown.
 	SeasonKey(ctx context.Context, show *MediaItem, season int) (string, error)
+	// Scores returns the review scores the server knows for an item, whatever rating its
+	// library is set to show.
+	Scores(ctx context.Context, ratingKey string) (Scores, error)
 	// URL is a deep link that works for every user the library is shared with (no token).
 	URL(ratingKey string) string
 	// Scan asks the server to scan the library folder holding path.

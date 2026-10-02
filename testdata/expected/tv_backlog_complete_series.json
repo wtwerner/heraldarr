@@ -248,7 +248,7 @@
           ],
           [
             "Rating",
-            "★ 8.8 TMDB · TV-14"
+            "★ 8.6 IMDb · 🍿 91% · TV-14"
           ],
           [
             "Genres",
@@ -323,7 +323,7 @@
               {
                 "inline": true,
                 "name": "Rating",
-                "value": "★ 8.8 TMDB · TV-14"
+                "value": "★ 8.6 IMDb · 🍿 91% · TV-14"
               },
               {
                 "inline": true,
@@ -369,7 +369,7 @@
               {
                 "inline": true,
                 "name": "Rating",
-                "value": "★ 8.8 TMDB · TV-14"
+                "value": "★ 8.6 IMDb · 🍿 91% · TV-14"
               },
               {
                 "inline": true,
@@ -428,7 +428,7 @@
                 "type": 10
               },
               {
-                "content": "Frontier · ★ 8.8 TMDB · TV-14 · Drama, Western · Ended 2019",
+                "content": "Frontier · ★ 8.6 IMDb · 🍿 91% · TV-14 · Drama, Western · Ended 2019",
                 "type": 10
               },
               {

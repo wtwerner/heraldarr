@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -85,11 +86,9 @@ type listing struct {
 
 // metadata is the part of a Plex item heraldarr reads.
 type metadata struct {
-	RatingKey           string  `json:"ratingKey"`
-	Index               int     `json:"index"`
-	AudienceRating      float64 `json:"audienceRating"`
-	AudienceRatingImage string  `json:"audienceRatingImage"`
-	ContentRating       string  `json:"contentRating"`
+	RatingKey     string `json:"ratingKey"`
+	Index         int    `json:"index"`
+	ContentRating string `json:"contentRating"`
 	// Plex sends both "guid" (its own plex:// ID) and "Guid" (the external IDs Find matches).
 	// encoding/json matches keys case-insensitively, so "guid" needs a field of its own.
 	PlexGUID string `json:"guid"`
@@ -215,6 +214,39 @@ func (p *Plex) SeasonKey(ctx context.Context, show *domain.MediaItem, season int
 	return "", nil
 }
 
+// Scores reads the item's Rating list, which holds every source Plex has (IMDb, Rotten Tomatoes
+// critic and audience, TMDB) whichever one the library shows. Library listings leave it out.
+func (p *Plex) Scores(ctx context.Context, ratingKey string) (domain.Scores, error) {
+	var c struct {
+		Metadata []struct {
+			Rating []struct {
+				Image string  `json:"image"` // "imdb://image.rating", "rottentomatoes://image.rating.ripe", …
+				Type  string  `json:"type"`  // critic | audience
+				Value float64 `json:"value"` // out of 10
+			} `json:"Rating"`
+		} `json:"Metadata"`
+	}
+	var s domain.Scores
+	if err := p.get(ctx, "/library/metadata/"+url.PathEscape(ratingKey), nil, &c); err != nil {
+		return s, err
+	}
+	if len(c.Metadata) == 0 {
+		return s, nil
+	}
+	for _, r := range c.Metadata[0].Rating {
+		src, _, _ := strings.Cut(r.Image, ":")
+		switch {
+		case src == "imdb":
+			s.IMDb = r.Value
+		case src == "rottentomatoes" && r.Type == "critic":
+			s.RTCritic = math.Round(r.Value * 10)
+		case src == "rottentomatoes" && r.Type == "audience":
+			s.RTAudience = math.Round(r.Value * 10)
+		}
+	}
+	return s, nil
+}
+
 // Scan requests a partial scan of path in the library that holds it. A path no library holds is
 // logged and ignored.
 func (p *Plex) Scan(ctx context.Context, path string) error {
@@ -264,13 +296,7 @@ func (s *section) holds(path string) bool {
 }
 
 func (m *metadata) item() *domain.MediaItem {
-	src, _, _ := strings.Cut(m.AudienceRatingImage, ":")
-	return &domain.MediaItem{
-		RatingKey:      m.RatingKey,
-		AudienceRating: m.AudienceRating,
-		RatingSource:   src,
-		ContentRating:  m.ContentRating,
-	}
+	return &domain.MediaItem{RatingKey: m.RatingKey, ContentRating: m.ContentRating}
 }
 
 func (p *Plex) identify(ctx context.Context) error {

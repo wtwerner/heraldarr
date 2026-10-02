@@ -155,7 +155,7 @@ type SeriesDetail struct {
 	Overview         string
 	Certification    string
 	Status           string  // continuing | ended | upcoming
-	Rating           float64 // 0: none
+	Rating           float64 // IMDb's rating (Sonarr reports it); 0: none
 	NextAiring       time.Time
 	LastAired        time.Time
 	EpisodeFileCount *int // nil: the API didn't report statistics
@@ -177,10 +177,15 @@ type MovieDetail struct {
 
 // MediaItem is a library item on the media server.
 type MediaItem struct {
-	RatingKey      string
-	AudienceRating float64 // 0: none
-	RatingSource   string  // scheme of the rating image: "themoviedb", "imdb", "rottentomatoes", ""
-	ContentRating  string
+	RatingKey     string
+	ContentRating string
+}
+
+// Scores are a title's review scores. Zero values mean "none".
+type Scores struct {
+	IMDb       float64 // out of 10
+	RTCritic   float64 // Rotten Tomatoes Tomatometer, percent
+	RTAudience float64 // Rotten Tomatoes Popcornmeter, percent
 }
 
 // Style changes how a route's cards look. The zero value is the standard public card.

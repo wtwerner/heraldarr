@@ -104,6 +104,7 @@ func renderScenario(t *testing.T, sc *testkit.Scenario) []domain.Card {
 			in.Show, _ = media.Find(ctx, []string{"tvdb://" + itoa(s.TVDBID), imdbGUID(s.IMDbID)}, s.Path, domain.KindTV, false)
 			if in.Show != nil {
 				in.ShowURL = media.URL(in.Show.RatingKey)
+				in.Scores, _ = media.Scores(ctx, in.Show.RatingKey)
 				if seasons := seasonsIn(b); len(seasons) == 1 {
 					if k, _ := media.SeasonKey(ctx, in.Show, seasons[0]); k != "" {
 						in.SeasonURL = media.URL(k)
@@ -120,6 +121,7 @@ func renderScenario(t *testing.T, sc *testkit.Scenario) []domain.Card {
 			in.Detail, _ = arrs.Movie(ctx, m.ID)
 			if it, _ := media.Find(ctx, []string{"tmdb://" + itoa(m.TMDBID), imdbGUID(m.IMDbID)}, m.Path, domain.KindMovie, false); it != nil {
 				in.URL = media.URL(it.RatingKey)
+				in.Scores, _ = media.Scores(ctx, it.RatingKey)
 			}
 			movies = append(movies, in)
 		}

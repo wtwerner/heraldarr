@@ -136,7 +136,7 @@
           ],
           [
             "Rating",
-            "★ 7.5 TMDB · TV-PG"
+            "★ 7.2 IMDb · 🍅 88% · 🍿 79% · TV-PG"
           ],
           [
             "Genres",
@@ -205,7 +205,7 @@
               {
                 "inline": true,
                 "name": "Rating",
-                "value": "★ 7.5 TMDB · TV-PG"
+                "value": "★ 7.2 IMDb · 🍅 88% · 🍿 79% · TV-PG"
               },
               {
                 "inline": true,
@@ -243,7 +243,7 @@
               {
                 "inline": true,
                 "name": "Rating",
-                "value": "★ 7.5 TMDB · TV-PG"
+                "value": "★ 7.2 IMDb · 🍅 88% · 🍿 79% · TV-PG"
               },
               {
                 "inline": true,
@@ -294,7 +294,7 @@
                 "type": 10
               },
               {
-                "content": "Orbit · ★ 7.5 TMDB · TV-PG · Science Fiction, Adventure",
+                "content": "Orbit · ★ 7.2 IMDb · 🍅 88% · 🍿 79% · TV-PG · Science Fiction, Adventure",
                 "type": 10
               },
               {
