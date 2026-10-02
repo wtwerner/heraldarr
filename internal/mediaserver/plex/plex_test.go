@@ -142,7 +142,7 @@ func TestFindMatchesAnyGUIDAndOnlyTheKind(t *testing.T) {
 	}
 }
 
-func TestFindReturnsRatingsAndRatingSource(t *testing.T) {
+func TestFindReturnsContentRating(t *testing.T) {
 	p, _, _ := setup(t)
 	for _, tc := range []struct {
 		guid, path string
@@ -151,11 +151,11 @@ func TestFindReturnsRatingsAndRatingSource(t *testing.T) {
 	}{
 		{
 			"tvdb://900102", "/data/media/TV/Glass Orchard (2022)", domain.KindTV,
-			domain.MediaItem{RatingKey: "5201", AudienceRating: 8.4, RatingSource: "themoviedb", ContentRating: "TV-MA"},
+			domain.MediaItem{RatingKey: "5201", ContentRating: "TV-MA"},
 		},
 		{
 			"tmdb://800301", "/data/media/Movies 4K/Film", domain.KindMovie,
-			domain.MediaItem{RatingKey: "7301", AudienceRating: 8.2, RatingSource: "rottentomatoes", ContentRating: "R"},
+			domain.MediaItem{RatingKey: "7301", ContentRating: "R"},
 		},
 		{
 			"tvdb://900101", "/data/media/TV/Harbor Lights (2026)", domain.KindTV,
@@ -166,6 +166,27 @@ func TestFindReturnsRatingsAndRatingSource(t *testing.T) {
 		if got == nil || *got != tc.want {
 			t.Errorf("Find(%s) = %+v, want %+v", tc.guid, got, tc.want)
 		}
+	}
+}
+
+func TestScoresReadEverySourceWhateverTheLibraryShows(t *testing.T) {
+	p, f, _ := setup(t)
+	ctx := t.Context()
+	got, err := p.Scores(ctx, "5201") // the library shows TMDB
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := (domain.Scores{IMDb: 7.9, RTCritic: 96, RTAudience: 82}); got != want {
+		t.Errorf("Scores(5201) = %+v, want %+v", got, want)
+	}
+	if reqs := f.Requests(); !slices.Contains(reqs, "/library/metadata/5201?") {
+		t.Errorf("want the item's metadata, got:\n%s", strings.Join(reqs, "\n"))
+	}
+	if got, err := p.Scores(ctx, "7301"); err != nil || got != (domain.Scores{}) { // no Rating list
+		t.Errorf("Scores(7301) = %+v, %v; want none", got, err)
+	}
+	if _, err := p.Scores(ctx, "404"); !errors.Is(err, domain.ErrNotFound) {
+		t.Errorf("unknown item: err = %v, want ErrNotFound", err)
 	}
 }
 
@@ -372,7 +393,7 @@ func TestParity(t *testing.T) {
 				}
 				fi := fakeItem{
 					RatingKey: it.RatingKey, GUIDs: []string{guid}, AddedAt: 1, Seasons: map[int]string{},
-					AudienceRating: it.AudienceRating, AudienceRatingImage: it.AudienceRatingImage, ContentRating: it.ContentRating,
+					ContentRating: it.ContentRating, Rating: it.Rating,
 				}
 				for k, season := range sc.PlexSeasons {
 					show, idx, _ := strings.Cut(k, ":")
@@ -421,6 +442,11 @@ func TestParity(t *testing.T) {
 				}
 			}
 			for _, it := range sc.Plex {
+				gs, err := p.Scores(ctx, it.RatingKey)
+				es, _ := want.Scores(ctx, it.RatingKey)
+				if err != nil || gs != es {
+					t.Errorf("Scores(%s) = %+v, %v; want %+v", it.RatingKey, gs, err, es)
+				}
 				if p.URL(it.RatingKey) != want.URL(it.RatingKey) {
 					t.Errorf("URL(%s) = %s, want %s", it.RatingKey, p.URL(it.RatingKey), want.URL(it.RatingKey))
 				}

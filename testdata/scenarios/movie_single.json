@@ -156,7 +156,24 @@
   "plex": {
     "tmdb://800201": {
       "ratingKey": "6201",
-      "type": "movie"
+      "type": "movie",
+      "Rating": [
+        {
+          "image": "imdb://image.rating",
+          "type": "audience",
+          "value": 7.3
+        },
+        {
+          "image": "rottentomatoes://image.rating.ripe",
+          "type": "critic",
+          "value": 9.0
+        },
+        {
+          "image": "rottentomatoes://image.rating.upright",
+          "type": "audience",
+          "value": 8.5
+        }
+      ]
     }
   },
   "plex_seasons": {},

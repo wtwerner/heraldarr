@@ -349,3 +349,50 @@ func TestTVDownloading(t *testing.T) {
 		t.Errorf("nothing queued: %q", card.Lines)
 	}
 }
+
+func TestTVScores(t *testing.T) {
+	one := 1
+	d := &domain.SeriesDetail{EpisodeFileCount: &one, Rating: 8.3, Certification: "TV-14", Seasons: map[int]domain.SeasonStats{1: {EpisodeFileCount: 1, TotalEpisodeCount: 8}}}
+	rating := func(d *domain.SeriesDetail, media domain.Scores) string {
+		for _, f := range TV(TVInput{Batch: tvBatch(domain.Episode{Season: 1, Number: 1}), Detail: d, Scores: media}).Facts {
+			if f.Name == "Rating" {
+				return f.Value
+			}
+		}
+		return ""
+	}
+	media := domain.Scores{IMDb: 7.9, RTCritic: 96, RTAudience: 82}
+	if got := rating(d, media); got != "★ 8.3 IMDb · 🍅 96% · 🍿 82% · TV-14" {
+		t.Errorf("both: %q", got)
+	}
+	d.Rating = 0
+	if got := rating(d, media); got != "★ 7.9 IMDb · 🍅 96% · 🍿 82% · TV-14" {
+		t.Errorf("media server only: %q", got)
+	}
+	if got := rating(d, domain.Scores{}); got != "TV-14" {
+		t.Errorf("no scores: %q", got)
+	}
+}
+
+func TestMovieScores(t *testing.T) {
+	for _, tc := range []struct {
+		detail *domain.MovieDetail
+		media  domain.Scores
+		want   string
+	}{
+		{&domain.MovieDetail{IMDbRating: 7.4, RTRating: 91}, domain.Scores{IMDb: 7.3, RTCritic: 90, RTAudience: 85}, "★ 7.4 IMDb · 🍅 91% · 🍿 85%"},
+		{&domain.MovieDetail{IMDbRating: 7.4}, domain.Scores{RTCritic: 90}, "★ 7.4 IMDb · 🍅 90%"},
+		{nil, domain.Scores{IMDb: 6.2, RTAudience: 40}, "★ 6.2 IMDb · 🍿 40%"},
+	} {
+		in := MovieInput{Movie: domain.Movie{Title: "Example"}, Detail: tc.detail, Scores: tc.media}
+		if got := strings.Join(movieScores(in), " · "); got != tc.want {
+			t.Errorf("movieScores(%+v, %+v) = %q, want %q", tc.detail, tc.media, got, tc.want)
+		}
+		if line := Movie(in, Common{}).Lines[0]; !strings.HasPrefix(line, tc.want) {
+			t.Errorf("movie card line %q, want it to start with %q", line, tc.want)
+		}
+		if line := Digest([]MovieInput{in}, Common{}).Lines[0]; !strings.Contains(line, tc.want) {
+			t.Errorf("digest line %q, want %q", line, tc.want)
+		}
+	}
+}

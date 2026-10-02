@@ -753,7 +753,24 @@
       "type": "show",
       "audienceRating": 7.5,
       "audienceRatingImage": "themoviedb://image.rating",
-      "contentRating": "TV-PG"
+      "contentRating": "TV-PG",
+      "Rating": [
+        {
+          "image": "imdb://image.rating",
+          "type": "audience",
+          "value": 7.3
+        },
+        {
+          "image": "rottentomatoes://image.rating.ripe",
+          "type": "critic",
+          "value": 8.8
+        },
+        {
+          "image": "rottentomatoes://image.rating.upright",
+          "type": "audience",
+          "value": 7.9
+        }
+      ]
     }
   },
   "plex_seasons": {

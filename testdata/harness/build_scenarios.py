@@ -68,12 +68,27 @@ def series_detail(s, network, status, seasons, overview, rating=None, cert=None,
     return d
 
 
-def plex_show(key, rating=None, cert=None):
+def plex_scores(imdb=None, rt_critic=None, rt_audience=None):
+    """An item's Rating list as Plex's item metadata has it (values out of 10). Heraldarr reads it;
+    the reference reads only audienceRating."""
+    out = []
+    if imdb is not None:
+        out.append({"image": "imdb://image.rating", "type": "audience", "value": imdb})
+    if rt_critic is not None:
+        out.append({"image": "rottentomatoes://image.rating.ripe", "type": "critic", "value": rt_critic})
+    if rt_audience is not None:
+        out.append({"image": "rottentomatoes://image.rating.upright", "type": "audience", "value": rt_audience})
+    return out
+
+
+def plex_show(key, rating=None, cert=None, **scores):
     m = {"ratingKey": key, "type": "show"}
     if rating is not None:
         m.update(audienceRating=rating, audienceRatingImage="themoviedb://image.rating")
     if cert:
         m["contentRating"] = cert
+    if scores:
+        m["Rating"] = plex_scores(**scores)
     return m
 
 
@@ -121,10 +136,12 @@ def credits(director, cast):
     return out
 
 
-def plex_movie(key, rating=None):
+def plex_movie(key, rating=None, **scores):
     m = {"ratingKey": key, "type": "movie"}
     if rating is not None:
         m.update(audienceRating=rating, audienceRatingImage="imdb://image.rating")
+    if scores:
+        m["Rating"] = plex_scores(**scores)
     return m
 
 
@@ -171,7 +188,8 @@ scenario("tv_season_pack", "A whole back-catalog season (10 files, one Download 
          arr={"series/103": series_detail(s, "Orbit", "ended", {1: (10, 10), 2: (10, 10)},
                                           "Kids build a rocket out of newspaper.", rating=7.2, cert="TV-PG",
                                           last_aired=days(300))},
-         plex={guid_tv(s): plex_show("5301", rating=7.5, cert="TV-PG")}, seasons={"5301:2": "5303"},
+         plex={guid_tv(s): plex_show("5301", rating=7.5, cert="TV-PG", imdb=7.3, rt_critic=8.8, rt_audience=7.9)},
+         seasons={"5301:2": "5303"},
          rt={s["imdbId"]: "tv/paper_comets"})
 
 s = series(104, "Northbound", 2015, ["Drama", "Western"], "northbound")
@@ -182,7 +200,7 @@ scenario("tv_backlog_complete_series", "An ended series added from scratch: seas
          arr={"series/104": series_detail(s, "Frontier", "ended", {0: (0, 2), 1: (8, 8), 2: (8, 8), 3: (8, 8)},
                                           "A cattle drive across three winters.", rating=8.6, cert="TV-14",
                                           last_aired=days(2500))},
-         plex={guid_tv(s): plex_show("5401", rating=8.8, cert="TV-14")})
+         plex={guid_tv(s): plex_show("5401", rating=8.8, cert="TV-14", rt_audience=9.1)})
 
 s = series(105, "Salt & Signal", 2019, ["Documentary"], "salt-and-signal")
 eps = [episode(5040 + n, 105, 4, n, f"Part {n}", days(200) + timedelta(days=7 * n)) for n in (1, 2, 3, 7, 8)]
@@ -255,6 +273,10 @@ CREDITS = {
 }
 
 
+# Rotten Tomatoes audience scores only Plex knows (Radarr has IMDb and the Tomatometer).
+PLEX_SCORES = {201: {"imdb": 7.3, "rt_critic": 9.0, "rt_audience": 8.5}, 204: {"rt_audience": 3.8}}
+
+
 def movie_arr(ids):
     out = {}
     for i in ids:
@@ -265,7 +287,7 @@ def movie_arr(ids):
 
 scenario("movie_single", "One movie: scores, certification, runtime, credits, collection, trailer, fanart.",
          [radarr_import("radarr", M[0])], arr=movie_arr([201]),
-         plex={guid_movie(M[0]): plex_movie("6201")}, rt={M[0]["imdbId"]: "m/the_long_meridian"})
+         plex={guid_movie(M[0]): plex_movie("6201", **PLEX_SCORES[201])}, rt={M[0]["imdbId"]: "m/the_long_meridian"})
 
 scenario("movie_three", "Three movies in one quiet window: one card each.",
          [radarr_import("radarr", m, quality="WEBDL-1080p") for m in M[1:4]], arr=movie_arr([202, 203, 204]),
@@ -273,7 +295,7 @@ scenario("movie_three", "Three movies in one quiet window: one card each.",
 
 scenario("movie_digest", "Five movies in one quiet window: one digest card with an image grid.",
          [radarr_import("radarr", m) for m in M], arr=movie_arr([201, 202, 203, 204, 205]),
-         plex={guid_movie(m): plex_movie(f"6{m['id']}") for m in M if m["id"] != 203})
+         plex={guid_movie(m): plex_movie(f"6{m['id']}", **PLEX_SCORES.get(m["id"], {})) for m in M if m["id"] != 203})
 
 UHD = movie(301, "The Long Meridian", 2025, ["Science Fiction", "Thriller"], "the-long-meridian",
             "A navigator discovers the map is lying.", uhd=True)

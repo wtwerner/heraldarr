@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/wtwerner/heraldarr/internal/testkit"
 )
 
 const (
@@ -26,7 +28,8 @@ type fakeItem struct {
 	AudienceRating      float64
 	AudienceRatingImage string
 	ContentRating       string
-	Seasons             map[int]string // index -> season rating key (shows)
+	Rating              []testkit.PlexRating // only in the item's own metadata, as in Plex
+	Seasons             map[int]string       // index -> season rating key (shows)
 }
 
 type fakeSection struct {
@@ -36,7 +39,7 @@ type fakeSection struct {
 }
 
 // fakePlex is an httptest Plex Media Server: enough of /, /library/sections, …/all (with sort,
-// type and container paging), …/refresh and /library/metadata/<key>/children.
+// type and container paging), …/refresh, /library/metadata/<key> and …/children.
 type fakePlex struct {
 	*httptest.Server
 	t testing.TB
@@ -72,7 +75,15 @@ func libraryFixtures() []*fakeSection {
 		{RatingKey: "7301", GUIDs: []string{"imdb://tt9800301", "tmdb://800301"}, AddedAt: 2100, AudienceRating: 8.2, AudienceRatingImage: "rottentomatoes://image.rating.upright", ContentRating: "R"},
 	}}
 	tv := &fakeSection{Key: "3", Type: "show", Title: "TV Shows", Locations: []string{"/media/TV"}, Items: []fakeItem{
-		{RatingKey: "5201", GUIDs: []string{"plex://show/bbb", "imdb://tt9900102", "tmdb://99102", "tvdb://900102"}, AddedAt: 3000, AudienceRating: 8.4, AudienceRatingImage: "themoviedb://image.rating", ContentRating: "TV-MA", Seasons: map[int]string{1: "5202", 3: "5203"}},
+		{
+			RatingKey: "5201", GUIDs: []string{"plex://show/bbb", "imdb://tt9900102", "tmdb://99102", "tvdb://900102"}, AddedAt: 3000, AudienceRating: 8.4, AudienceRatingImage: "themoviedb://image.rating", ContentRating: "TV-MA", Seasons: map[int]string{1: "5202", 3: "5203"},
+			Rating: []testkit.PlexRating{
+				{Image: "imdb://image.rating", Type: "audience", Value: 7.9},
+				{Image: "rottentomatoes://image.rating.ripe", Type: "critic", Value: 9.6},
+				{Image: "rottentomatoes://image.rating.upright", Type: "audience", Value: 8.2},
+				{Image: "themoviedb://image.rating", Type: "audience", Value: 8.4},
+			},
+		},
 		{RatingKey: "5101", GUIDs: []string{"tvdb://900101"}, AddedAt: 2500, Seasons: map[int]string{0: "5100", 1: "5102"}},
 	}}
 	music := &fakeSection{Key: "4", Type: "artist", Title: "Music", Locations: []string{"/media/Music"}, Items: []fakeItem{
@@ -156,6 +167,21 @@ func (f *fakePlex) serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+	case len(parts) == 3 && parts[1] == "metadata":
+		it := f.item(parts[2])
+		if it == nil {
+			http.NotFound(w, r)
+			return
+		}
+		m := map[string]any{"ratingKey": it.RatingKey}
+		if it.AudienceRating != 0 {
+			m["audienceRating"] = it.AudienceRating
+			m["audienceRatingImage"] = it.AudienceRatingImage
+		}
+		if len(it.Rating) > 0 {
+			m["Rating"] = it.Rating
+		}
+		f.reply(w, map[string]any{"size": 1, "Metadata": []map[string]any{m}})
 	case len(parts) == 4 && parts[1] == "metadata" && parts[3] == "children":
 		it := f.item(parts[2])
 		if it == nil {

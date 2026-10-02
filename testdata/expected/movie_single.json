@@ -72,7 +72,7 @@
         ],
         "headline": "New movie",
         "lines": [
-          "★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama",
+          "★ 7.4 IMDb · 🍅 91% · 🍿 85% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama",
           "Directed by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt",
           "Part of the Meridian Collection"
         ],
@@ -131,7 +131,7 @@
               "name": "New movie"
             },
             "color": 15048717,
-            "description": "> A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is…\n\n★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection",
+            "description": "> A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is…\n\n★ 7.4 IMDb · 🍅 91% · 🍿 85% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection",
             "fields": [],
             "footer": {
               "text": "Example Server · 1080p Blu-ray"
@@ -156,7 +156,7 @@
               "name": "New movie"
             },
             "color": 15048717,
-            "description": "> A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is…\n\n★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201) · [Trailer](https://www.youtube.com/watch?v=EXAMPLE0001) · [IMDb](https://www.imdb.com/title/tt9800201/) · [Rotten Tomatoes](https://www.rottentomatoes.com/m/the_long_meridian)",
+            "description": "> A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is lying. A navigator discovers the map is…\n\n★ 7.4 IMDb · 🍅 91% · 🍿 85% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection\n\n[Open in Plex](https://app.plex.tv/desktop/#!/server/0123456789abcdef0123456789abcdef01234567/details?key=%2Flibrary%2Fmetadata%2F6201) · [Trailer](https://www.youtube.com/watch?v=EXAMPLE0001) · [IMDb](https://www.imdb.com/title/tt9800201/) · [Rotten Tomatoes](https://www.rottentomatoes.com/m/the_long_meridian)",
             "fields": [],
             "footer": {
               "text": "Example Server · 1080p Blu-ray"
@@ -200,7 +200,7 @@
                 "type": 14
               },
               {
-                "content": "★ 7.4 IMDb · 🍅 91% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection",
+                "content": "★ 7.4 IMDb · 🍅 91% · 🍿 85% · PG-13 · 2h 04m · Science Fiction, Thriller, Drama\nDirected by Rae Okafor · Starring Lena Marsh, Tomas Vey, Ida Brandt\nPart of the Meridian Collection",
                 "type": 10
               },
               {

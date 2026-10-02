@@ -1,6 +1,7 @@
 package render
 
 import (
+	"cmp"
 	"fmt"
 	"regexp"
 	"slices"
@@ -139,13 +140,26 @@ func runtime(minutes int) string {
 	return ""
 }
 
-func movieScores(d *domain.MovieDetail) []string {
-	var out []string
-	if d.IMDbRating != 0 {
-		out = append(out, fmt.Sprintf("★ %.1f IMDb", d.IMDbRating))
+func movieScores(in MovieInput) []string {
+	var arr domain.Scores
+	if in.Detail != nil {
+		arr = domain.Scores{IMDb: in.Detail.IMDbRating, RTCritic: in.Detail.RTRating}
 	}
-	if d.RTRating != 0 {
-		out = append(out, "🍅 "+strconv.FormatFloat(d.RTRating, 'f', -1, 64)+"%")
+	return scores(arr, in.Scores)
+}
+
+// scores formats IMDb, the Tomatometer and the Popcornmeter: "★ 7.4 IMDb", "🍅 91%", "🍿 85%".
+// The *arr's score wins where both have one; only the media server has the Popcornmeter.
+func scores(arr, media domain.Scores) []string {
+	var out []string
+	if v := cmp.Or(arr.IMDb, media.IMDb); v != 0 {
+		out = append(out, fmt.Sprintf("★ %.1f IMDb", v))
+	}
+	if v := cmp.Or(arr.RTCritic, media.RTCritic); v != 0 {
+		out = append(out, "🍅 "+strconv.FormatFloat(v, 'f', -1, 64)+"%")
+	}
+	if v := cmp.Or(arr.RTAudience, media.RTAudience); v != 0 {
+		out = append(out, "🍿 "+strconv.FormatFloat(v, 'f', -1, 64)+"%")
 	}
 	return out
 }

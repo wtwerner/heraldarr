@@ -1751,7 +1751,14 @@
       "type": "show",
       "audienceRating": 8.8,
       "audienceRatingImage": "themoviedb://image.rating",
-      "contentRating": "TV-14"
+      "contentRating": "TV-14",
+      "Rating": [
+        {
+          "image": "rottentomatoes://image.rating.upright",
+          "type": "audience",
+          "value": 9.1
+        }
+      ]
     }
   },
   "plex_seasons": {},

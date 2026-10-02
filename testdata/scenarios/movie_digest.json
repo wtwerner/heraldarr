@@ -623,7 +623,24 @@
   "plex": {
     "tmdb://800201": {
       "ratingKey": "6201",
-      "type": "movie"
+      "type": "movie",
+      "Rating": [
+        {
+          "image": "imdb://image.rating",
+          "type": "audience",
+          "value": 7.3
+        },
+        {
+          "image": "rottentomatoes://image.rating.ripe",
+          "type": "critic",
+          "value": 9.0
+        },
+        {
+          "image": "rottentomatoes://image.rating.upright",
+          "type": "audience",
+          "value": 8.5
+        }
+      ]
     },
     "tmdb://800202": {
       "ratingKey": "6202",
@@ -631,7 +648,14 @@
     },
     "tmdb://800204": {
       "ratingKey": "6204",
-      "type": "movie"
+      "type": "movie",
+      "Rating": [
+        {
+          "image": "rottentomatoes://image.rating.upright",
+          "type": "audience",
+          "value": 3.8
+        }
+      ]
     },
     "tmdb://800205": {
       "ratingKey": "6205",

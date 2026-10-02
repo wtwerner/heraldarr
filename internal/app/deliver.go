@@ -76,7 +76,7 @@ func (a *App) deliver(ctx context.Context, b *domain.Batch, force bool, dest *do
 		var movies []render.MovieInput
 		for _, k := range b.Keys() {
 			m := b.Movies[k]
-			in := render.MovieInput{Key: k, Movie: m, URL: a.url(found[string(k)])}
+			in := render.MovieInput{Key: k, Movie: m, URL: a.url(found[string(k)]), Scores: a.scores(ctx, found[string(k)])}
 			if !digest { // digest cards have no Rotten Tomatoes button
 				in.RottenTomatoes = a.RT.RottenTomatoes(ctx, m.IMDbID, m.Title)
 			}
@@ -239,6 +239,7 @@ func (a *App) renderTV(ctx context.Context, b *domain.Batch, src Source, show *d
 	}
 	if show != nil {
 		in.ShowURL = a.url(show)
+		in.Scores = a.scores(ctx, show)
 		if seasons := seasonsIn(b); len(seasons) == 1 {
 			if k, err := a.Media.SeasonKey(ctx, show, seasons[0]); err == nil && k != "" {
 				in.SeasonURL = a.Media.URL(k)
@@ -310,6 +311,19 @@ func (a *App) url(it *domain.MediaItem) string {
 		return ""
 	}
 	return a.Media.URL(it.RatingKey)
+}
+
+// scores asks the media server for an item's review scores. Without them the card shows what the
+// *arr knows.
+func (a *App) scores(ctx context.Context, it *domain.MediaItem) domain.Scores {
+	if it == nil || a.Media == nil {
+		return domain.Scores{}
+	}
+	s, err := a.Media.Scores(ctx, it.RatingKey)
+	if err != nil {
+		a.Log.Warn("media server scores unavailable", "item", it.RatingKey, "err", err)
+	}
+	return s
 }
 
 func seasonsIn(b *domain.Batch) []int {
