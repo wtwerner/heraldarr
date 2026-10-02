@@ -174,6 +174,11 @@ func (f *fakePlex) serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		m := map[string]any{"ratingKey": it.RatingKey}
+		for _, r := range it.Rating {
+			if r.Type == "critic" { // Plex repeats the critic score as "rating"
+				m["rating"] = r.Value
+			}
+		}
 		if it.AudienceRating != 0 {
 			m["audienceRating"] = it.AudienceRating
 			m["audienceRatingImage"] = it.AudienceRatingImage
