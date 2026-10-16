@@ -450,3 +450,30 @@ func TestReportedAgainDuringRecheckStaysOpen(t *testing.T) {
 		t.Errorf("due = %+v", w)
 	}
 }
+
+func TestRefreshKeepsTheAppsMessage(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down: A"))
+	if err := r.m.Refresh(context.Background(), key, "down: A, B"); err != nil {
+		t.Fatal(err)
+	}
+	if s := r.stored(key); s.Message != "down: A" {
+		t.Errorf("refreshed an alert that wasn't handed out: %q", s.Message)
+	}
+	r.clock.Advance(30 * time.Minute)
+	one(t, r.due(), Post)
+	for _, m := range []string{"down: A, B", ""} { // empty: keep it
+		if err := r.m.Refresh(context.Background(), key, m); err != nil {
+			t.Fatal(err)
+		}
+	}
+	r.add(warning("down: A, B, C")) // an event still wins
+	r.done(key, Sent, msg)
+	if s := r.stored(key); s.Message != "down: A, B, C" {
+		t.Errorf("message %q", s.Message)
+	}
+	r.add(restored())
+	if a := one(t, r.due(), Resolve); a.Message != "down: A, B, C" {
+		t.Errorf("resolve shows %q", a.Message)
+	}
+}

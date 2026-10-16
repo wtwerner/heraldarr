@@ -60,6 +60,45 @@ var alertsDest = domain.Destination{Name: "server", WebhookURL: "https://discord
 
 func newAlertEnv(t *testing.T, opts ...func(*app.Alerts)) *alertEnv {
 	t.Helper()
+	return buildAlertEnv(t, nil, opts...)
+}
+
+// brokenAlerts is a MemStore whose alert calls fail while err is set.
+type brokenAlerts struct {
+	*testkit.MemStore
+	mu  sync.Mutex
+	err error
+}
+
+func (b *brokenAlerts) fail(err error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.err = err
+}
+
+func (b *brokenAlerts) broken() error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.err
+}
+
+func (b *brokenAlerts) LoadAlerts(ctx context.Context) (map[string]*domain.Alert, error) {
+	if err := b.broken(); err != nil {
+		return nil, err
+	}
+	return b.MemStore.LoadAlerts(ctx)
+}
+
+func (b *brokenAlerts) SaveAlert(ctx context.Context, a *domain.Alert) error {
+	if err := b.broken(); err != nil {
+		return err
+	}
+	return b.MemStore.SaveAlert(ctx, a)
+}
+
+// buildAlertEnv: deps, when set, adjusts the App's Deps (its Store is the env's MemStore).
+func buildAlertEnv(t *testing.T, deps func(*app.Deps), opts ...func(*app.Alerts)) *alertEnv {
+	t.Helper()
 	e := &alertEnv{
 		clock: testkit.NewClock(time.Date(2026, 6, 15, 12, 0, 0, 0, time.UTC)), out: &capture{},
 		store: testkit.NewMemStore(), health: &health{},
@@ -75,10 +114,14 @@ func newAlertEnv(t *testing.T, opts ...func(*app.Alerts)) *alertEnv {
 	for _, o := range opts {
 		o(al)
 	}
-	e.app = app.New(app.Deps{
+	d := app.Deps{
 		Clock: e.clock, Store: e.store, Notifier: e.out, Sources: map[string]app.Source{}, Timing: timing,
 		Alerts: al, Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
-	})
+	}
+	if deps != nil {
+		deps(&d)
+	}
+	e.app = app.New(d)
 	e.srv = e.app.Handler()
 	return e
 }
@@ -145,7 +188,8 @@ func TestAlertLifecycle(t *testing.T) {
 		t.Fatalf("%d posts after the hold, want 1", e.out.count())
 	}
 	p := e.out.posts[0]
-	if p.dest.Name != "server" || !strings.Contains(v2Content(p.layouts[0]), "⚠️ Warning · Prowlarr") {
+	if p.dest.Name != "server" || !strings.Contains(v2Content(p.layouts[0]), "⚠️ Warning · Prowlarr") ||
+		!strings.Contains(v2Content(p.layouts[0]), "Indexers unavailable due to failures: Example") {
 		t.Errorf("posted to %s: %s", p.dest.Name, v2Content(p.layouts[0]))
 	}
 	e.flush()
@@ -270,7 +314,10 @@ func TestAlertHookRouting(t *testing.T) {
 			t.Errorf("%s: HTTP %d, want %d", c.name, code, c.code)
 		}
 	}
-	// A source that isn't in alerts acknowledges and ignores alert events.
+	if !strings.Contains(metricsBody(t, e.srv), `heraldarr_alerts_total{source="prowlarr",result="invalid"} 1`) {
+		t.Error("bad alert not counted as invalid")
+	}
+	// A source in neither routes nor alerts is unknown.
 	o := newAlertEnv(t, func(a *app.Alerts) { delete(a.Sources, "sonarr") })
 	if code := o.hook(t, "sonarr", indexersDown); code != http.StatusNotFound {
 		t.Errorf("source in neither routes nor alerts: HTTP %d", code)
@@ -443,6 +490,11 @@ func TestAlertPostUsesTheAppsCurrentMessage(t *testing.T) {
 	if e.out.count() != 1 || !strings.Contains(v2Content(e.out.posts[0].layouts[0]), "Example, Another") {
 		t.Fatalf("posted %s", v2Content(e.out.posts[0].layouts[0]))
 	}
+	e.hook(t, "prowlarr", indexersBack)
+	e.flush()
+	if len(e.out.edits) != 1 || !strings.Contains(v2Content(e.out.edits[0].layout), "Example, Another") {
+		t.Errorf("the resolved card went back to the webhook's message: %+v", e.out.edits)
+	}
 }
 
 func TestAlertPostsAreCountedAndRecorded(t *testing.T) {
@@ -470,4 +522,38 @@ func metricsBody(t *testing.T, srv http.Handler) string {
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, req)
 	return rec.Body.String()
+}
+
+func TestAlertResolvedPostIsCountedAndRecorded(t *testing.T) {
+	e := postedAlert(t, func(a *app.Alerts) { a.Restored = "post" })
+	e.hook(t, "prowlarr", indexersBack)
+	e.flush()
+	if !strings.Contains(metricsBody(t, e.srv), `heraldarr_posts_total{source="prowlarr",destination="server",layout="v2"} 2`) {
+		t.Error("resolved card not in heraldarr_posts_total")
+	}
+	if len(e.store.History) != 2 || e.store.History[1].Headline != "resolved" {
+		t.Errorf("history %+v", e.store.History)
+	}
+}
+
+func TestAlertStoreErrors(t *testing.T) {
+	p := newPinger(t, http.StatusOK)
+	st := &brokenAlerts{MemStore: testkit.NewMemStore()}
+	e := buildAlertEnv(t, func(d *app.Deps) { d.Store, d.Heartbeat = st, p.URL+pingPath })
+	st.fail(errors.New("disk I/O error"))
+	if code := e.hook(t, "prowlarr", indexersDown); code != http.StatusInternalServerError {
+		t.Errorf("HTTP %d for an alert that couldn't be recorded, want 500", code)
+	}
+	if !strings.Contains(metricsBody(t, e.srv), `heraldarr_alerts_total{source="prowlarr",result="error"} 1`) {
+		t.Error("store error not counted")
+	}
+	e.flush() // no batch is due, so only the alerts touch the store
+	if p.count() != 0 {
+		t.Fatal("pinged after a flush whose alerts couldn't be loaded")
+	}
+	st.fail(nil)
+	e.flush()
+	if p.count() != 1 {
+		t.Errorf("%d pings after the store recovered, want 1", p.count())
+	}
 }

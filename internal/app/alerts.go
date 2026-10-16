@@ -119,8 +119,11 @@ func (a *App) deliverAlert(ctx context.Context, w alert.Work) (alert.Outcome, *d
 				a.Log.Info("alert cleared before posting (the app no longer reports it)", "alert", al.Key)
 				return alert.Closed, nil
 			}
-			if now != nil && now.Message != "" {
+			if now != nil && now.Message != "" && now.Message != al.Message {
 				al.Message = now.Message // the app's latest (e.g. more indexers down by now)
+				if err := a.alerts.Refresh(context.WithoutCancel(ctx), al.Key, al.Message); err != nil {
+					a.Log.Warn("recording the app's current alert message", "alert", al.Key, "err", err)
+				}
 			}
 		}
 		res, err := a.Notifier.Post(ctx, dest, render.Alert(al, a.Clock.Now()))

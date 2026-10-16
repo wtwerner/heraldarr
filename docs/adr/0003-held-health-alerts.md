@@ -43,5 +43,5 @@ open issue. Webhook deliveries aren't retried.
 - A warning that matters shows up `hold` late. Errors don't wait by default.
 - An escalation from warning to error under the same check sends no event, so it keeps the
   warning's hold unless the app reports it again.
-- heraldarr calls each alert source's health API at most once per held alert and once per
-  `recheck` per posted alert.
+- heraldarr calls an alert source's health API once per attempt to post a held alert (retries
+  included) and once per `recheck` per posted alert.

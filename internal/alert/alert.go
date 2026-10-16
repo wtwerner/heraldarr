@@ -286,6 +286,20 @@ func (m *Manager) Done(ctx context.Context, key string, outcome Outcome, msg *do
 	return m.save(ctx, &a)
 }
 
+// Refresh replaces the message of an alert Due handed out with the app's latest, so its later
+// cards (resolved) show what was posted. It doesn't count as an event.
+func (m *Manager) Refresh(ctx context.Context, key, message string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	cur := m.alerts[key]
+	if _, out := m.inflight[key]; !out || cur == nil || message == "" || cur.Message == message {
+		return nil
+	}
+	a := *cur
+	a.Message = message
+	return m.save(ctx, &a)
+}
+
 func (m *Manager) loaded(ctx context.Context) (map[string]*domain.Alert, error) {
 	if m.alerts == nil {
 		all, err := m.store.LoadAlerts(ctx)

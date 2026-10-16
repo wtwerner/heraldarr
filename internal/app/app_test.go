@@ -685,12 +685,20 @@ routes:
 
 func TestFromConfigAlerts(t *testing.T) {
 	dir := t.TempDir()
+	prowlarr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1/health" {
+			http.NotFound(w, r)
+			return
+		}
+		_, _ = io.WriteString(w, `[{"source":"IndexerStatusCheck","type":"warning","message":"m"}]`)
+	}))
+	defer prowlarr.Close()
 	yaml := `
 server: {data_dir: ` + filepath.Join(dir, "data") + `}
 sources:
   - {name: sonarr, kind: sonarr, url: "http://sonarr:8989", api_key: k}
   - {name: radarr, kind: radarr, url: "http://radarr:7878", api_key: k}
-  - {name: prowlarr, kind: prowlarr, url: "http://prowlarr:9696", api_key: k}
+  - {name: prowlarr, kind: prowlarr, url: "` + prowlarr.URL + `", api_key: k}
 destinations:
   - {name: tv, webhook_url: "https://discord.invalid/api/webhooks/1/x", public: true}
   - {name: server, webhook_url: "https://discord.invalid/api/webhooks/2/y", username: Server}
@@ -712,7 +720,10 @@ alerts: {destination: server, sources: [radarr, prowlarr], hold: 1h, hold_errors
 		t.Fatalf("alerts: %+v", al)
 	}
 	if len(al.Sources) != 2 || al.Sources["radarr"] == nil || al.Sources["prowlarr"] == nil {
-		t.Errorf("alert sources: %v", al.Sources)
+		t.Fatalf("alert sources: %v", al.Sources)
+	}
+	if h, err := al.Sources["prowlarr"].Health(context.Background()); err != nil || len(h) != 1 {
+		t.Errorf("Prowlarr health (v1 API) = %v, %v", h, err)
 	}
 	if c := al.Config; c.Hold != time.Hour || c.HoldErrors != time.Minute || c.Recheck != 5*time.Minute || c.Updates ||
 		c.RetryInterval != 2*time.Minute || c.RetryMax != 30 {

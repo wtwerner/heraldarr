@@ -25,27 +25,26 @@ var markdown = strings.NewReplacer(`\`, `\\`, `*`, `\*`, `_`, `\_`, `~`, `\~`, "
 // Alert encodes an alert for Discord: open (held long enough to post), resolved, or an
 // application update. now stamps the embed. Alerts go to non-public destinations only.
 func Alert(a *domain.Alert, now time.Time) []domain.Layout {
-	app := a.App
-	if app == "" {
-		app = a.Source
+	name := a.App
+	if name == "" {
+		name = a.Source
 	}
-	app = markdown.Replace(app)
+	app := markdown.Replace(name) // for text Discord renders as markdown; embed author names aren't
 	check := markdown.Replace(a.Check)
-	var head, body, foot string
+	var label, head, body, foot string
 	var color int
 	var buttons []domain.Button
 	message := markdown.Replace(truncate(a.Message, maxAlertMessage))
 	switch {
 	case a.Kind == domain.AlertUpdate:
-		head, color = "⬆️ Updated · "+app, colorUpdate
+		label, color = "⬆️ Updated", colorUpdate
 		body = "**" + markdown.Replace(joinNonEmpty(" → ", a.From, a.To)) + "**"
 		foot = message
 	case !a.Resolved.IsZero():
-		head, color = "✅ Resolved · "+app, colorResolved
+		label, color = "✅ Resolved", colorResolved
 		body = message
 		foot = joinNonEmpty(" · ", "Lasted "+lasted(a.Resolved.Sub(a.First)), check)
 	default:
-		var label string
 		switch a.Level {
 		case domain.LevelError:
 			label, color = "🛑 Error", colorError
@@ -54,16 +53,16 @@ func Alert(a *domain.Alert, now time.Time) []domain.Layout {
 		default:
 			label, color = "⚠️ Warning", colorWarning
 		}
-		head = label + " · " + app
 		body = "**" + message + "**"
 		foot = joinNonEmpty(" · ", fmt.Sprintf("Failing since <t:%d:R>", a.First.Unix()), check)
 		if web(a.WikiURL) {
 			buttons = append(buttons, domain.Button{Label: "Wiki", URL: a.WikiURL, Emoji: "📖"})
 		}
 		if web(a.AppURL) {
-			buttons = append(buttons, domain.Button{Label: "Open " + a.App, URL: a.AppURL, Emoji: "🔗"})
+			buttons = append(buttons, domain.Button{Label: "Open " + name, URL: a.AppURL, Emoji: "🔗"})
 		}
 	}
+	head = label + " · " + app
 
 	card := domain.Card{Headline: head, Color: color, Lines: []string{body}, Footer: foot, Buttons: buttons}
 	parts := []any{text("-# " + head + "\n" + body)}
@@ -78,7 +77,7 @@ func Alert(a *domain.Alert, now time.Time) []domain.Layout {
 		"components": []any{map[string]any{"type": componentBox, "accent_color": color, "components": parts}},
 	}
 	e := map[string]any{
-		"author":      map[string]any{"name": head},
+		"author":      map[string]any{"name": label + " · " + name},
 		"description": truncate(joinNonEmpty("\n\n", body, foot), maxEmbedDesc),
 		"color":       color,
 		"timestamp":   now.UTC().Format("2006-01-02T15:04:05-07:00"),

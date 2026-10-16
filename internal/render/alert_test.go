@@ -138,4 +138,17 @@ func TestAlertEscapesNames(t *testing.T) {
 	if !strings.Contains(txt, `Sonarr\_4K`) || !strings.Contains(txt, `Index\*Check`) {
 		t.Errorf("names not escaped:\n%s", txt)
 	}
+	e := Alert(a, alertT0)[1].Body["embeds"].([]any)[0].(map[string]any)
+	if got := e["author"].(map[string]any)["name"]; got != "⚠️ Warning · Sonarr_4K" {
+		t.Errorf("embed author %q: author names aren't markdown", got)
+	}
+}
+
+func TestAlertButtonNamesTheSourceWithoutAnInstanceName(t *testing.T) {
+	a := heldAlert()
+	a.App = ""
+	b, _ := json.Marshal(Alert(a, alertT0)[0].Body)
+	if !strings.Contains(string(b), `"label":"Open prowlarr"`) {
+		t.Errorf("button labels: %s", b)
+	}
 }

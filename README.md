@@ -212,7 +212,7 @@ Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST
 | `heraldarr_pending_batches` | batches waiting to be posted |
 | `heraldarr_media_server_waits_total` | deliveries postponed until the media server has the items |
 | `heraldarr_last_post_timestamp_seconds` | the last post since start (0 until the first) |
-| `heraldarr_alerts_total{source,result}` | health and update events; `result` is `held`, `repeat`, `cleared` (restored within the hold), `restored`, `update`, `ignored`, `invalid` or `error` |
+| `heraldarr_alerts_total{source,result}` | health and update events; `result` is `held`, `repeat`, `cleared` (restored within the hold), `restored`, `update`, `ignored`, `invalid` or `error`. For a source in alerts, a body that isn't valid JSON counts here as `invalid`, not in `heraldarr_imports_total` |
 | `heraldarr_alerts_dropped_total{source,reason}` | alerts never posted: `cleared` (restored within the hold, or no longer reported by the app when the hold ended) or `failed` delivery |
 
 A useful alert: `increase(heraldarr_delivery_failures_total[1h]) > 0` (a Discord webhook was
