@@ -659,3 +659,50 @@ routes:
 		t.Errorf("backlog overrides not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
 	}
 }
+
+func TestFromConfigAlerts(t *testing.T) {
+	dir := t.TempDir()
+	yaml := `
+server: {data_dir: ` + filepath.Join(dir, "data") + `}
+sources:
+  - {name: sonarr, kind: sonarr, url: "http://sonarr:8989", api_key: k}
+  - {name: radarr, kind: radarr, url: "http://radarr:7878", api_key: k}
+  - {name: prowlarr, kind: prowlarr, url: "http://prowlarr:9696", api_key: k}
+destinations:
+  - {name: tv, webhook_url: "https://discord.invalid/api/webhooks/1/x", public: true}
+  - {name: server, webhook_url: "https://discord.invalid/api/webhooks/2/y", username: Server}
+routes:
+  - {sources: [sonarr], destination: tv}
+alerts: {destination: server, sources: [radarr, prowlarr], hold: 1h, hold_errors: 1m, restored: post, recheck: 5m, updates: false}
+`
+	cfg, err := config.Parse([]byte(yaml))
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc, err := app.FromConfig(cfg, "test", slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = svc.Close() }()
+	al := svc.Alerts
+	if al == nil || al.Destination.Name != "server" || al.Destination.Username != "Server" || al.Restored != "post" {
+		t.Fatalf("alerts: %+v", al)
+	}
+	if len(al.Sources) != 2 || al.Sources["radarr"] == nil || al.Sources["prowlarr"] == nil {
+		t.Errorf("alert sources: %v", al.Sources)
+	}
+	if c := al.Config; c.Hold != time.Hour || c.HoldErrors != time.Minute || c.Recheck != 5*time.Minute || c.Updates ||
+		c.RetryInterval != 2*time.Minute || c.RetryMax != 30 {
+		t.Errorf("alert config: %+v", c)
+	}
+	// Alerts-only sources post no imports.
+	if _, ok := svc.Sources["radarr"]; ok {
+		t.Error("an unrouted radarr became an import source")
+	}
+	if _, ok := svc.Sources["prowlarr"]; ok {
+		t.Error("prowlarr became an import source")
+	}
+	if _, ok := svc.Sources["sonarr"]; !ok {
+		t.Error("sonarr lost its route")
+	}
+}

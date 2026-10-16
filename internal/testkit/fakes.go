@@ -133,6 +133,7 @@ type MemStore struct {
 	posted  map[domain.ItemKey]time.Time
 	History []domain.HistoryEntry
 	cache   map[string]cached
+	alerts  map[string]*domain.Alert
 }
 
 type cached struct {
@@ -141,7 +142,10 @@ type cached struct {
 }
 
 func NewMemStore() *MemStore {
-	return &MemStore{batches: map[string]*domain.Batch{}, posted: map[domain.ItemKey]time.Time{}, cache: map[string]cached{}}
+	return &MemStore{
+		batches: map[string]*domain.Batch{}, posted: map[domain.ItemKey]time.Time{}, cache: map[string]cached{},
+		alerts: map[string]*domain.Alert{},
+	}
 }
 
 func clone(b *domain.Batch) *domain.Batch {
@@ -242,6 +246,39 @@ func (s *MemStore) CachePut(_ context.Context, ns, key string, val []byte, at ti
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.cache[ns+"\x00"+key] = cached{val: val, at: at}
+	return nil
+}
+
+func cloneAlert(a *domain.Alert) *domain.Alert {
+	c := *a
+	if a.Posted != nil {
+		m := *a.Posted
+		c.Posted = &m
+	}
+	return &c
+}
+
+func (s *MemStore) LoadAlerts(context.Context) (map[string]*domain.Alert, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	out := make(map[string]*domain.Alert, len(s.alerts))
+	for k, a := range s.alerts {
+		out[k] = cloneAlert(a)
+	}
+	return out, nil
+}
+
+func (s *MemStore) SaveAlert(_ context.Context, a *domain.Alert) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.alerts[a.Key] = cloneAlert(a)
+	return nil
+}
+
+func (s *MemStore) DeleteAlert(_ context.Context, key string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.alerts, key)
 	return nil
 }
 

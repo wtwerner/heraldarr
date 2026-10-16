@@ -12,6 +12,11 @@ several movies land together. Cards show ratings, cast and runtime, and have but
 item in Plex for every friend the library is shared with. Upgrades are never announced, and nothing
 is announced twice within 30 days.
 
+It can also take over the apps' **health alerts** (Sonarr, Radarr and Prowlarr) for a private
+channel: a warning posts only if it is still failing after 30 minutes, so indexer blips that fix
+themselves never reach the channel, and a posted alert is edited to "Resolved" when it clears. See
+[Health alerts](#health-alerts).
+
 ## Screenshots
 
 <!-- Card images go here: a single-series card, a "3 new episodes" card, a movie digest. -->
@@ -143,6 +148,37 @@ Sonarr/Radarr ID (the `id` field of `/api/v3/series` or `/api/v3/movie`):
 docker compose exec heraldarr /heraldarr preview radarr 12 -to private
 ```
 
+## Health alerts
+
+The *arrs post every health check change to Discord as it happens: "Indexers unavailable due to
+failures", then "health restored" a few minutes later, mostly for indexers that recover on their
+own. heraldarr holds them instead:
+
+- A **warning** (or notice) posts once it has been failing for `alerts.hold` (30 min). If the app
+  reports it restored before then, nothing is posted. A check that fails again within a hold of
+  clearing counts as the same issue, so a flapping check still posts.
+- An **error** posts at the next flush (`alerts.hold_errors`, 0).
+- Before posting, heraldarr asks the app's API whether the check is still failing, and while an
+  alert is posted it asks again every `alerts.recheck` (15 min), so a restore event heraldarr
+  missed (it was restarting) doesn't leave an alert open.
+- When the check passes, the card is edited to **Resolved** with how long it lasted (silent in
+  Discord), or a resolved card is posted (`alerts.restored: post`).
+- **Application updates** post as they happen (`alerts.updates`).
+
+```yaml
+sources:
+  - {name: prowlarr, kind: prowlarr, url: http://prowlarr:9696, api_key: {file: /config/secrets/prowlarr_api_key}}
+destinations:
+  - {name: server, webhook_url: {file: /config/secrets/discord_server}}   # not public
+alerts:
+  destination: server
+  # sources: [sonarr, radarr, prowlarr]   # default: every source
+```
+
+Run `heraldarr setup`: it turns on Health, Health Restored (with warnings) and Application Update
+in the heraldarr connection of each alert source, and creates it in Prowlarr. Then turn off the
+health triggers of any Discord connection the apps had for this, or both will post.
+
 ## Reference
 
 Secrets can be inline, read from a file (`{file: …}`, recommended) or read from the environment
@@ -153,7 +189,7 @@ Secrets can be inline, read from a file (`{file: …}`, recommended) or read fro
 |---|---|
 | `heraldarr serve` | run the webhook receiver and poster (the image's default) |
 | `heraldarr validate` | check the configuration |
-| `heraldarr setup [-name NAME] [-dry-run]` | create or update the Webhook connection in every Sonarr/Radarr |
+| `heraldarr setup [-name NAME] [-dry-run]` | create or update the Webhook connection in every Sonarr/Radarr/Prowlarr |
 | `heraldarr preview radarr 12,34 -to private` | render items already on disk as new and post them to a non-public destination (without `-to`: print the JSON) |
 | `heraldarr preview sonarr 7 S02` | same for a series, a season or `S02E05,S02E06` |
 | `heraldarr flush` | post everything pending now (asks the running server) |
@@ -176,6 +212,8 @@ Endpoints: `POST /hook/{source}`, `GET /health` (no auth), `GET /pending`, `POST
 | `heraldarr_pending_batches` | batches waiting to be posted |
 | `heraldarr_media_server_waits_total` | deliveries postponed until the media server has the items |
 | `heraldarr_last_post_timestamp_seconds` | the last post since start (0 until the first) |
+| `heraldarr_alerts_total{source,result}` | health and update events; `result` is `held`, `repeat`, `cleared` (restored within the hold), `restored`, `update`, `ignored`, `invalid` or `error` |
+| `heraldarr_alerts_dropped_total{source,reason}` | alerts never posted: `cleared` within their hold, or `failed` delivery |
 
 A useful alert: `increase(heraldarr_delivery_failures_total[1h]) > 0` (a Discord webhook was
 deleted, or Discord is down).

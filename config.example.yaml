@@ -58,6 +58,11 @@ sources:
     kind: radarr
     url: http://radarr:7878
     api_key: {file: /config/secrets/radarr_api_key}
+  # Prowlarr only sends health alerts (see alerts below); it needs no route.
+  # - name: prowlarr
+  #   kind: prowlarr
+  #   url: http://prowlarr:9696
+  #   api_key: {file: /config/secrets/prowlarr_api_key}
 
 destinations:
   - name: tv
@@ -76,3 +81,15 @@ routes:
   # - sources: [radarr4k]
   #   destination: private
   #   style: {label: 4K, color: "#9B59B6", tech_details: true}
+
+# Health alerts and application updates from the sources, to one private destination. A warning
+# posts only if it is still failing after `hold`; a posted alert is edited to "Resolved" when it
+# clears. `heraldarr setup` turns the triggers on in each source's connection.
+# alerts:
+#   destination: server     # a destination without `public: true`
+#   sources: [sonarr, radarr, prowlarr]   # default: every source
+#   hold: 30m               # warnings and notices
+#   hold_errors: 0s         # errors: at the next flush
+#   restored: edit          # edit: mark the card resolved (silent); post: post a resolved card
+#   recheck: 15m            # ask the app whether a posted alert still fails (catches a missed restore)
+#   updates: true           # post application updates

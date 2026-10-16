@@ -23,6 +23,7 @@ type Config struct {
 	Sources      []Source      `yaml:"sources"`
 	Destinations []Destination `yaml:"destinations"`
 	Routes       []Route       `yaml:"routes"`
+	Alerts       Alerts        `yaml:"alerts"` // off until it names a destination
 }
 
 type Server struct {
@@ -93,7 +94,7 @@ type PathMap struct {
 
 type Source struct {
 	Name      string `yaml:"name"` // URL path of its webhook: POST /hook/<name>
-	Kind      string `yaml:"kind"` // sonarr | radarr
+	Kind      string `yaml:"kind"` // sonarr | radarr | prowlarr (alerts only)
 	URL       string `yaml:"url"`
 	APIKey    Secret `yaml:"api_key"`
 	ConfigXML string `yaml:"config_xml"` // alternative to api_key: read <ApiKey> from the app's config.xml
@@ -111,6 +112,41 @@ type Route struct {
 	Sources     []string `yaml:"sources"`
 	Destination string   `yaml:"destination"`
 	Style       Style    `yaml:"style"`
+}
+
+// Alerts posts the sources' health alerts and application updates to one non-public destination.
+// A health warning is held: it posts only if it is still failing after Hold.
+type Alerts struct {
+	Destination string        `yaml:"destination"` // "": alerts off
+	Sources     []string      `yaml:"sources"`     // empty: every source
+	Hold        time.Duration `yaml:"hold"`        // warnings and notices
+	HoldErrors  time.Duration `yaml:"hold_errors"` // errors
+	Restored    string        `yaml:"restored"`    // edit: mark the posted card resolved; post: post a resolved card
+	Recheck     time.Duration `yaml:"recheck"`     // ask the app whether a posted issue still fails (0: never)
+	Updates     bool          `yaml:"updates"`     // post application updates
+}
+
+// Alerts.Restored values.
+const (
+	RestoredEdit = "edit"
+	RestoredPost = "post"
+)
+
+// Enabled reports whether alerts are configured.
+func (a Alerts) Enabled() bool { return a.Destination != "" }
+
+// AlertSources lists the sources whose alerts are posted, in configuration order (nil: alerts off).
+func (c *Config) AlertSources() []string {
+	if !c.Alerts.Enabled() {
+		return nil
+	}
+	var out []string
+	for _, s := range c.Sources {
+		if len(c.Alerts.Sources) == 0 || slices.Contains(c.Alerts.Sources, s.Name) {
+			out = append(out, s.Name)
+		}
+	}
+	return out
 }
 
 type Style struct {
@@ -134,6 +170,7 @@ func Defaults() Config {
 			Mode: BacklogLead, Scope: ScopeSeries, Edit: true,
 			Settle: 5 * time.Minute, Idle: 24 * time.Hour, MaxHold: 24 * time.Hour,
 		},
+		Alerts: Alerts{Hold: 30 * time.Minute, Restored: RestoredEdit, Recheck: 15 * time.Minute, Updates: true},
 	}
 }
 
@@ -184,8 +221,8 @@ func (c *Config) Validate() error {
 			bad("sources: duplicate name %q", s.Name)
 		}
 		sources[s.Name] = s
-		if s.Kind != "sonarr" && s.Kind != "radarr" {
-			bad("source %q: kind must be sonarr or radarr, not %q", s.Name, s.Kind)
+		if s.Kind != "sonarr" && s.Kind != "radarr" && s.Kind != "prowlarr" {
+			bad("source %q: kind must be sonarr, radarr or prowlarr, not %q", s.Name, s.Kind)
 		}
 		if s.URL == "" {
 			bad("source %q: url is required", s.Name)
@@ -222,8 +259,12 @@ func (c *Config) Validate() error {
 			bad("routes[%d]: at least one source is required", i)
 		}
 		for _, s := range r.Sources {
-			if _, ok := sources[s]; !ok {
+			src, ok := sources[s]
+			if !ok {
 				bad("routes[%d]: unknown source %q", i, s)
+			}
+			if src.Kind == "prowlarr" {
+				bad("routes[%d]: prowlarr source %q has nothing to announce; list it under alerts", i, s)
 			}
 			if routed[s] {
 				bad("routes[%d]: source %q is already routed (one route per source for now)", i, s)
@@ -234,9 +275,35 @@ func (c *Config) Validate() error {
 			bad("routes[%d]: tech_details would show sizes and release groups on public destination %q", i, d.Name)
 		}
 	}
+	alerting := map[string]bool{}
+	for _, s := range c.AlertSources() {
+		alerting[s] = true
+	}
 	for _, s := range c.Sources {
-		if s.Name != "" && !routed[s.Name] {
-			bad("source %q: not used by any route", s.Name)
+		switch {
+		case s.Name == "":
+		case s.Kind == "prowlarr" && !alerting[s.Name]:
+			bad("source %q: a prowlarr source is only for alerts; add it to alerts (or alerts.sources)", s.Name)
+		case s.Kind != "prowlarr" && !routed[s.Name] && !alerting[s.Name]:
+			bad("source %q: not used by any route or by alerts", s.Name)
+		}
+	}
+	if al := c.Alerts; al.Enabled() {
+		if d, ok := dests[al.Destination]; !ok {
+			bad("alerts: unknown destination %q", al.Destination)
+		} else if d.Public {
+			bad("alerts: destination %q is public; alerts name hosts, indexers and errors", al.Destination)
+		}
+		for _, s := range al.Sources {
+			if _, ok := sources[s]; !ok {
+				bad("alerts: unknown source %q", s)
+			}
+		}
+		if al.Restored != RestoredEdit && al.Restored != RestoredPost {
+			bad("alerts: restored must be edit or post, not %q", al.Restored)
+		}
+		if al.Hold < 0 || al.HoldErrors < 0 || al.Recheck < 0 {
+			bad("alerts: hold, hold_errors and recheck must not be negative")
 		}
 	}
 	if ms := c.MediaServer; ms != nil {

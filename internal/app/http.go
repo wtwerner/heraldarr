@@ -19,7 +19,7 @@ const maxBody = 4 << 20
 
 // Handler serves:
 //
-//	POST /hook/{source}  *arr webhook (Basic auth when configured)
+//	POST /hook/{source}  *arr or Prowlarr webhook: imports and alerts (Basic auth when configured)
 //	GET  /health         liveness and pending count (no auth: for Docker health checks)
 //	GET  /pending        what is waiting (auth)
 //	POST /flush          post everything pending now (auth)
@@ -56,7 +56,7 @@ func (a *App) auth(next http.HandlerFunc) http.HandlerFunc {
 func (a *App) hook(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("source")
 	src, ok := a.Sources[name]
-	if !ok {
+	if !ok && !a.alerting(name) {
 		reply(w, http.StatusNotFound, map[string]any{"error": "unknown source"})
 		return
 	}
@@ -70,6 +70,27 @@ func (a *App) hook(w http.ResponseWriter, r *http.Request) {
 	case err != nil:
 		a.metrics.imports.add(1, name, importInvalid)
 		reply(w, http.StatusBadRequest, map[string]any{"error": "could not read body"})
+		return
+	}
+	if a.alerting(name) {
+		switch ev, isAlert, err := arr.ParseAlert(name, body); {
+		case err != nil:
+			a.metrics.alerts.add(1, name, alertInvalid)
+			a.Log.Warn("unexpected alert payload", "source", name, "err", err)
+			reply(w, http.StatusBadRequest, map[string]any{"error": "unexpected payload"})
+			return
+		case isAlert:
+			if code, msg := a.addAlert(r.Context(), ev); code != http.StatusOK {
+				reply(w, code, map[string]any{"error": msg})
+				return
+			}
+			reply(w, http.StatusOK, map[string]any{"ok": true})
+			return
+		}
+	}
+	if !ok { // an alerts-only source (Prowlarr): Test, Grab…
+		a.Log.Debug("webhook event ignored", "source", name)
+		reply(w, http.StatusOK, map[string]any{"ok": true})
 		return
 	}
 	imp, ok, err := arr.ParseWebhook(name, src.Kind, body)

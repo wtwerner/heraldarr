@@ -255,3 +255,67 @@ type HistoryEntry struct {
 	Following   bool
 	MessageID   string
 }
+
+// AlertKind is what an alert webhook event reports.
+type AlertKind string
+
+const (
+	AlertHealth   AlertKind = "health"   // a health check started failing ("Health")
+	AlertRestored AlertKind = "restored" // it passes again ("HealthRestored")
+	AlertUpdate   AlertKind = "update"   // the app updated itself ("ApplicationUpdate")
+)
+
+// Health check levels, as the *arrs name them.
+const (
+	LevelNotice  = "notice"
+	LevelWarning = "warning"
+	LevelError   = "error"
+)
+
+// AlertEvent is one normalized Health, Health Restored or Application Update webhook event.
+type AlertEvent struct {
+	Source  string
+	Kind    AlertKind
+	App     string // the app's instance name ("Prowlarr"); "" when it sent none
+	AppURL  string // its application URL setting; "" when unset
+	Check   string // health: the check's name ("IndexerStatusCheck"), the *arr's key for the issue
+	Level   string // health: notice, warning or error
+	Message string
+	WikiURL string
+	From    string // update: previous version
+	To      string // update: new version
+}
+
+// Alert is a health issue from one source's check, or an application update, from the event that
+// opened it until it is closed. Its key is "<source>:health:<check>" or "<source>:update:<version>".
+type Alert struct {
+	Key     string    `json:"key"`
+	Source  string    `json:"source"`
+	Kind    AlertKind `json:"kind"` // AlertHealth or AlertUpdate
+	App     string    `json:"app,omitempty"`
+	AppURL  string    `json:"appUrl,omitempty"`
+	Check   string    `json:"check,omitempty"`
+	Level   string    `json:"level,omitempty"`
+	Message string    `json:"message"`
+	WikiURL string    `json:"wikiUrl,omitempty"`
+	From    string    `json:"from,omitempty"`
+	To      string    `json:"to,omitempty"`
+	First   time.Time `json:"first"` // when the issue opened
+	// Resolved is when it passed again (restored, or gone from the app's health); zero: open.
+	Resolved time.Time `json:"resolved,omitzero"`
+	// Posted is the alert's card; nil until it goes out. Checked is when the app was last asked
+	// whether a posted issue is still failing.
+	Posted   *Message  `json:"posted,omitempty"`
+	PostedAt time.Time `json:"postedAt,omitzero"`
+	Checked  time.Time `json:"checked,omitzero"`
+	// Delivery state, owned by the alert manager.
+	Tries     int       `json:"tries"`
+	NotBefore time.Time `json:"notBefore,omitzero"`
+}
+
+// HealthCheck is one check an app reports failing right now.
+type HealthCheck struct {
+	Check   string // the check's name ("IndexerStatusCheck")
+	Level   string
+	Message string
+}

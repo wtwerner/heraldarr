@@ -1,9 +1,10 @@
-// Package setup creates or updates, in every configured Sonarr and Radarr, the Webhook connection
-// that sends On Import events to heraldarr.
+// Package setup creates or updates, in every configured Sonarr, Radarr and Prowlarr, the Webhook
+// connection that sends heraldarr On Import events and, for the sources in alerts, Health,
+// Health Restored (with warnings) and Application Update.
 //
-// It speaks the *arr v3 notification API: find the connection by name, or start from the
-// Webhook template in GET /notification/schema; set the URL, POST, the server.auth credentials
-// and On Import as the only trigger; save it. Creating without forceSave makes the *arr send its
+// It speaks the notification API (v3; Prowlarr's v1 is the same): find the connection by name, or
+// start from the Webhook template in GET /notification/schema; set the URL, POST, the server.auth
+// credentials and exactly those triggers; save it. Creating without forceSave makes the *arr send its
 // Test event to heraldarr first and refuse the save if that fails; an update skips that when
 // nothing changed, so then it asks for the Test event (POST /notification/test) first. Either
 // way a success proves the URL and the credentials work.
@@ -48,6 +49,31 @@ type Options struct {
 // want is the connection one source should have.
 type want struct {
 	name, url, username, password string
+	triggers                      []string // the "on…" switches to turn on; every other one is turned off
+	warnings                      bool     // includeHealthWarnings
+}
+
+// Triggers and how the report names them.
+var triggerNames = map[string]string{
+	"onDownload": "On Import", "onHealthIssue": "Health", "onHealthRestored": "Health Restored",
+	"onApplicationUpdate": "Application Update",
+}
+
+// triggersFor lists the triggers source s needs: On Import when its imports are announced (every
+// Sonarr or Radarr not used only for alerts), and the alert events when it is in alerts.
+func triggersFor(cfg *config.Config, s config.Source) (triggers []string, warnings bool) {
+	_, routed := cfg.RouteFor(s.Name)
+	alerting := slices.Contains(cfg.AlertSources(), s.Name)
+	if s.Kind != "prowlarr" && (routed || !alerting) {
+		triggers = append(triggers, "onDownload")
+	}
+	if alerting {
+		triggers = append(triggers, "onHealthIssue", "onHealthRestored")
+		if cfg.Alerts.Updates {
+			triggers = append(triggers, "onApplicationUpdate")
+		}
+	}
+	return triggers, alerting
 }
 
 // Run sets up every source in cfg, writing one report per source to w: what was saved and that
@@ -75,6 +101,7 @@ func Run(ctx context.Context, cfg *config.Config, opt Options, w io.Writer) erro
 			name: opt.Name, username: user, password: pass,
 			url: strings.TrimRight(cfg.Server.PublicURL, "/") + "/hook/" + s.Name,
 		}
+		wt.triggers, wt.warnings = triggersFor(cfg, s)
 		report, err := setupSource(ctx, client, opt, s, wt)
 		if err != nil {
 			report = "error: " + err.Error()
@@ -98,7 +125,11 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 			return "", err
 		}
 	}
-	api := &api{base: strings.TrimRight(s.URL, "/") + "/api/v3/", key: key, ua: opt.UserAgent, http: client}
+	version := "v3"
+	if s.Kind == "prowlarr" {
+		version = "v1"
+	}
+	api := &api{base: strings.TrimRight(s.URL, "/") + "/api/" + version + "/", key: key, ua: opt.UserAgent, http: client}
 
 	var all []map[string]any
 	if err := api.do(ctx, http.MethodGet, "notification", nil, &all); err != nil {
@@ -155,7 +186,7 @@ func setupSource(ctx context.Context, client *http.Client, opt Options, s config
 		if err := api.do(ctx, http.MethodPost, "notification", conn, nil); err != nil {
 			return "", fmt.Errorf("creating %q: %w", wt.name, err)
 		}
-		return fmt.Sprintf("created %q (On Import → %s), test event accepted", wt.name, wt.url), nil
+		return fmt.Sprintf("created %q (%s → %s), test event accepted", wt.name, triggerList(wt.triggers), wt.url), nil
 	}
 	id, ok := conn["id"].(json.Number)
 	if !ok {
@@ -194,9 +225,11 @@ func apply(conn map[string]any, wt want) (changes []string, hidden bool, err err
 		conn["name"] = wt.name
 	}
 
-	// On Import only: every other trigger off, upgrades included.
-	if _, ok := conn["onDownload"].(bool); !ok {
-		return nil, false, errors.New("the Webhook connection has no On Import (onDownload) trigger")
+	// Exactly the wanted triggers: every other one off, upgrades included.
+	for _, k := range wt.triggers {
+		if _, ok := conn[k].(bool); !ok {
+			return nil, false, fmt.Errorf("the Webhook connection has no %s (%s) trigger", triggerNames[k], k)
+		}
 	}
 	triggers := []string{}
 	for k, v := range conn {
@@ -206,10 +239,15 @@ func apply(conn map[string]any, wt want) (changes []string, hidden bool, err err
 	}
 	slices.Sort(triggers)
 	for _, k := range triggers {
-		if on := k == "onDownload"; conn[k] != on {
+		if on := slices.Contains(wt.triggers, k); conn[k] != on {
 			changes = append(changes, fmt.Sprintf("%s: %v → %v", k, conn[k], on))
 			conn[k] = on
 		}
+	}
+	// heraldarr holds warnings itself, so it needs them; without alerts, nothing to include.
+	if v, ok := conn["includeHealthWarnings"].(bool); ok && v != wt.warnings {
+		changes = append(changes, fmt.Sprintf("includeHealthWarnings: %v → %v", v, wt.warnings))
+		conn["includeHealthWarnings"] = wt.warnings
 	}
 	if tags, _ := conn["tags"].([]any); len(tags) > 0 || conn["tags"] == nil {
 		changes = append(changes, "tags: "+show(conn["tags"])+" → []")
@@ -272,8 +310,19 @@ func summary(wt want) []string {
 		"method: POST",
 		"username: " + user,
 		"password: " + pass,
-		"triggers: On Import only",
+		"triggers: " + triggerList(wt.triggers),
 	}
+}
+
+func triggerList(triggers []string) string {
+	names := make([]string, len(triggers))
+	for i, k := range triggers {
+		names[i] = triggerNames[k]
+	}
+	if len(names) == 1 {
+		return names[0] + " only"
+	}
+	return strings.Join(names, ", ")
 }
 
 func indent(lines []string) string { return "  " + strings.Join(lines, "\n  ") }
