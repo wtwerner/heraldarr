@@ -96,7 +96,7 @@ func (b *brokenAlerts) SaveAlert(ctx context.Context, a *domain.Alert) error {
 	return b.MemStore.SaveAlert(ctx, a)
 }
 
-// buildAlertEnv: deps, when set, adjusts the App's Deps (its Store is the env's MemStore).
+// buildAlertEnv: deps, when set, adjusts the App's Deps (whose Store starts as the env's MemStore).
 func buildAlertEnv(t *testing.T, deps func(*app.Deps), opts ...func(*app.Alerts)) *alertEnv {
 	t.Helper()
 	e := &alertEnv{
@@ -240,6 +240,7 @@ func TestAlertDeletedCardStillCloses(t *testing.T) {
 
 func TestAlertGoneFromTheAppIsNotPosted(t *testing.T) {
 	e := newAlertEnv(t)
+	e.health.set("DownloadClientCheck") // something else fails; the alert's own check passes
 	e.hook(t, "prowlarr", indexersDown) // its restore never reached heraldarr
 	e.clock.Advance(30 * time.Minute)
 	e.flush()
@@ -270,7 +271,7 @@ func TestAlertRecheckResolvesAMissedRestore(t *testing.T) {
 	if len(e.out.edits) != 0 {
 		t.Fatal("resolved while still failing")
 	}
-	e.health.set() // passes; the Health Restored event was lost
+	e.health.set("DownloadClientCheck") // the alert's check passes; the Health Restored event was lost
 	e.clock.Advance(15 * time.Minute)
 	e.flush() // recheck: gone
 	e.flush() // resolve
@@ -555,5 +556,22 @@ func TestAlertStoreErrors(t *testing.T) {
 	e.flush()
 	if p.count() != 1 {
 		t.Errorf("%d pings after the store recovered, want 1", p.count())
+	}
+}
+
+func TestAlertOutcomeStoreErrorWithholdsTheHeartbeat(t *testing.T) {
+	p := newPinger(t, http.StatusOK)
+	st := &brokenAlerts{MemStore: testkit.NewMemStore()}
+	e := buildAlertEnv(t, func(d *app.Deps) { d.Store, d.Heartbeat = st, p.URL+pingPath })
+	e.health.set("IndexerStatusCheck")
+	e.hook(t, "prowlarr", indexersDown) // loaded and cached while the store works
+	e.clock.Advance(30 * time.Minute)
+	st.fail(errors.New("disk I/O error"))
+	e.flush() // posts, then can't record it
+	if e.out.count() != 1 {
+		t.Fatalf("%d posts", e.out.count())
+	}
+	if p.count() != 0 {
+		t.Error("pinged after a flush that couldn't record an alert's outcome")
 	}
 }

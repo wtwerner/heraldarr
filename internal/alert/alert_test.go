@@ -2,6 +2,7 @@ package alert
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -475,5 +476,77 @@ func TestRefreshKeepsTheAppsMessage(t *testing.T) {
 	r.add(restored())
 	if a := one(t, r.due(), Resolve); a.Message != "down: A, B, C" {
 		t.Errorf("resolve shows %q", a.Message)
+	}
+}
+
+// failingSaves is a MemStore whose SaveAlert fails while fail is set.
+type failingSaves struct {
+	*testkit.MemStore
+	fail bool
+}
+
+func (f *failingSaves) SaveAlert(ctx context.Context, a *domain.Alert) error {
+	if f.fail {
+		return errors.New("disk I/O error")
+	}
+	return f.MemStore.SaveAlert(ctx, a)
+}
+
+func TestRefreshIgnoresAnEmptyMessage(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down: A"))
+	r.clock.Advance(30 * time.Minute)
+	one(t, r.due(), Post)
+	if err := r.m.Refresh(context.Background(), key, ""); err != nil {
+		t.Fatal(err)
+	}
+	if s := r.stored(key); s.Message != "down: A" {
+		t.Errorf("message %q", s.Message)
+	}
+}
+
+func TestFailedAddDoesntCountAsAnEvent(t *testing.T) {
+	clock, st := testkit.NewClock(t0), &failingSaves{MemStore: testkit.NewMemStore()}
+	var drops []string
+	m := New(cfg(), clock, st)
+	m.Dropped = func(a *domain.Alert, reason string) { drops = append(drops, reason) }
+	ctx := context.Background()
+	if _, err := m.Add(ctx, warning("down")); err != nil {
+		t.Fatal(err)
+	}
+	clock.Advance(30 * time.Minute)
+	one(t, mustDue(t, m), Post)
+	st.fail = true
+	if _, err := m.Add(ctx, warning("down again")); err == nil {
+		t.Fatal("Add with a failing store returned no error")
+	}
+	st.fail = false
+	if err := m.Done(ctx, key, Closed, nil); err != nil { // the app says it passes
+		t.Fatal(err)
+	}
+	if len(drops) != 1 {
+		t.Errorf("drops = %v; an Add that wasn't saved must not keep the alert", drops)
+	}
+}
+
+func TestDueHandsOutCopies(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down"))
+	r.clock.Advance(30 * time.Minute)
+	a := one(t, r.due(), Post)
+	a.Message = "changed by the caller"
+	r.done(key, Failed, nil)
+	r.clock.Advance(2 * time.Minute)
+	if b := one(t, r.due(), Post); b.Message != "down" {
+		t.Errorf("message %q: Due shared its alert", b.Message)
+	}
+}
+
+func TestDuplicateUpdateIsIgnored(t *testing.T) {
+	r := newRig(t, cfg())
+	up := domain.AlertEvent{Source: "sonarr", Kind: domain.AlertUpdate, Message: "m", To: "4.0.2"}
+	r.add(up)
+	if got := r.add(up); got != Ignored {
+		t.Errorf("second update = %v, want ignored", got)
 	}
 }

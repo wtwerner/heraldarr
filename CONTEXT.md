@@ -1,7 +1,8 @@
 # Glossary
 
-**Source**: one Sonarr or Radarr instance, named in config (`sonarr`, `radarr4k`). Its webhook
-posts to `/hook/<name>`. Kind `tv` (Sonarr) or `movie` (Radarr).
+**Source**: one Sonarr, Radarr or Prowlarr instance, named in config (`sonarr`, `radarr4k`). Its
+webhook posts to `/hook/<name>`. Kind `tv` (Sonarr) or `movie` (Radarr); a Prowlarr source sends
+alerts only.
 
 **Import**: one "On Import" webhook event (`eventType: Download`): one episode file (with its
 episodes) or one movie file. An **upgrade** (`isUpgrade`, or `deletedFiles` present) is never
