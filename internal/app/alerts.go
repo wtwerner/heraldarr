@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/wtwerner/heraldarr/internal/alert"
+	"github.com/wtwerner/heraldarr/internal/config"
 	"github.com/wtwerner/heraldarr/internal/domain"
 	"github.com/wtwerner/heraldarr/internal/render"
 )
@@ -17,7 +18,7 @@ type Alerts struct {
 	// fails (nil: never asked).
 	Sources  map[string]domain.HealthReader
 	Config   alert.Config
-	Restored string // config.RestoredEdit or config.RestoredPost
+	Restored string // config.RestoredEdit (default) or config.RestoredPost
 }
 
 // Alert results counted by heraldarr_alerts_total besides alert.Result.
@@ -105,7 +106,7 @@ func (a *App) deliverAlert(ctx context.Context, w alert.Work) (alert.Outcome, *d
 	}
 	switch w.Action {
 	case alert.Recheck:
-		if failing, known := a.stillFailing(ctx, al); known && !failing {
+		if now, known := a.current(ctx, al); known && now == nil {
 			a.Log.Info("alert resolved: the app no longer reports it", "alert", al.Key)
 			return alert.Gone, nil
 		}
@@ -113,9 +114,13 @@ func (a *App) deliverAlert(ctx context.Context, w alert.Work) (alert.Outcome, *d
 
 	case alert.Post:
 		if al.Kind == domain.AlertHealth {
-			if failing, known := a.stillFailing(ctx, al); known && !failing {
+			now, known := a.current(ctx, al)
+			if known && now == nil {
 				a.Log.Info("alert cleared before posting (the app no longer reports it)", "alert", al.Key)
 				return alert.Closed, nil
+			}
+			if now != nil && now.Message != "" {
+				al.Message = now.Message // the app's latest (e.g. more indexers down by now)
 			}
 		}
 		res, err := a.Notifier.Post(ctx, dest, render.Alert(al, a.Clock.Now()))
@@ -128,7 +133,7 @@ func (a *App) deliverAlert(ctx context.Context, w alert.Work) (alert.Outcome, *d
 
 	case alert.Resolve:
 		layouts := render.Alert(al, a.Clock.Now())
-		if a.Alerts.Restored == "post" {
+		if a.Alerts.Restored == config.RestoredPost {
 			res, err := a.Notifier.Post(ctx, dest, layouts)
 			if err != nil {
 				a.Log.Warn("alert delivery failed", "alert", al.Key, "err", err, "try", al.Tries+1)
@@ -157,19 +162,22 @@ func (a *App) deliverAlert(ctx context.Context, w alert.Work) (alert.Outcome, *d
 	return alert.Aborted, nil
 }
 
-// stillFailing asks the alert's app whether its check still fails. known is false when the app
-// can't be asked (no reader, or an error): the caller goes ahead as if it does.
-func (a *App) stillFailing(ctx context.Context, al *domain.Alert) (failing, known bool) {
+// current asks the alert's app for its check: nil when the app reports it passing. known is false
+// when the app can't be asked (no reader, or an error): the caller goes ahead as if it still fails.
+func (a *App) current(ctx context.Context, al *domain.Alert) (check *domain.HealthCheck, known bool) {
 	r := a.Alerts.Sources[al.Source]
 	if r == nil {
-		return false, false
+		return nil, false
 	}
 	checks, err := r.Health(ctx)
 	if err != nil {
 		a.Log.Warn("app health unavailable", "source", al.Source, "err", err)
-		return false, false
+		return nil, false
 	}
-	return slices.ContainsFunc(checks, func(c domain.HealthCheck) bool { return c.Check == al.Check }), true
+	if i := slices.IndexFunc(checks, func(c domain.HealthCheck) bool { return c.Check == al.Check }); i >= 0 {
+		return &checks[i], true
+	}
+	return nil, true
 }
 
 func (a *App) recordAlert(ctx context.Context, al *domain.Alert, dest domain.Destination, res domain.PostResult) {

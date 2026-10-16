@@ -288,6 +288,9 @@ func (c *Config) Validate() error {
 			bad("source %q: not used by any route or by alerts", s.Name)
 		}
 	}
+	if al := c.Alerts; !al.Enabled() && len(al.Sources) > 0 {
+		bad("alerts: sources is set but destination isn't: alerts are off")
+	}
 	if al := c.Alerts; al.Enabled() {
 		if d, ok := dests[al.Destination]; !ok {
 			bad("alerts: unknown destination %q", al.Destination)

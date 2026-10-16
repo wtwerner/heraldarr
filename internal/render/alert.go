@@ -29,6 +29,8 @@ func Alert(a *domain.Alert, now time.Time) []domain.Layout {
 	if app == "" {
 		app = a.Source
 	}
+	app = markdown.Replace(app)
+	check := markdown.Replace(a.Check)
 	var head, body, foot string
 	var color int
 	var buttons []domain.Button
@@ -41,7 +43,7 @@ func Alert(a *domain.Alert, now time.Time) []domain.Layout {
 	case !a.Resolved.IsZero():
 		head, color = "✅ Resolved · "+app, colorResolved
 		body = message
-		foot = joinNonEmpty(" · ", "Lasted "+lasted(a.Resolved.Sub(a.First)), a.Check)
+		foot = joinNonEmpty(" · ", "Lasted "+lasted(a.Resolved.Sub(a.First)), check)
 	default:
 		var label string
 		switch a.Level {
@@ -54,12 +56,12 @@ func Alert(a *domain.Alert, now time.Time) []domain.Layout {
 		}
 		head = label + " · " + app
 		body = "**" + message + "**"
-		foot = joinNonEmpty(" · ", fmt.Sprintf("Failing since <t:%d:R>", a.First.Unix()), a.Check)
+		foot = joinNonEmpty(" · ", fmt.Sprintf("Failing since <t:%d:R>", a.First.Unix()), check)
 		if web(a.WikiURL) {
 			buttons = append(buttons, domain.Button{Label: "Wiki", URL: a.WikiURL, Emoji: "📖"})
 		}
 		if web(a.AppURL) {
-			buttons = append(buttons, domain.Button{Label: "Open " + app, URL: a.AppURL, Emoji: "🔗"})
+			buttons = append(buttons, domain.Button{Label: "Open " + a.App, URL: a.AppURL, Emoji: "🔗"})
 		}
 	}
 

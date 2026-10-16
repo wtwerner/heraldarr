@@ -130,3 +130,12 @@ func TestLasted(t *testing.T) {
 		}
 	}
 }
+
+func TestAlertEscapesNames(t *testing.T) {
+	a := heldAlert()
+	a.App, a.Check = "Sonarr_4K", "Index*Check"
+	txt, _ := v2Text(t, Alert(a, alertT0)[0])
+	if !strings.Contains(txt, `Sonarr\_4K`) || !strings.Contains(txt, `Index\*Check`) {
+		t.Errorf("names not escaped:\n%s", txt)
+	}
+}

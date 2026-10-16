@@ -246,6 +246,29 @@ func TestPipelineParity(t *testing.T) {
 	}
 }
 
+// With alerts on for every source (the default), imports post exactly as without.
+func TestPipelineParityWithAlerts(t *testing.T) {
+	for _, name := range testkit.Names(t) {
+		t.Run(name, func(t *testing.T) {
+			e := newEnv(t, name, true, func(d *app.Deps) {
+				readers := map[string]domain.HealthReader{}
+				for n := range d.Sources {
+					readers[n] = nil
+				}
+				d.Alerts = &app.Alerts{Destination: domain.Destination{Name: "server"}, Sources: readers, Restored: "edit"}
+			})
+			e.send(t)
+			e.app.Flush(context.Background(), true)
+			if len(e.out.posts) != len(e.exp.Posts) {
+				t.Fatalf("got %d posts, want %d", len(e.out.posts), len(e.exp.Posts))
+			}
+			for i, p := range e.out.posts {
+				testkit.EqualJSON(t, "v2", p.layouts[0].Body, e.exp.Posts[i].V2)
+			}
+		})
+	}
+}
+
 // Without force, a batch waits for its quiet window, then for the media server, then posts
 // without the deep link once the checks run out.
 func TestWaitsForQuietThenMediaServer(t *testing.T) {

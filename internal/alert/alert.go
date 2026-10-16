@@ -266,7 +266,8 @@ func (m *Manager) Done(ctx context.Context, key string, outcome Outcome, msg *do
 	case Open:
 		a.Checked = now
 	case Gone:
-		if a.Resolved.IsZero() {
+		// Unless it was reported failing again while the app was being asked.
+		if a.Resolved.IsZero() && !changed {
 			a.Resolved = now
 		}
 		a.Checked = now
@@ -298,8 +299,11 @@ func (m *Manager) loaded(ctx context.Context) (map[string]*domain.Alert, error) 
 
 // put saves a changed alert from Add.
 func (m *Manager) put(ctx context.Context, a *domain.Alert) error {
+	if err := m.save(ctx, a); err != nil {
+		return err
+	}
 	m.rev[a.Key]++
-	return m.save(ctx, a)
+	return nil
 }
 
 func (m *Manager) save(ctx context.Context, a *domain.Alert) error {

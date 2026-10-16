@@ -379,3 +379,74 @@ func TestDuplicateRestoreIsIgnored(t *testing.T) {
 		t.Errorf("resolved moved to %v; a duplicate must not extend the hold", s.Resolved)
 	}
 }
+
+func TestRecheckZeroMeansNever(t *testing.T) {
+	c := cfg()
+	c.Recheck = 0
+	r := newRig(t, c)
+	r.add(warning("down"))
+	r.clock.Advance(30 * time.Minute)
+	one(t, r.due(), Post)
+	r.done(key, Sent, msg)
+	r.clock.Advance(24 * time.Hour)
+	if w := r.due(); len(w) != 0 {
+		t.Fatalf("rechecked with recheck 0: %+v", w)
+	}
+}
+
+func TestFailedResolveGivesUpAfterRetryMax(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down"))
+	r.clock.Advance(30 * time.Minute)
+	one(t, r.due(), Post)
+	r.done(key, Sent, msg)
+	r.add(restored())
+	for try := 1; try <= 3; try++ {
+		one(t, r.due(), Resolve)
+		r.done(key, Failed, nil)
+		r.clock.Advance(2 * time.Minute)
+	}
+	if s := r.stored(key); s != nil {
+		t.Errorf("still stored after RetryMax failed resolves: %+v", s)
+	}
+	if len(r.drops) != 0 {
+		t.Errorf("drops = %v; a posted alert isn't dropped unposted", r.drops)
+	}
+}
+
+func TestTriesResetOnceSent(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down"))
+	r.clock.Advance(30 * time.Minute)
+	for range 2 {
+		one(t, r.due(), Post)
+		r.done(key, Failed, nil)
+		r.clock.Advance(2 * time.Minute)
+	}
+	one(t, r.due(), Post)
+	r.done(key, Sent, msg)
+	r.add(restored())
+	one(t, r.due(), Resolve)
+	r.done(key, Failed, nil) // one failed resolve must not use up the post's retries
+	if s := r.stored(key); s == nil || s.Tries != 1 {
+		t.Errorf("stored %+v; want tries 1", s)
+	}
+}
+
+func TestReportedAgainDuringRecheckStaysOpen(t *testing.T) {
+	r := newRig(t, cfg())
+	r.add(warning("down"))
+	r.clock.Advance(30 * time.Minute)
+	one(t, r.due(), Post)
+	r.done(key, Sent, msg)
+	r.clock.Advance(15 * time.Minute)
+	one(t, r.due(), Recheck)
+	r.add(warning("down again")) // the app's health said passing, then it failed again
+	r.done(key, Gone, nil)
+	if s := r.stored(key); s == nil || !s.Resolved.IsZero() {
+		t.Fatalf("stored %+v; want still open", s)
+	}
+	if w := r.due(); len(w) != 0 {
+		t.Errorf("due = %+v", w)
+	}
+}

@@ -20,10 +20,11 @@ import (
 
 // health is a fake HealthReader: the checks the app reports failing, or an error.
 type health struct {
-	mu     sync.Mutex
-	checks []string
-	err    error
-	calls  int
+	mu      sync.Mutex
+	checks  []string
+	message string
+	err     error
+	calls   int
 }
 
 func (h *health) Health(context.Context) ([]domain.HealthCheck, error) {
@@ -35,7 +36,7 @@ func (h *health) Health(context.Context) ([]domain.HealthCheck, error) {
 	}
 	out := make([]domain.HealthCheck, len(h.checks))
 	for i, c := range h.checks {
-		out[i] = domain.HealthCheck{Check: c, Level: domain.LevelWarning}
+		out[i] = domain.HealthCheck{Check: c, Level: domain.LevelWarning, Message: h.message}
 	}
 	return out, nil
 }
@@ -335,4 +336,138 @@ func TestAlertFromASourceNoLongerInAlertsIsDropped(t *testing.T) {
 	if all, _ := e.store.LoadAlerts(context.Background()); len(all) != 0 {
 		t.Errorf("left in the store: %v", all)
 	}
+}
+
+func (e *alertEnv) stored(t *testing.T) map[string]*domain.Alert {
+	t.Helper()
+	all, err := e.store.LoadAlerts(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return all
+}
+
+const alertKey = "prowlarr:health:IndexerStatusCheck"
+
+// postedAlert runs an indexer warning through its hold and posts it.
+func postedAlert(t *testing.T, opts ...func(*app.Alerts)) *alertEnv {
+	t.Helper()
+	e := newAlertEnv(t, opts...)
+	e.health.set("IndexerStatusCheck")
+	e.hook(t, "prowlarr", indexersDown)
+	e.clock.Advance(30 * time.Minute)
+	e.flush()
+	if e.out.count() != 1 {
+		t.Fatalf("%d posts after the hold", e.out.count())
+	}
+	return e
+}
+
+func TestAlertPostFailureRetriesThenDrops(t *testing.T) {
+	e := newAlertEnv(t)
+	e.health.set("IndexerStatusCheck")
+	e.out.fail = errors.New("discord down")
+	e.hook(t, "prowlarr", indexersDown)
+	e.clock.Advance(30 * time.Minute)
+	for try := 1; try <= 3; try++ {
+		e.flush()
+		a := e.stored(t)[alertKey]
+		if try < 3 && (a == nil || a.Tries != try) {
+			t.Fatalf("try %d: stored %+v; want kept for a retry", try, a)
+		}
+		e.clock.Advance(2 * time.Minute)
+	}
+	if a := e.stored(t)[alertKey]; a != nil {
+		t.Errorf("kept after RetryMax failures: %+v", a)
+	}
+	body := metricsBody(t, e.srv)
+	if !strings.Contains(body, `heraldarr_alerts_dropped_total{source="prowlarr",reason="failed"} 1`) {
+		t.Errorf("drop not counted as failed:\n%s", body)
+	}
+}
+
+func TestAlertResolveFailureRetries(t *testing.T) {
+	for name, opt := range map[string]func(*app.Alerts){
+		"edit": func(*app.Alerts) {},
+		"post": func(a *app.Alerts) { a.Restored = "post" },
+	} {
+		t.Run(name, func(t *testing.T) {
+			e := postedAlert(t, opt)
+			e.out.editErr, e.out.fail = errors.New("discord down"), errors.New("discord down")
+			e.hook(t, "prowlarr", indexersBack)
+			e.flush()
+			if a := e.stored(t)[alertKey]; a == nil || a.Tries != 1 || a.Resolved.IsZero() {
+				t.Fatalf("stored %+v; want kept for a retry", a)
+			}
+			e.out.editErr, e.out.fail = nil, nil
+			e.clock.Advance(2 * time.Minute)
+			e.flush()
+			if a := e.stored(t)[alertKey]; a != nil {
+				t.Errorf("still stored after the retry worked: %+v", a)
+			}
+		})
+	}
+}
+
+func TestAlertRefusedEditCloses(t *testing.T) {
+	e := postedAlert(t)
+	e.out.editErr = domain.ErrRefused
+	e.hook(t, "prowlarr", indexersBack)
+	e.flush()
+	if all := e.stored(t); len(all) != 0 {
+		t.Errorf("an edit Discord refuses is retried: %v", all)
+	}
+}
+
+func TestAlertRecheckWithTheAppDownStaysOpen(t *testing.T) {
+	e := postedAlert(t)
+	e.health.err = errors.New("connection refused")
+	e.clock.Advance(15 * time.Minute)
+	e.flush()
+	e.flush()
+	if len(e.out.edits) != 0 {
+		t.Fatalf("resolved because the app couldn't be asked: %+v", e.out.edits)
+	}
+	if a := e.stored(t)[alertKey]; a == nil || !a.Resolved.IsZero() || !a.Checked.Equal(e.clock.Now()) {
+		t.Errorf("stored %+v; want open, checked now", a)
+	}
+}
+
+func TestAlertPostUsesTheAppsCurrentMessage(t *testing.T) {
+	e := newAlertEnv(t)
+	e.health.set("IndexerStatusCheck")
+	e.health.message = "Indexers unavailable due to failures: Example, Another"
+	e.hook(t, "prowlarr", indexersDown)
+	e.clock.Advance(30 * time.Minute)
+	e.flush()
+	if e.out.count() != 1 || !strings.Contains(v2Content(e.out.posts[0].layouts[0]), "Example, Another") {
+		t.Fatalf("posted %s", v2Content(e.out.posts[0].layouts[0]))
+	}
+}
+
+func TestAlertPostsAreCountedAndRecorded(t *testing.T) {
+	e := postedAlert(t)
+	e.hook(t, "prowlarr", indexersBack)
+	e.flush()
+	if !strings.Contains(metricsBody(t, e.srv), `heraldarr_posts_total{source="prowlarr",destination="server",layout="v2"} 1`) {
+		t.Error("alert post not in heraldarr_posts_total")
+	}
+	if len(e.store.History) != 1 || e.store.History[0].Source != "prowlarr" || e.store.History[0].Destination != "server" ||
+		e.store.History[0].Headline != "warning" || e.store.History[0].MessageID != "1" {
+		t.Errorf("history %+v", e.store.History) // the resolve edit adds nothing
+	}
+	u := newAlertEnv(t)
+	u.hook(t, "sonarr", `{"eventType":"ApplicationUpdate","instanceName":"Sonarr","message":"m","newVersion":"4.0.2"}`)
+	u.flush()
+	if len(u.store.History) != 1 || u.store.History[0].Headline != "update" {
+		t.Errorf("update history %+v", u.store.History)
+	}
+}
+
+func metricsBody(t *testing.T, srv http.Handler) string {
+	t.Helper()
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/metrics", nil)
+	rec := httptest.NewRecorder()
+	srv.ServeHTTP(rec, req)
+	return rec.Body.String()
 }
