@@ -129,6 +129,67 @@ func StoreContract(t *testing.T, open func(t *testing.T) domain.Store, reopen fu
 		}
 	})
 
+	t.Run("alerts round-trip", func(t *testing.T) {
+		s := open(t)
+		held := &domain.Alert{
+			Key: "prowlarr:health:IndexerStatusCheck", Source: "prowlarr", Kind: domain.AlertHealth,
+			App: "Prowlarr", Check: "IndexerStatusCheck", Level: domain.LevelWarning,
+			Message: "Indexers unavailable due to failures: Example", WikiURL: "https://wiki.example.org/x",
+			First: t0, Tries: 2, NotBefore: t0.Add(2 * time.Minute),
+		}
+		posted := &domain.Alert{
+			Key: "sonarr:health:DownloadClientCheck", Source: "sonarr", Kind: domain.AlertHealth,
+			Check: "DownloadClientCheck", Level: domain.LevelError, Message: "Unable to communicate",
+			First: t0, Resolved: t0.Add(time.Hour), PostedAt: t0.Add(time.Minute), Checked: t0.Add(30 * time.Minute),
+			Posted: &domain.Message{Destination: "server", ID: "42", Layout: "v2"},
+		}
+		for _, a := range []*domain.Alert{held, posted} {
+			if err := s.SaveAlert(ctx, a); err != nil {
+				t.Fatal(err)
+			}
+		}
+		held.Message = "changed after saving"
+		if reopen != nil {
+			s = reopen(t, s)
+		}
+		got, err := s.LoadAlerts(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != 2 {
+			t.Fatalf("got %d alerts", len(got))
+		}
+		if g := got[held.Key]; g == nil || g.Message != "Indexers unavailable due to failures: Example" || g.Level != domain.LevelWarning ||
+			g.App != "Prowlarr" || g.WikiURL == "" || !g.First.Equal(t0) || g.Tries != 2 || !g.NotBefore.Equal(t0.Add(2*time.Minute)) ||
+			g.Posted != nil || !g.Resolved.IsZero() {
+			t.Errorf("held alert did not round-trip: %+v", g)
+		}
+		if g := got[posted.Key]; g == nil || g.Posted == nil || g.Posted.ID != "42" || !g.Resolved.Equal(t0.Add(time.Hour)) ||
+			!g.PostedAt.Equal(t0.Add(time.Minute)) || !g.Checked.Equal(t0.Add(30*time.Minute)) {
+			t.Errorf("posted alert did not round-trip: %+v", g)
+		}
+		got[posted.Key].Posted.ID = "mutated"
+		if again, _ := s.LoadAlerts(ctx); again[posted.Key].Posted.ID != "42" {
+			t.Error("LoadAlerts returned shared state")
+		}
+		posted.Level = domain.LevelWarning
+		if err := s.SaveAlert(ctx, posted); err != nil {
+			t.Fatal(err)
+		}
+		if again, _ := s.LoadAlerts(ctx); again[posted.Key].Level != domain.LevelWarning {
+			t.Error("SaveAlert did not replace the alert")
+		}
+		if err := s.DeleteAlert(ctx, held.Key); err != nil {
+			t.Fatal(err)
+		}
+		if after, _ := s.LoadAlerts(ctx); len(after) != 1 || after[posted.Key] == nil {
+			t.Errorf("after delete: %v", after)
+		}
+		if err := s.DeleteAlert(ctx, "missing"); err != nil {
+			t.Errorf("deleting a missing alert: %v", err)
+		}
+	})
+
 	t.Run("history", func(t *testing.T) {
 		s := open(t)
 		if err := s.AppendHistory(ctx, domain.HistoryEntry{At: t0, Source: "sonarr", Title: "X", Items: 3}); err != nil {

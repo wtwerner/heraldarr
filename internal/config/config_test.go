@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -96,7 +97,7 @@ func TestValidationErrors(t *testing.T) {
 	for _, tc := range []struct{ name, from, to, want string }{
 		{"missing secret file", "api_key: k", "api_key: {file: /nonexistent/key}", "no such file"},
 		{"empty env", "api_key: k", "api_key: {env: HERALDARR_UNSET_VAR}", "is empty"},
-		{"bad kind", "kind: sonarr", "kind: lidarr", "kind must be sonarr or radarr"},
+		{"bad kind", "kind: sonarr", "kind: lidarr", "kind must be sonarr, radarr or prowlarr"},
 		{"unknown destination", "destination: tv}", "destination: nope}", `unknown destination "nope"`},
 		{"unrouted source", "routes:\n  - {sources: [sonarr], destination: tv}", "routes: []", "not used by any route"},
 		{"tech details on public", "destination: tv}", "destination: tv, style: {tech_details: true}}", "public destination"},
@@ -188,5 +189,99 @@ func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatal(err)
+	}
+}
+
+const withAlerts = `
+sources:
+  - {name: sonarr, kind: sonarr, url: http://sonarr:8989, api_key: k}
+  - {name: prowlarr, kind: prowlarr, url: http://prowlarr:9696, api_key: k}
+destinations:
+  - {name: tv, webhook_url: "https://discord.com/api/webhooks/1/x", public: true}
+  - {name: server, webhook_url: "https://discord.com/api/webhooks/2/y"}
+routes:
+  - {sources: [sonarr], destination: tv}
+alerts:
+  destination: server
+`
+
+func TestAlertsDefaults(t *testing.T) {
+	cfg, err := Parse([]byte(minimal))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Alerts.Enabled() {
+		t.Error("alerts on without a destination")
+	}
+	cfg, err = Parse([]byte(withAlerts))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := Alerts{
+		Destination: "server", Hold: 30 * time.Minute, Restored: RestoredEdit, Recheck: 15 * time.Minute, Updates: true,
+	}
+	if !reflect.DeepEqual(cfg.Alerts, want) {
+		t.Errorf("alerts = %+v", cfg.Alerts)
+	}
+	if got := cfg.AlertSources(); !reflect.DeepEqual(got, []string{"sonarr", "prowlarr"}) {
+		t.Errorf("AlertSources = %v, want every source", got)
+	}
+	cfg, err = Parse([]byte(withAlerts + "  sources: [prowlarr]\n  hold: 1h\n  hold_errors: 5m\n  restored: post\n  recheck: 0s\n  updates: false\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = Alerts{
+		Destination: "server", Sources: []string{"prowlarr"}, Hold: time.Hour, HoldErrors: 5 * time.Minute,
+		Restored: RestoredPost,
+	}
+	if !reflect.DeepEqual(cfg.Alerts, want) {
+		t.Errorf("overrides: %+v", cfg.Alerts)
+	}
+	if got := cfg.AlertSources(); !reflect.DeepEqual(got, []string{"prowlarr"}) {
+		t.Errorf("AlertSources = %v", got)
+	}
+}
+
+func TestAlertsValidation(t *testing.T) {
+	for name, c := range map[string]struct{ yaml, want string }{
+		"public destination": {
+			strings.Replace(withAlerts, "destination: server", "destination: tv", 1),
+			`alerts: destination "tv" is public`,
+		},
+		"unknown destination": {
+			strings.Replace(withAlerts, "destination: server", "destination: nope", 1),
+			`alerts: unknown destination "nope"`,
+		},
+		"unknown source":   {withAlerts + "  sources: [nope]\n", `alerts: unknown source "nope"`},
+		"restored":         {withAlerts + "  restored: maybe\n", "alerts: restored must be edit or post"},
+		"negative hold":    {withAlerts + "  hold: -1m\n", "alerts: hold, hold_errors and recheck must not be negative"},
+		"negative errors":  {withAlerts + "  hold_errors: -1m\n", "alerts: hold, hold_errors and recheck must not be negative"},
+		"negative recheck": {withAlerts + "  recheck: -1m\n", "alerts: hold, hold_errors and recheck must not be negative"},
+		"no destination": {
+			strings.Replace(withAlerts, "  destination: server\n", "  sources: [sonarr]\n", 1),
+			"alerts: sources is set but destination isn't",
+		},
+		"unknown key":     {withAlerts + "  holdd: 1m\n", "holdd"},
+		"prowlarr routed": {withAlerts + "  sources: [sonarr]\n", `source "prowlarr": a prowlarr source is only for alerts`},
+		"prowlarr unused": {strings.Replace(withAlerts, "alerts:\n  destination: server\n", "", 1), `source "prowlarr": a prowlarr source is only for alerts`},
+		"prowlarr in route": {
+			strings.Replace(withAlerts, "sources: [sonarr], destination: tv", "sources: [sonarr, prowlarr], destination: tv", 1),
+			`routes[0]: prowlarr source "prowlarr" has nothing to announce`,
+		},
+		"bad kind": {strings.Replace(withAlerts, "kind: prowlarr", "kind: lidarr", 1), "kind must be sonarr, radarr or prowlarr"},
+	} {
+		_, err := Parse([]byte(c.yaml))
+		if err == nil || !strings.Contains(err.Error(), c.want) {
+			t.Errorf("%s: err = %v, want %q", name, err, c.want)
+		}
+	}
+	// A sonarr or radarr used only for alerts needs no route.
+	only := strings.Replace(withAlerts, "routes:\n  - {sources: [sonarr], destination: tv}\n", "", 1)
+	if _, err := Parse([]byte(only)); err != nil {
+		t.Errorf("alerts-only sonarr: %v", err)
+	}
+	if _, err := Parse([]byte(strings.Replace(only, "alerts:\n  destination: server\n", "", 1))); err == nil ||
+		!strings.Contains(err.Error(), `source "sonarr": not used by any route or by alerts`) {
+		t.Errorf("unused sonarr: %v", err)
 	}
 }

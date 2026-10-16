@@ -40,13 +40,15 @@ type fakeArr struct {
 	plainPasswords bool
 	writes         []string // "POST /api/v3/notification?", "PUT /api/v3/notification/7?"
 	tests          int      // Test events sent
+	api            string   // "v3" (Sonarr, Radarr) or "v1" (Prowlarr)
+	schema         []any    // GET notification/schema
 }
 
 const mask = "********"
 
 func newFakeArr(t *testing.T, conns ...map[string]any) *fakeArr {
 	t.Helper()
-	f := &fakeArr{conns: conns, nextID: 100}
+	f := &fakeArr{conns: conns, nextID: 100, api: "v3", schema: []any{discordSchema(), webhookSchema()}}
 	f.Server = httptest.NewServer(http.HandlerFunc(f.serve))
 	t.Cleanup(f.Close)
 	return f
@@ -89,8 +91,13 @@ func (f *fakeArr) serve(w http.ResponseWriter, r *http.Request) {
 		return conn
 	}
 	force := r.URL.Query().Get("forceSave") == "true"
+	path := strings.Replace(r.URL.Path, "/api/"+f.api+"/", "/api/v3/", 1) // the routes below, for either API
+	if path == r.URL.Path && f.api != "v3" {
+		http.NotFound(w, r)
+		return
+	}
 	switch {
-	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification":
+	case r.Method == http.MethodGet && path == "/api/v3/notification":
 		out := make([]map[string]any, len(f.conns))
 		for i, c := range f.conns {
 			out[i] = clone(c)
@@ -99,13 +106,13 @@ func (f *fakeArr) serve(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		reply(http.StatusOK, out)
-	case r.Method == http.MethodGet && r.URL.Path == "/api/v3/notification/schema":
-		reply(http.StatusOK, []any{discordSchema(), webhookSchema()})
-	case r.Method == http.MethodPost && r.URL.Path == "/api/v3/notification/test":
+	case r.Method == http.MethodGet && path == "/api/v3/notification/schema":
+		reply(http.StatusOK, f.schema)
+	case r.Method == http.MethodPost && path == "/api/v3/notification/test":
 		if decode() != nil && testEvent() {
 			reply(http.StatusOK, map[string]any{})
 		}
-	case r.Method == http.MethodPost && r.URL.Path == "/api/v3/notification":
+	case r.Method == http.MethodPost && path == "/api/v3/notification":
 		f.writes = append(f.writes, r.Method+" "+r.URL.Path+"?"+r.URL.RawQuery)
 		conn := decode()
 		if conn == nil || (!force && !testEvent()) {
@@ -115,13 +122,13 @@ func (f *fakeArr) serve(w http.ResponseWriter, r *http.Request) {
 		conn["id"] = f.nextID
 		f.conns = append(f.conns, conn)
 		reply(http.StatusCreated, conn)
-	case r.Method == http.MethodPut && strings.HasPrefix(r.URL.Path, "/api/v3/notification/"):
+	case r.Method == http.MethodPut && strings.HasPrefix(path, "/api/v3/notification/"):
 		f.writes = append(f.writes, r.Method+" "+r.URL.Path+"?"+r.URL.RawQuery)
 		conn := decode()
 		if conn == nil {
 			return
 		}
-		id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/v3/notification/"))
+		id, _ := strconv.Atoi(strings.TrimPrefix(path, "/api/v3/notification/"))
 		for i, c := range f.conns {
 			if num(c["id"]) != id {
 				continue
@@ -681,5 +688,110 @@ func TestValidation(t *testing.T) {
 		if got := validation([]byte(tc.body)); got != tc.want {
 			t.Errorf("validation(%s) = %q, want %q", tc.body, got, tc.want)
 		}
+	}
+}
+
+// prowlarrSchema is Prowlarr's Webhook template: no On Import, a grab trigger instead.
+func prowlarrSchema() map[string]any {
+	c := webhookSchema()
+	for _, k := range []string{
+		"onDownload", "onUpgrade", "onImportComplete", "onRename", "onSeriesAdd", "onSeriesDelete",
+		"onEpisodeFileDelete", "onEpisodeFileDeleteForUpgrade", "onManualInteractionRequired", "supportsOnDownload", "supportsOnUpgrade",
+	} {
+		delete(c, k)
+	}
+	c["onGrab"], c["includeManualGrabs"] = true, false
+	return c
+}
+
+func assertTriggers(t *testing.T, conn map[string]any, on ...string) {
+	t.Helper()
+	for k, v := range conn {
+		if b, ok := v.(bool); ok && strings.HasPrefix(k, "on") {
+			want := false
+			for _, o := range on {
+				want = want || o == k
+			}
+			if b != want {
+				t.Errorf("%s = %v, want %v", k, b, want)
+			}
+		}
+	}
+}
+
+func alertsConfig(sources ...config.Source) *config.Config {
+	cfg := testConfig(sources...)
+	cfg.Alerts = config.Alerts{Destination: "server", Updates: true}
+	return cfg
+}
+
+func TestAlertTriggers(t *testing.T) {
+	f := newFakeArr(t)
+	cfg := alertsConfig(source("sonarr", f))
+	cfg.Routes = []config.Route{{Sources: []string{"sonarr"}, Destination: "tv"}}
+	if out, err := run(t, cfg, Options{}); err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	conns, _ := f.snapshot()
+	hook := named(conns, "heraldarr")[0]
+	assertTriggers(t, hook, "onDownload", "onHealthIssue", "onHealthRestored", "onApplicationUpdate")
+	if hook["includeHealthWarnings"] != true {
+		t.Errorf("includeHealthWarnings = %v: heraldarr holds warnings, it needs them", hook["includeHealthWarnings"])
+	}
+
+	// Updates off; then out of alerts altogether: back to On Import only.
+	cfg.Alerts.Updates = false
+	out, err := run(t, cfg, Options{})
+	if err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	conns, _ = f.snapshot()
+	assertTriggers(t, named(conns, "heraldarr")[0], "onDownload", "onHealthIssue", "onHealthRestored")
+	if !strings.Contains(out, `updated "heraldarr" (onApplicationUpdate)`) {
+		t.Errorf("output %q", out)
+	}
+	cfg.Alerts = config.Alerts{}
+	if out, err := run(t, cfg, Options{}); err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	conns, _ = f.snapshot()
+	assertHook(t, named(conns, "heraldarr")[0], "sonarr")
+	if named(conns, "heraldarr")[0]["includeHealthWarnings"] != false {
+		t.Error("includeHealthWarnings left on")
+	}
+}
+
+func TestAlertsOnlySourceHasNoOnImport(t *testing.T) {
+	f := newFakeArr(t)
+	cfg := alertsConfig(source("sonarr", f)) // no route
+	if out, err := run(t, cfg, Options{}); err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	conns, _ := f.snapshot()
+	assertTriggers(t, named(conns, "heraldarr")[0], "onHealthIssue", "onHealthRestored", "onApplicationUpdate")
+}
+
+func TestProwlarr(t *testing.T) {
+	f := newFakeArr(t)
+	f.api, f.schema = "v1", []any{prowlarrSchema()}
+	src := config.Source{Name: "prowlarr", Kind: "prowlarr", URL: f.URL, APIKey: config.Literal(apiKey)}
+	out, err := run(t, alertsConfig(src), Options{Name: "heraldarr-alerts"})
+	if err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	conns, writes := f.snapshot()
+	if len(writes) != 1 || writes[0] != "POST /api/v1/notification?" {
+		t.Errorf("writes = %q", writes)
+	}
+	hook := named(conns, "heraldarr-alerts")[0]
+	assertTriggers(t, hook, "onHealthIssue", "onHealthRestored", "onApplicationUpdate")
+	if got := field(t, hook, "url"); got != public+"/hook/prowlarr" {
+		t.Errorf("url = %v", got)
+	}
+	if hook["includeHealthWarnings"] != true {
+		t.Errorf("includeHealthWarnings = %v", hook["includeHealthWarnings"])
+	}
+	if !strings.Contains(out, "Health, Health Restored, Application Update") {
+		t.Errorf("output %q names the triggers", out)
 	}
 }

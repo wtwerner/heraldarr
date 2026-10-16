@@ -48,6 +48,10 @@ var migrations = []string{
 		message_id  TEXT NOT NULL
 	);
 	CREATE INDEX history_at ON history (at);`,
+	`CREATE TABLE alerts (
+		key  TEXT PRIMARY KEY,
+		data BLOB NOT NULL -- domain.Alert as JSON
+	);`,
 }
 
 // busyTimeout is how long a statement waits for another connection's lock (e.g. a second process
@@ -180,6 +184,51 @@ func (s *Store) SaveBatch(ctx context.Context, b *domain.Batch) error {
 func (s *Store) DeleteBatch(ctx context.Context, key string) error {
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM batches WHERE key = ?`, key); err != nil {
 		return fmt.Errorf("store: delete batch %s: %w", key, err)
+	}
+	return nil
+}
+
+func (s *Store) LoadAlerts(ctx context.Context) (map[string]*domain.Alert, error) {
+	rows, err := s.rdb.QueryContext(ctx, `SELECT key, data FROM alerts`)
+	if err != nil {
+		return nil, fmt.Errorf("store: load alerts: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+	out := map[string]*domain.Alert{}
+	for rows.Next() {
+		var key string
+		var data []byte
+		if err := rows.Scan(&key, &data); err != nil {
+			return nil, fmt.Errorf("store: load alerts: %w", err)
+		}
+		a := &domain.Alert{}
+		if err := json.Unmarshal(data, a); err != nil {
+			return nil, fmt.Errorf("store: load alert %s: %w", key, err)
+		}
+		out[key] = a
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("store: load alerts: %w", err)
+	}
+	return out, nil
+}
+
+func (s *Store) SaveAlert(ctx context.Context, a *domain.Alert) error {
+	data, err := json.Marshal(a)
+	if err != nil {
+		return fmt.Errorf("store: save alert %s: %w", a.Key, err)
+	}
+	_, err = s.db.ExecContext(ctx,
+		`INSERT INTO alerts (key, data) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET data = excluded.data`, a.Key, data)
+	if err != nil {
+		return fmt.Errorf("store: save alert %s: %w", a.Key, err)
+	}
+	return nil
+}
+
+func (s *Store) DeleteAlert(ctx context.Context, key string) error {
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM alerts WHERE key = ?`, key); err != nil {
+		return fmt.Errorf("store: delete alert %s: %w", key, err)
 	}
 	return nil
 }

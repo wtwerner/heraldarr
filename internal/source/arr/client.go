@@ -73,11 +73,20 @@ type Client struct {
 // NewClient returns a client for the instance at baseURL (with its URL base, if any). timeout
 // bounds each request; 0 means DefaultTimeout. version goes into the User-Agent.
 func NewClient(baseURL string, key KeyFunc, version string, timeout time.Duration) *Client {
+	return newClient(baseURL, "v3", key, version, timeout)
+}
+
+// NewProwlarrClient returns a client for a Prowlarr instance (its v1 API). Only Health applies.
+func NewProwlarrClient(baseURL string, key KeyFunc, version string, timeout time.Duration) *Client {
+	return newClient(baseURL, "v1", key, version, timeout)
+}
+
+func newClient(baseURL, api string, key KeyFunc, version string, timeout time.Duration) *Client {
 	if timeout <= 0 {
 		timeout = DefaultTimeout
 	}
 	return &Client{
-		base: strings.TrimRight(baseURL, "/") + "/api/v3/",
+		base: strings.TrimRight(baseURL, "/") + "/api/" + api + "/",
 		key:  key,
 		ua:   "heraldarr/" + version,
 		http: &http.Client{
@@ -142,7 +151,7 @@ func (c *Client) Queue(ctx context.Context, seriesID int) ([]domain.QueueItem, e
 	return q, nil
 }
 
-// get returns the body of a 200 response to GET /api/v3/{path}.
+// get returns the body of a 200 response to GET /api/v3/{path} (v1 for Prowlarr).
 func (c *Client) get(ctx context.Context, path string) ([]byte, error) {
 	key, err := c.key()
 	if err != nil {

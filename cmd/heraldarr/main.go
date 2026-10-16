@@ -1,4 +1,4 @@
-// Command heraldarr announces new media from Sonarr and Radarr to Discord.
+// Command heraldarr announces new media from Sonarr and Radarr to Discord, and their health alerts.
 package main
 
 import (
@@ -26,7 +26,8 @@ import (
 
 var version = "dev" // set by -ldflags at build time
 
-const usage = `heraldarr announces new media from Sonarr and Radarr to Discord.
+const usage = `heraldarr announces new media from Sonarr and Radarr to Discord, and holds their
+health alerts until they last.
 
 Usage:
   heraldarr serve                      run the webhook receiver and poster
@@ -35,7 +36,7 @@ Usage:
   heraldarr health                     exit 0 if the running server is healthy
   heraldarr setup [-name heraldarr] [-dry-run]
                                        create or update the Webhook connection in every
-                                       Sonarr/Radarr (needs server.public_url); each *arr
+                                       Sonarr/Radarr/Prowlarr (needs server.public_url); each
                                        sends a Test event, so heraldarr must be running
   heraldarr preview SOURCE ID[,ID…] [S02|S02E05,S02E06] [-to DESTINATION]
                                        render items already on disk as if they just arrived

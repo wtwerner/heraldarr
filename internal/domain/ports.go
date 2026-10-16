@@ -28,6 +28,11 @@ type ArrClient interface {
 	Queue(ctx context.Context, seriesID int) ([]QueueItem, error)
 }
 
+// HealthReader reads the health checks an app (Sonarr, Radarr, Prowlarr) reports failing now.
+type HealthReader interface {
+	Health(ctx context.Context) ([]HealthCheck, error)
+}
+
 // MediaServer finds imported items in the library and links to them.
 type MediaServer interface {
 	// Name is the server's friendly name for card footers ("" until known).
@@ -67,6 +72,10 @@ type Store interface {
 	PrunePosted(ctx context.Context, before time.Time) (int, error)
 
 	AppendHistory(ctx context.Context, e HistoryEntry) error
+
+	LoadAlerts(ctx context.Context) (map[string]*Alert, error)
+	SaveAlert(ctx context.Context, a *Alert) error
+	DeleteAlert(ctx context.Context, key string) error
 
 	// Cache is a small namespaced key/value store (e.g. ns "rt": IMDb ID -> RT path).
 	CacheGet(ctx context.Context, ns, key string) (val []byte, at time.Time, ok bool, err error)

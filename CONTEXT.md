@@ -1,7 +1,8 @@
 # Glossary
 
-**Source**: one Sonarr or Radarr instance, named in config (`sonarr`, `radarr4k`). Its webhook
-posts to `/hook/<name>`. Kind `tv` (Sonarr) or `movie` (Radarr).
+**Source**: one Sonarr, Radarr or Prowlarr instance, named in config (`sonarr`, `radarr4k`). Its
+webhook posts to `/hook/<name>`. Kind `tv` (Sonarr) or `movie` (Radarr); a Prowlarr source sends
+alerts only.
 
 **Import**: one "On Import" webhook event (`eventType: Download`): one episode file (with its
 episodes) or one movie file. An **upgrade** (`isUpgrade`, or `deletedFiles` present) is never
@@ -64,3 +65,16 @@ color, `tech_details`).
 
 **Oracle**: `testdata/expected/`, the reference implementation's output for each **scenario** in
 `testdata/scenarios/`. **Parity** means matching it exactly.
+
+**Alert**: a health issue from one source's health check (keyed `<source>:health:<check>`, as the
+*arrs key them: Health when the check starts failing, Health Restored when it passes) or an
+application update (`<source>:update:<version>`). Alerts go to one non-public destination
+(`alerts.destination`). Prowlarr sources (kind `prowlarr`) send alerts only.
+
+**Hold**: how long an issue must keep failing before its alert posts: `alerts.hold` (30 min) for
+warnings and notices, `alerts.hold_errors` (0) for errors. An issue restored within its hold is
+**cleared**: never posted. One that fails again within a hold of clearing is the same issue.
+
+**Recheck**: asking the app's health API whether a check still fails, before a held alert posts
+and every `alerts.recheck` while a posted one is open, so a missed Health Restored can't leave it
+open.

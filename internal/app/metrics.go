@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/wtwerner/heraldarr/internal/alert"
 )
 
 // Import results counted by heraldarr_imports_total.
@@ -27,9 +29,10 @@ const (
 type metrics struct {
 	imports, posts, failures, waits, lastPost *family
 	pending                                   *family // set from the store at each scrape
+	alerts, alertDrops                        *family
 }
 
-func newMetrics(sources []string) *metrics {
+func newMetrics(sources, alertSources []string) *metrics {
 	m := &metrics{
 		imports:  newFamily("heraldarr_imports_total", "counter", "Webhook imports received, by result.", "source", "result"),
 		posts:    newFamily("heraldarr_posts_total", "counter", "Cards posted, by the layout Discord accepted.", "source", "destination", "layout"),
@@ -37,6 +40,18 @@ func newMetrics(sources []string) *metrics {
 		pending:  newFamily("heraldarr_pending_batches", "gauge", "Batches waiting to be posted."),
 		waits:    newFamily("heraldarr_media_server_waits_total", "counter", "Deliveries postponed because the media server didn't have the items yet."),
 		lastPost: newFamily("heraldarr_last_post_timestamp_seconds", "gauge", "Unix time of the last card posted since start (0: none yet)."),
+		alerts:   newFamily("heraldarr_alerts_total", "counter", "Health and update webhook events received, by result.", "source", "result"),
+		alertDrops: newFamily("heraldarr_alerts_dropped_total", "counter",
+			"Alerts dropped without a post: cleared within their hold, or failed delivery.", "source", "reason"),
+	}
+	for _, s := range alertSources {
+		for _, r := range []alert.Result{alert.Held, alert.Repeat, alert.Cleared, alert.Restored, alert.Update, alert.Ignored} {
+			m.alerts.add(0, s, string(r))
+		}
+		m.alerts.add(0, s, alertInvalid)
+		m.alerts.add(0, s, alertError)
+		m.alertDrops.add(0, s, alert.DropCleared)
+		m.alertDrops.add(0, s, alert.DropFailed)
 	}
 	// Every known series starts at 0, so rates and alerts work before the first event.
 	for _, s := range sources {
@@ -51,7 +66,7 @@ func newMetrics(sources []string) *metrics {
 }
 
 func (m *metrics) write(w io.Writer) {
-	for _, f := range []*family{m.imports, m.posts, m.failures, m.pending, m.waits, m.lastPost} {
+	for _, f := range []*family{m.imports, m.posts, m.failures, m.pending, m.waits, m.lastPost, m.alerts, m.alertDrops} {
 		f.write(w)
 	}
 }

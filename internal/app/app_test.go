@@ -246,6 +246,29 @@ func TestPipelineParity(t *testing.T) {
 	}
 }
 
+// With alerts on for every source (the default), imports post exactly as without.
+func TestPipelineParityWithAlerts(t *testing.T) {
+	for _, name := range testkit.Names(t) {
+		t.Run(name, func(t *testing.T) {
+			e := newEnv(t, name, true, func(d *app.Deps) {
+				readers := map[string]domain.HealthReader{}
+				for n := range d.Sources {
+					readers[n] = nil
+				}
+				d.Alerts = &app.Alerts{Destination: domain.Destination{Name: "server"}, Sources: readers, Restored: "edit"}
+			})
+			e.send(t)
+			e.app.Flush(context.Background(), true)
+			if len(e.out.posts) != len(e.exp.Posts) {
+				t.Fatalf("got %d posts, want %d", len(e.out.posts), len(e.exp.Posts))
+			}
+			for i, p := range e.out.posts {
+				testkit.EqualJSON(t, "v2", p.layouts[0].Body, e.exp.Posts[i].V2)
+			}
+		})
+	}
+}
+
 // Without force, a batch waits for its quiet window, then for the media server, then posts
 // without the deep link once the checks run out.
 func TestWaitsForQuietThenMediaServer(t *testing.T) {
@@ -657,5 +680,63 @@ routes:
 	want = batcher.Backlog{Mode: batcher.Complete, PerSeason: true, Settle: 5 * time.Minute, Idle: 12 * time.Hour, MaxHold: 24 * time.Hour}
 	if svc.Timing.Backlog != want || svc.Timing.FollowingEarly != 2*time.Hour {
 		t.Errorf("backlog overrides not wired: %+v, following_early %s", svc.Timing.Backlog, svc.Timing.FollowingEarly)
+	}
+}
+
+func TestFromConfigAlerts(t *testing.T) {
+	dir := t.TempDir()
+	prowlarr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1/health" {
+			http.NotFound(w, r)
+			return
+		}
+		_, _ = io.WriteString(w, `[{"source":"IndexerStatusCheck","type":"warning","message":"m"}]`)
+	}))
+	defer prowlarr.Close()
+	yaml := `
+server: {data_dir: ` + filepath.Join(dir, "data") + `}
+sources:
+  - {name: sonarr, kind: sonarr, url: "http://sonarr:8989", api_key: k}
+  - {name: radarr, kind: radarr, url: "http://radarr:7878", api_key: k}
+  - {name: prowlarr, kind: prowlarr, url: "` + prowlarr.URL + `", api_key: k}
+destinations:
+  - {name: tv, webhook_url: "https://discord.invalid/api/webhooks/1/x", public: true}
+  - {name: server, webhook_url: "https://discord.invalid/api/webhooks/2/y", username: Server}
+routes:
+  - {sources: [sonarr], destination: tv}
+alerts: {destination: server, sources: [radarr, prowlarr], hold: 1h, hold_errors: 1m, restored: post, recheck: 5m, updates: false}
+`
+	cfg, err := config.Parse([]byte(yaml))
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc, err := app.FromConfig(cfg, "test", slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = svc.Close() }()
+	al := svc.Alerts
+	if al == nil || al.Destination.Name != "server" || al.Destination.Username != "Server" || al.Restored != "post" {
+		t.Fatalf("alerts: %+v", al)
+	}
+	if len(al.Sources) != 2 || al.Sources["radarr"] == nil || al.Sources["prowlarr"] == nil {
+		t.Fatalf("alert sources: %v", al.Sources)
+	}
+	if h, err := al.Sources["prowlarr"].Health(context.Background()); err != nil || len(h) != 1 {
+		t.Errorf("Prowlarr health (v1 API) = %v, %v", h, err)
+	}
+	if c := al.Config; c.Hold != time.Hour || c.HoldErrors != time.Minute || c.Recheck != 5*time.Minute || c.Updates ||
+		c.RetryInterval != 2*time.Minute || c.RetryMax != 30 {
+		t.Errorf("alert config: %+v", c)
+	}
+	// Alerts-only sources post no imports.
+	if _, ok := svc.Sources["radarr"]; ok {
+		t.Error("an unrouted radarr became an import source")
+	}
+	if _, ok := svc.Sources["prowlarr"]; ok {
+		t.Error("prowlarr became an import source")
+	}
+	if _, ok := svc.Sources["sonarr"]; !ok {
+		t.Error("sonarr lost its route")
 	}
 }

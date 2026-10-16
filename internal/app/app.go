@@ -10,6 +10,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/wtwerner/heraldarr/internal/alert"
 	"github.com/wtwerner/heraldarr/internal/batcher"
 	"github.com/wtwerner/heraldarr/internal/domain"
 )
@@ -39,7 +40,8 @@ type Deps struct {
 	DigestFrom int
 	WaitChecks int // media server checks before posting without a deep link
 	Auth       *BasicAuth
-	Heartbeat  string // GET after each flush without a store error, at most once a minute ("": none)
+	Heartbeat  string  // GET after each flush without a store error, at most once a minute ("": none)
+	Alerts     *Alerts // nil: alerts off
 	Log        *slog.Logger
 }
 
@@ -49,7 +51,8 @@ type BasicAuth struct{ Username, Password string }
 type App struct {
 	Deps
 	batcher   *batcher.Batcher
-	kick      chan bool // flush now; true = force
+	alerts    *alert.Manager // nil: alerts off
+	kick      chan bool      // flush now; true = force
 	metrics   *metrics
 	heartbeat *heartbeat // nil: none configured
 }
@@ -62,7 +65,15 @@ func New(d Deps) *App {
 	if d.Log == nil {
 		d.Log = slog.Default()
 	}
-	a := &App{Deps: d, kick: make(chan bool, 1), metrics: newMetrics(slices.Collect(maps.Keys(kinds)))}
+	a := &App{Deps: d, kick: make(chan bool, 1)}
+	a.metrics = newMetrics(slices.Collect(maps.Keys(kinds)), a.alertSources())
+	if d.Alerts != nil {
+		a.alerts = alert.New(d.Alerts.Config, d.Clock, d.Store)
+		a.alerts.Dropped = func(al *domain.Alert, reason string) {
+			a.metrics.alertDrops.add(1, al.Source, reason)
+			a.Log.Info("alert dropped", "alert", al.Key, "reason", reason)
+		}
+	}
 	if d.Heartbeat != "" {
 		a.heartbeat = &heartbeat{url: d.Heartbeat, client: &http.Client{Timeout: 5 * time.Second}} // short: it holds up the flush loop
 	}
@@ -100,10 +111,15 @@ func (a *App) Kick(force bool) {
 	}
 }
 
-// Flush delivers every due batch once, then calls the heartbeat URL if the store worked
-// throughout. Run calls it; tests call it directly.
+// Flush delivers every due batch and alert once, then calls the heartbeat URL if the store worked
+// throughout. Run calls it; tests call it directly. force applies to batches only: an alert's hold
+// is never skipped.
 func (a *App) Flush(ctx context.Context, force bool) {
-	if a.flush(ctx, force) {
+	ok := a.flush(ctx, force)
+	if ctx.Err() == nil {
+		ok = a.flushAlerts(ctx) && ok
+	}
+	if ok {
 		a.beat(ctx)
 	}
 }
